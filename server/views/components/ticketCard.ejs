@@ -1,0 +1,49 @@
+<article class="ticket-card <%= isFeatured ? 'ticket-card--featured' : '' %>">
+  <div class="ticket-card__body">
+    <% if (ticket.badge_text) { %>
+    <span class="ticket-card__badge" style="<%= ticket.badge_bg_color ? `--ticket-badge-bg: ${ticket.badge_bg_color};` : '' %><%= ticket.badge_text_color ? `--ticket-badge-color: ${ticket.badge_text_color};` : '' %>">
+      <%- renderTextWithLinks(ticket.badge_text) %>
+    </span>
+    <% } %>
+    <h3 class="ticket-card__title"><%- renderTextWithLinks(ticket.title) %></h3>
+    <% if (ticket.ticket_text) { %>
+    <p class="ticket-card__text"><%- renderTextWithLinks(ticket.ticket_text) %></p>
+    <% } %>
+
+    <div class="ticket-card__price-group">
+      <span class="ticket-card__price-old"><%= formatCurrency(ticket.event_price) %></span>
+      <span class="ticket-card__price-current">
+        <%= formatCurrency(ticket.pricing?.current_price ?? ticket.event_price) %>
+      </span>
+      <% if (ticket.pricing?.price_note) { %>
+      <span class="ticket-card__price-note"><%- renderTextWithLinks(ticket.pricing.price_note) %></span>
+      <% } %>
+    </div>
+
+    <% if (ticket.features?.length) { %>
+    <ul class="ticket-card__features">
+      <% ticket.features.forEach((feature) => { %>
+      <li>
+        <svg class="ticket-card__star" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3l2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 17.6 6.6 20.8l1-6.1-4.4-4.3 6.1-.9L12 3z"></path>
+        </svg>
+        <span><%- renderTextWithLinks(feature.feature_text) %></span>
+      </li>
+      <% }) %>
+    </ul>
+    <% } %>
+
+    <% if (ticket.hint_text) { %>
+    <p class="ticket-card__hint"><%- renderTextWithLinks(ticket.hint_text) %></p>
+    <% } %>
+  </div>
+
+  <div class="ticket-card__cta">
+    <a class="ticket-card__button" href="<%= ticket.purchase_url || ticket.button_url || '#' %>">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 12h12.2l-4.6-4.6L14 6l7 7-7 7-1.4-1.4 4.6-4.6H5z"></path>
+      </svg>
+      <span><%= ticket.button_label || 'Ticket wählen' %></span>
+    </a>
+  </div>
+</article>

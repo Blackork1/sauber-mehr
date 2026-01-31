@@ -1,0 +1,39 @@
+<section class="auth-card">
+  <h1><%= t?.registerHeadline || 'Registrierung' %></h1>
+  <p><%= t?.registerIntro || 'Erstelle ein Konto, um Tickets und Newsletter zu verwalten.' %></p>
+  <% if (error) { %>
+    <p class="auth-error"><%= error %></p>
+  <% } %>
+  <form method="post" action="/register" class="auth-form">
+    <label><%= t?.firstName || 'Vorname' %>
+      <input name="firstName" type="text" required>
+    </label>
+    <label><%= t?.lastName || 'Nachname' %>
+      <input name="lastName" type="text" required>
+    </label>
+    <label><%= t?.email || 'E-Mail' %>
+      <input name="email" type="email" required>
+    </label>
+    <label><%= t?.password || 'Passwort' %>
+      <input name="password" type="password" required>
+    </label>
+
+    <fieldset class="auth-fieldset">
+      <legend><%= t?.newsletter || 'Newsletter' %></legend>
+      <label class="auth-checkbox">
+        <input type="checkbox" name="newsletterArticles">
+        <%= t?.newsletterArticles || 'Artikel-News abonnieren' %>
+      </label>
+      <label class="auth-checkbox">
+        <input type="checkbox" name="newsletterVideos">
+        <%= t?.newsletterVideos || 'Video-News abonnieren' %>
+      </label>
+    </fieldset>
+
+    <button type="submit" class="auth-button"><%= t?.registerButton || 'Registrieren' %></button>
+  </form>
+  <a class="auth-google" href="/auth/google<%= locale ? `?lang=${locale}` : '' %>">
+    <span><%= t?.registerGoogle || 'Mit Google registrieren' %></span>
+  </a>
+  <p class="auth-note"><%= t?.registerNote || 'Schon registriert?' %> <a href="/login"><%= t?.registerNoteLink || 'Zum Login' %></a></p>
+</section>

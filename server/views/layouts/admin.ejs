@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="<%= (meta?.locale || 'de-DE') %>">
+
+<head>
+  <%- include('../partials/head', { meta, schemaGraphJson }) %>
+</head>
+
+<body class="admin-body">
+  <main class="admin-main">
+    <%- body %>
+  </main>
+  <div class="admin-upload-overlay is-hidden" data-upload-overlay>
+    <div class="admin-upload-overlay__dialog" role="status" aria-live="polite">
+      <div class="admin-upload-overlay__spinner" aria-hidden="true"></div>
+      <div class="admin-upload-overlay__progress">
+        <div class="admin-upload-overlay__percent" data-upload-percent>0%</div>
+        <div class="admin-upload-overlay__bar">
+          <div class="admin-upload-overlay__bar-fill" data-upload-bar></div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script src="/js/admin.js<%= assetSuffix || '' %>"></script>
+
+</body>
+
+</html>

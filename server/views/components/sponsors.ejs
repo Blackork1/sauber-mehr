@@ -1,0 +1,46 @@
+<%
+  const locale = page?.locale || 'de-DE';
+  const localeKey = locale.startsWith('en') ? 'en' : (locale.startsWith('ku') ? 'ku' : 'de');
+  const sponsorItems = Array.isArray(sponsors) ? sponsors : [];
+%>
+
+<section class="sponsor-section">
+  <div class="sponsor-section__inner">
+    <div class="sponsor-grid">
+      <% sponsorItems.forEach((item) => { %>
+      <%
+        const descriptionByLocale = localeKey === 'en'
+          ? item.description_en
+          : (localeKey === 'ku' ? item.description_ku : item.description_de);
+      %>
+      <figure class="sponsor-card">
+        <figcaption class="sponsor-card__name">
+          <h3><%- renderTextWithLinks(item.name || 'Name des Sponsors') %></h3>
+        </figcaption>
+        <div class="sponsor-card__logo">
+          <% if (item.image_url) { %>
+          <% if (item.link_url) { %>
+          <a href="<%= item.link_url %>" target="_blank" rel="noopener noreferrer">
+            <img src="<%= item.image_url %>" alt="<%= item.name || 'Name des Sponsors' %>">
+          </a>
+          <% } else { %>
+          <img src="<%= item.image_url %>" alt="<%= item.name || 'Name des Sponsors' %>">
+          <% } %>
+          <% } else { %>
+          <span class="sponsor-card__placeholder">Logo</span>
+          <% } %>
+        </div>
+        <figcaption class="sponsor-card__name">
+          <% if (descriptionByLocale) { %>
+          <p class="sponsor-card__description"><%- renderTextWithLinks(descriptionByLocale) %></p>
+          <% } %>
+        </figcaption>
+      </figure>
+      <% }) %>
+    </div>
+
+    <% if (!sponsorItems.length) { %>
+    <p class="sponsor-section__empty">Noch keine Sponsoren vorhanden.</p>
+    <% } %>
+  </div>
+</section>

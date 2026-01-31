@@ -1,0 +1,55 @@
+<%
+  const headline = block?.headline || page?.title || '';
+  const shortText = String(block?.shortText || '').trim();
+  const longText = String(block?.longText || '').trim();
+  const poster = block?.poster || {};
+  const downloads = Array.isArray(block?.downloads) ? block.downloads : [];
+  const shortParagraphs = shortText
+    ? shortText.split(/\r?\n+/).map((paragraph) => paragraph.trim()).filter(Boolean)
+    : [];
+  const longParagraphs = longText
+    ? longText.split(/\r?\n+/).map((paragraph) => paragraph.trim()).filter(Boolean)
+    : [];
+%>
+<section class="rahmenplan-page">
+  <div class="rahmenplan-page__inner">
+    <header class="rahmenplan-page__header">
+      <% if (headline) { %>
+      <h1 class="rahmenplan-page__title"><%- renderTextWithLinks(headline) %></h1>
+      <% } %>
+      <% if (shortParagraphs.length) { %>
+      <div class="rahmenplan-page__intro">
+        <% shortParagraphs.forEach((paragraph) => { %>
+        <p><%- renderTextWithLinks(paragraph) %></p>
+        <% }) %>
+      </div>
+      <% } %>
+    </header>
+
+    <% if (poster?.src) { %>
+    <div class="rahmenplan-page__poster">
+      <img src="<%= poster.src %>" alt="<%= poster.alt || headline || 'Rahmenplan' %>">
+    </div>
+    <% } %>
+
+    <% if (downloads.length) { %>
+    <div class="rahmenplan-page__downloads">
+      <% downloads.forEach((item) => { %>
+      <% if (item?.url && item?.label) { %>
+      <a class="rahmenplan-page__download" href="<%= item.url %>" download>
+        <%- renderTextWithLinks(item.label) %>
+      </a>
+      <% } %>
+      <% }) %>
+    </div>
+    <% } %>
+
+    <% if (longParagraphs.length) { %>
+    <div class="rahmenplan-page__body">
+      <% longParagraphs.forEach((paragraph) => { %>
+      <p><%- renderTextWithLinks(paragraph) %></p>
+      <% }) %>
+    </div>
+    <% } %>
+  </div>
+</section>

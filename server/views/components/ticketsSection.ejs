@@ -1,0 +1,241 @@
+<%
+  const defaultChoice = block?.defaultChoice === 'online' ? 'online' : 'kino';
+  const online = block?.online || {};
+  const kino = block?.kino || {};
+  const tickets = Array.isArray(mediaTickets) ? mediaTickets : [];
+  const onlineTickets = Array.isArray(ticketShowcase?.online?.tickets)
+    ? ticketShowcase.online.tickets
+    : tickets.filter((ticket) => ['online', 'combo'].includes(ticket.ticket_type));
+  const kinoTickets = Array.isArray(ticketShowcase?.kino?.tickets)
+    ? ticketShowcase.kino.tickets
+    : tickets.filter((ticket) => ['kino', 'combo'].includes(ticket.ticket_type));
+
+  const onlineFeatured = ticketShowcase?.online?.featured || {};
+  const kinoFeatured = ticketShowcase?.kino?.featured || {};
+
+  const onlineScenes = Array.isArray(ticketShowcase?.online?.scenes) ? ticketShowcase.online.scenes : [];
+  const kinoScenes = Array.isArray(ticketShowcase?.kino?.scenes) ? ticketShowcase.kino.scenes : [];
+
+  const onlineAllVideos = Array.isArray(ticketShowcase?.online?.allVideos) ? ticketShowcase.online.allVideos : [];
+  const kinoNowPlaying = Array.isArray(ticketShowcase?.kino?.nowPlaying) ? ticketShowcase.kino.nowPlaying : [];
+  const kinoUpcoming = Array.isArray(ticketShowcase?.kino?.upcoming) ? ticketShowcase.kino.upcoming : [];
+  const kinoUpcomingDate = ticketShowcase?.kino?.upcomingDate || '';
+
+  const locale = page?.locale || 'de-DE';
+  const formatCurrency = (value) => {
+    const numberValue = Number(value);
+    if (Number.isNaN(numberValue)) return '';
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(numberValue);
+  };
+
+  const localeKey = String(locale).toLowerCase().startsWith('en')
+    ? 'en'
+    : (String(locale).toLowerCase().startsWith('ku') ? 'ku' : 'de');
+  const videoDetailBase = `/video-${localeKey}`;
+%>
+
+<section class="tickets-section" data-component="tickets-section" id="tickets-online">
+  <div class="tickets-section__panel <%= defaultChoice === 'online' ? 'is-active' : '' %>" data-ticket-section="online" <%= defaultChoice === 'online' ? '' : 'hidden' %>>
+    <div class="tickets-section__intro">
+      <h2 class="tickets-section__title"><%- renderTextWithLinks(online.headline || '') %></h2>
+      <p class="tickets-section__text"><%- renderTextWithLinks(online.text || '') %></p>
+    </div>
+
+    <div class="ticket-showcase__content" data-component="ticket-showcase" data-min-cards="3" >
+      <div class="ticket-showcase__tickets tickets-section__tickets" data-carousel>
+        <% if (!onlineTickets.length) { %>
+        <div class="ticket-showcase__empty">Aktuell sind keine Tickets verfügbar.</div>
+        <% } %>
+        <% onlineTickets.forEach((ticket, index) => { %>
+        <%- include('./ticketCard', { ticket, formatCurrency, isFeatured: index === 1 }) %>
+        <% }) %>
+      </div>
+      <button class="ticket-showcase__scroll-hint ticket-showcase__scroll-hint--left" type="button" data-scroll="left" aria-label="Zurück">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M15 5l-7 7 7 7 1.5-1.5L10.5 12 16.5 6.5 15 5z"></path>
+        </svg>
+      </button>
+
+      <button class="ticket-showcase__scroll-hint ticket-showcase__scroll-hint--right" type="button" data-scroll="right" aria-label="Weiter">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M9 5l7 7-7 7-1.5-1.5L13 12 7.5 6.5 9 5z"></path>
+        </svg>
+      </button>
+
+      <div class="ticket-showcase__dots" data-dots aria-hidden="true"></div>
+    </div>
+
+    <div class="tickets-section__listing">
+      <h3 class="tickets-section__subtitle"><%- renderTextWithLinks(online.listingHeadline || '') %></h3>
+      <div class="tickets-feature">
+        <div class="tickets-feature__image">
+          <% if (onlineFeatured.image) { %>
+          <img src="<%= onlineFeatured.image %>" alt="<%= onlineFeatured.title || '' %>" loading="lazy">
+          <% } %>
+        </div>
+        <div class="tickets-feature__content">
+          <h4><%- renderTextWithLinks(onlineFeatured.title || '') %></h4>
+          <div class="tickets-feature__meta">
+            <% (onlineFeatured.meta || []).forEach((item) => { %>
+            <span><%- renderTextWithLinks(item) %></span>
+            <% }) %>
+            <% if (onlineFeatured.tag) { %>
+            <span class="tickets-feature__tag"><%- renderTextWithLinks(onlineFeatured.tag) %></span>
+            <% } %>
+          </div>
+          <p><%- renderTextWithLinks(onlineFeatured.description || '') %></p>
+          <div class="tickets-feature__actions">
+            <% (onlineFeatured.actions || []).forEach((action) => { %>
+            <a class="tickets-feature__button <%= action.variant === 'secondary' ? 'is-secondary' : '' %>" href="<%= action.url || '#' %>"><%= action.label || '' %></a>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+
+      <% if (onlineScenes.length) { %>
+      <div class="tickets-scenes">
+        <p class="tickets-scenes__label"><%- renderTextWithLinks(online.scenesLabel || 'Szenen') %></p>
+        <div class="tickets-scenes__grid">
+          <% onlineScenes.forEach((scene) => { %>
+          <div class="tickets-scenes__item">
+            <img src="<%= scene.src %>" alt="<%= scene.alt || '' %>" loading="lazy">
+          </div>
+          <% }) %>
+        </div>
+      </div>
+      <% } %>
+
+      <% if (onlineAllVideos.length) { %>
+      <div class="tickets-videos">
+        <div class="tickets-videos__header">
+          <h4><%- renderTextWithLinks(online.videosHeadline || 'Alle Filme') %></h4>
+          <% if (online.videosLink) { %>
+          <a class="tickets-videos__link" href="<%= online.videosLink %>"><%= online.videosLinkLabel || 'Alle anzeigen' %></a>
+          <% } %>
+        </div>
+        <div class="video-category__carousel" data-video-carousel>
+          <% onlineAllVideos.forEach((video) => { %>
+          <a class="video-card" href="<%= `${videoDetailBase}/${video.id}` %>">
+            <div class="video-card__thumb" style="<%= video.thumbnail_url ? `background-image: url('${video.thumbnail_url}');` : '' %>"></div>
+            <div class="video-card__title"><%= video.title || '' %></div>
+          </a>
+          <% }) %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="tickets-section__panel <%= defaultChoice === 'kino' ? 'is-active' : '' %>" data-ticket-section="kino" <%= defaultChoice === 'kino' ? '' : 'hidden' %> id="tickets-kino">
+    <div class="tickets-section__intro">
+      <h2 class="tickets-section__title"><%- renderTextWithLinks(kino.headline || '') %></h2>
+      <p class="tickets-section__text"><%- renderTextWithLinks(kino.text || '') %></p>
+    </div>
+
+    <div class="ticket-showcase__content" data-component="ticket-showcase" data-min-cards="3" >
+      <div class="ticket-showcase__tickets tickets-section__tickets" data-carousel>
+        <% if (!kinoTickets.length) { %>
+        <div class="ticket-showcase__empty">Aktuell sind keine Tickets verfügbar.</div>
+        <% } %>
+        <% kinoTickets.forEach((ticket, index) => { %>
+        <%- include('./ticketCard', { ticket, formatCurrency, isFeatured: index === 1 }) %>
+        <% }) %>
+      </div>
+
+      <button class="ticket-showcase__scroll-hint ticket-showcase__scroll-hint--left" type="button" data-scroll="left" aria-label="Zurück">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M15 5l-7 7 7 7 1.5-1.5L10.5 12 16.5 6.5 15 5z"></path>
+        </svg>
+      </button>
+
+      <button class="ticket-showcase__scroll-hint ticket-showcase__scroll-hint--right" type="button" data-scroll="right" aria-label="Weiter">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M9 5l7 7-7 7-1.5-1.5L13 12 7.5 6.5 9 5z"></path>
+        </svg>
+      </button>
+
+      <div class="ticket-showcase__dots" data-dots aria-hidden="true"></div>
+    </div>
+
+    <div class="tickets-section__listing">
+      <h3 class="tickets-section__subtitle"><%- renderTextWithLinks(kino.listingHeadline || '') %></h3>
+      <div class="tickets-feature">
+        <div class="tickets-feature__image">
+          <% if (kinoFeatured.image) { %>
+          <img src="<%= kinoFeatured.image %>" alt="<%= kinoFeatured.title || '' %>" loading="lazy">
+          <% } %>
+        </div>
+        <div class="tickets-feature__content">
+          <h4><%- renderTextWithLinks(kinoFeatured.title || '') %></h4>
+          <div class="tickets-feature__meta">
+            <% (kinoFeatured.meta || []).forEach((item) => { %>
+            <span><%- renderTextWithLinks(item) %></span>
+            <% }) %>
+            <% if (kinoFeatured.tag) { %>
+            <span class="tickets-feature__tag"><%- renderTextWithLinks(kinoFeatured.tag) %></span>
+            <% } %>
+          </div>
+          <p><%- renderTextWithLinks(kinoFeatured.description || '') %></p>
+          <div class="tickets-feature__actions">
+            <% (kinoFeatured.actions || []).forEach((action) => { %>
+            <a class="tickets-feature__button <%= action.variant === 'secondary' ? 'is-secondary' : '' %>" href="<%= action.url || '#' %>"><%= action.label || '' %></a>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+
+      <% if (kinoScenes.length) { %>
+      <div class="tickets-scenes">
+        <p class="tickets-scenes__label"><%- renderTextWithLinks(kino.scenesLabel || 'Szenen') %></p>
+        <div class="tickets-scenes__grid">
+          <% kinoScenes.forEach((scene) => { %>
+          <div class="tickets-scenes__item">
+            <img src="<%= scene.src %>" alt="<%= scene.alt || '' %>" loading="lazy">
+          </div>
+          <% }) %>
+        </div>
+      </div>
+      <% } %>
+
+      <% if (kinoNowPlaying.length) { %>
+      <div class="tickets-videos">
+        <div class="tickets-videos__header">
+          <h4><%- renderTextWithLinks(kino.nowPlayingHeadline || '') %></h4>
+          <% if (kino.nowPlayingLink) { %>
+          <a class="tickets-videos__link" href="<%= kino.nowPlayingLink %>"><%= kino.nowPlayingLinkLabel || 'Alle anzeigen' %></a>
+          <% } %>
+        </div>
+        <div class="video-category__carousel" data-video-carousel>
+          <% kinoNowPlaying.forEach((video) => { %>
+          <article class="video-card">
+            <div class="video-card__thumb" style="<%= video.image ? `background-image: url('${video.image}');` : '' %>"></div>
+            <div class="video-card__title"><%= video.title || '' %></div>
+          </article>
+          <% }) %>
+        </div>
+      </div>
+      <% } %>
+
+      <% if (kinoUpcoming.length) { %>
+      <div class="tickets-videos">
+        <div class="tickets-videos__header">
+          <h4><%- renderTextWithLinks(kinoUpcomingDate ? `Ab ${kinoUpcomingDate} im Kino` : kino.upcomingHeadline || '') %></h4>
+        </div>
+        <div class="video-category__carousel" data-video-carousel>
+          <% kinoUpcoming.forEach((video) => { %>
+          <article class="video-card">
+            <div class="video-card__thumb" style="<%= video.image ? `background-image: url('${video.image}');` : '' %>"></div>
+            <div class="video-card__title"><%= video.title || '' %></div>
+          </article>
+          <% }) %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</section>

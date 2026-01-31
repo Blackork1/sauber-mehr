@@ -1,0 +1,48 @@
+[
+  {
+    "cta": {
+      "href": "/tickets",
+      "label": "Tickets sichern"
+    },
+    "type": "hero",
+    "subline": "Filme, Gespräche und Kultur – im Kino und online. September 2026.",
+    "headline": "Kurdisches Filmfestival Berlin"
+  },
+  {
+    "html": "<p>Willkommen beim Kurdischen Filmfestival Berlin. Entdecke Spielfilme, Dokumentationen und Kurzfilme aus Kurdistan und der Diaspora – ergänzt durch Panels, Q&As und Begegnungen.</p><p>Hier findest du Programm-Highlights, News, Tickets sowie den Online-Pass für ausgewählte Inhalte.</p>",
+    "type": "richText"
+  },
+  {
+    "text": "Sichere dir dein Kino-Ticket oder hol dir den Online-Pass, um ausgewählte Filme bequem von überall zu sehen.",
+    "type": "imageText",
+    "title": "Tickets & Online-Pass",
+    "imageAlt": "Publikum im Kino",
+    "imageUrl": "/images/placeholder-festival.webp"
+  },
+  {
+    "type": "cta",
+    "button": {
+      "href": "/programm",
+      "label": "Zum Programm"
+    },
+    "subline": "Sieh dir die Programmpunkte an und plane deinen Festivalbesuch.",
+    "headline": "Programm entdecken"
+  },
+  {
+    "type": "faq",
+    "items": [
+      {
+        "a": "Geplant ist September 2026. Die genauen Termine veröffentlichen wir rechtzeitig auf dieser Seite.",
+        "q": "Wann findet das Festival statt?"
+      },
+      {
+        "a": "Ja. Mit dem Online-Pass kannst du ausgewählte Filme online ansehen. Details findest du unter „Online-Pass“.",
+        "q": "Gibt es einen Online-Pass?"
+      },
+      {
+        "a": "In Berlin (Kino-Location folgt) und ergänzend online.",
+        "q": "Wo findet das Festival statt?"
+      }
+    ]
+  }
+]

@@ -1,0 +1,13 @@
+<section class="cta">
+  <div class="cta__box">
+    <% if (block.title) { %><h2><%- renderTextWithLinks(block.title) %></h2><% } %>
+    <% if (block.text) { %>
+    <% const paragraphs = String(block.text).split(/\r?\n+/).map((paragraph) => paragraph.trim()).filter(Boolean); %>
+    <% paragraphs.forEach((paragraph) => { %>
+    <p><%- renderTextWithLinks(paragraph) %></p>
+    <% }) %>
+    <% } %> <% if (block.button && block.button.href) { %>
+    <a class="btn" href="<%= block.button.href %>"><%= block.button.label || 'Kontakt' %></a>
+    <% } %>
+  </div>
+</section>

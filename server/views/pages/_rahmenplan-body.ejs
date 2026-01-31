@@ -1,0 +1,6 @@
+<%
+  const contentBlocks = Array.isArray(page?.content) ? page.content : [];
+  const rahmenplanBlock = contentBlocks.find((block) => block?.type === 'rahmenplan') || {};
+%>
+
+<%- include('../components/rahmenplan', { block: rahmenplanBlock, page }) %>

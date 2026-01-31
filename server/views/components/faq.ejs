@@ -1,0 +1,11 @@
+<section class="faq">
+  <% if (block.title) { %><h2><%- renderTextWithLinks(block.title) %></h2><% } %>
+  <div class="faq__list">
+    <% (block.items || []).forEach(it => { %>
+    <details class="faq__item">
+      <summary><%- renderTextWithLinks(it.q) %></summary>
+      <div class="prose"><%- it.a %></div>
+    </details>
+    <% }) %>
+  </div>
+</section>

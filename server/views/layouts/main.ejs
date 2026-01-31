@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="<%= (meta?.locale || 'de-DE') %>">
+
+<head>
+  <%- include('../partials/head', { meta, schemaGraphJson }) %>
+</head>
+
+<body>
+  <%- include('../partials/navbar', { translations, meta }) %>
+  <%- include('../partials/social-rail') %>
+
+  <main class="container">
+    <%- body %>
+  </main>
+
+  <%- include('../partials/footer', { meta, newsletterStatus }) %>
+
+  <script src="/js/site.js<%= assetSuffix || '' %>" defer></script>
+  <script src="/js/slideOnScroll.js<%= assetSuffix || '' %>" defer></script>
+</body>
+
+</html>

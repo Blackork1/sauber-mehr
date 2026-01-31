@@ -1,0 +1,61 @@
+<%
+  const backgroundStyle = director?.background_image_url
+    ? `background-image: url('${director.background_image_url}');`
+    : '';
+    const copy = {
+    de: {
+      portraitAltFallback: 'Regie',
+      videosTitle: 'Filme',
+      emptyText: 'Aktuell sind keine Filme zugeordnet.'
+    },
+    en: {
+      portraitAltFallback: 'Director',
+      videosTitle: 'Movies',
+      emptyText: 'There are currently no movies assigned.'
+    },
+    ku: {
+      portraitAltFallback: 'Pardon',
+      videosTitle: 'Pardon',
+      emptyText: 'Niha tu fîlm nehatiye zêdekirin.'
+    }
+  };
+  const localeCopy = copy[languageKey] || copy.de;
+  const portraitAlt = director?.name || localeCopy.portraitAltFallback;
+%>
+
+<article class="page director-page">
+  <section class="director-hero">
+    <div class="director-hero__image" style="<%= backgroundStyle %>">
+      <% if (director?.portrait_image_url) { %>
+      <div class="director-hero__portrait">
+        <img src="<%= director.portrait_image_url %>" alt="<%= portraitAlt %>" loading="lazy">
+      </div>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="section director-content">
+    <div class="section__inner director-content__inner">
+      <h1 class="director-content__title"><%= director?.name || '' %></h1>
+      <div class="director-content__text"><%= director?.description || '' %></div>
+    </div>
+  </section>
+
+  <section class="section director-videos">
+    <div class="section__inner director-videos__inner">
+      <h2 class="director-videos__title"><%= localeCopy.videosTitle %></h2>
+      <% if (!(videos || []).length) { %>
+      <p class="director-videos__empty"><%= localeCopy.emptyText %></p>
+      <% } else { %>
+      <div class="director-videos__grid">
+        <% (videos || []).forEach((video) => { %>
+        <a class="video-card" href="<%= `${videoBasePath}/${video.id}` %>">
+          <div class="video-card__thumb" style="<%= video.thumbnail_url ? `background-image: url('${video.thumbnail_url}');` : '' %>"></div>
+          <div class="video-card__title"><%= video.title %></div>
+        </a>
+        <% }) %>
+      </div>
+      <% } %>
+    </div>
+  </section>
+</article>

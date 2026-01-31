@@ -1,0 +1,19 @@
+{
+  "watch": [
+    "controllers",
+    "routes",
+    "services",
+    "middleware",
+    "helpers",
+    "util",
+    "views",
+    "index.js"
+  ],
+  "ext": "js,ejs,json,css",
+  "ignore": [
+    "public/uploads/*",
+    "public/images/uploads/*",
+    "public/video/uploads/*"
+  ],
+  "exec": "node index.js"
+}

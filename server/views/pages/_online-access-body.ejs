@@ -1,0 +1,26 @@
+<article class="page online-access-page">
+  <section class="section online-access">
+    <div class="section__inner online-access__inner">
+      <h1>Online-Zugang freischalten</h1>
+      <p>Gib den einmaligen Zugangscode aus deiner E-Mail ein, um alle Filme freizuschalten.</p>
+
+      <% if (success) { %>
+      <p class="online-access__success">Dein Zugang wurde freigeschaltet. Viel Spaß beim Anschauen!</p>
+      <% } %>
+
+      <% if (error === 'missing') { %>
+      <p class="online-access__error">Bitte gib deinen Code ein.</p>
+      <% } %>
+      <% if (error === 'invalid') { %>
+      <p class="online-access__error">Der Code ist ungültig oder wurde bereits verwendet.</p>
+      <% } %>
+
+      <form method="post" action="/online-access" class="online-access__form">
+        <label>Dein Zugangscode
+          <input type="text" name="code" required>
+        </label>
+        <button type="submit">Zugang freischalten</button>
+      </form>
+    </div>
+  </section>
+</article>

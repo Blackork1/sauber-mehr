@@ -1,0 +1,101 @@
+<%
+  const type = ticketType || 'kino';
+  const baseTicketPrice = ticket?.pricing?.current_price ?? ticket?.event_price;
+  const standardKinoPrice = standardKinoTicket?.pricing?.current_price
+    ?? standardKinoTicket?.base_price
+    ?? kinoTicket?.pricing?.current_price
+    ?? kinoTicket?.event_price
+    ?? baseTicketPrice;
+  const summaryStep = type === 'online' ? 3 : 4;
+%>
+
+<article class="page checkout-page">
+  <section class="section checkout">
+    <div class="section__inner checkout__inner">
+      <header class="checkout__header">
+        <h1>Ticketkauf</h1>
+        <p>Gib deine Kontaktdaten ein und wähle deine Tickets. Nach der Zahlung bekommst du deine Tickets per E-Mail.</p>
+      </header>
+
+      <% if (!ticket) { %>
+      <p>Kein Ticket ausgewählt. Bitte starte den Kauf über die Ticketseite.</p>
+      <% } else { %>
+      <form class="checkout__form" data-checkout-form>
+        <input type="hidden" name="ticketId" value="<%= ticket?.id || '' %>">
+        <input type="hidden" name="ticketType" value="<%= type %>">
+
+        <div class="checkout__card">
+          <h2>1. Kontaktdaten</h2>
+          <label>Vor- und Nachname
+            <input type="text" name="buyerName" required>
+          </label>
+          <label>E-Mail
+            <input type="email" name="buyerEmail" required>
+          </label>
+        </div>
+
+        <div class="checkout__card">
+          <h2>2. Ticket-Auswahl</h2>
+          <div class="checkout__ticket-summary">
+            <p><strong><%= ticket?.title || '' %></strong></p>
+            <% if (ticket?.pricing?.current_price || ticket?.event_price) { %>
+            <p>Preis: <strong><%= Number(ticket?.pricing?.current_price ?? ticket?.event_price).toFixed(2) %> €</strong></p>
+            <% } %>
+          </div>
+
+          <% if (type !== 'online') { %>
+          <label>Wie viele Kinotickets möchtest du kaufen? (max. 10)
+            <select name="kinoQuantity" data-kino-quantity>
+              <% for (let i = 1; i <= 10; i += 1) { %>
+              <option value="<%= i %>" <%= i === 1 ? 'selected' : '' %>><%= i %></option>
+              <% } %>
+            </select>
+          </label>
+          <% if (type === 'combo') { %>
+          <p class="checkout__note">Im Kombiticket ist 1 Kinoticket enthalten. Zusätzliche Tickets kosten <strong><%= standardKinoPrice ? `${Number(standardKinoPrice).toFixed(2)} €` : '' %></strong> pro Person.</p>
+          <% } %>
+          <% } else { %>
+          <input type="hidden" name="kinoQuantity" value="0">
+          <% } %>
+        </div>
+
+        <% if (type !== 'online') { %>
+        <div class="checkout__card" data-attendees>
+          <h2>3. Personalisierte Kinotickets</h2>
+          <p>Bitte gib für jedes Kinoticket den Vor- und Nachnamen ein.</p>
+          <div class="checkout__attendee-list" data-attendee-list></div>
+        </div>
+        <% } %>
+
+                <div class="checkout__card checkout__summary" data-checkout-summary data-ticket-type="<%= type %>" data-ticket-price="<%= Number(baseTicketPrice || 0).toFixed(2) %>" data-standard-kino-price="<%= Number(standardKinoPrice || 0).toFixed(2) %>">
+          <h2><%= summaryStep %>. Preisübersicht</h2>
+          <div class="checkout__summary-row">
+            <span class="checkout__summary-label"><%= ticket?.title || '' %></span>
+            <span class="checkout__summary-value" data-summary-base-price></span>
+          </div>
+          <div class="checkout__summary-row" data-summary-extra hidden>
+            <span class="checkout__summary-label" data-summary-extra-label></span>
+            <span class="checkout__summary-value" data-summary-extra-total></span>
+          </div>
+          <div class="checkout__summary-row checkout__summary-row--sub" data-summary-extra-unit-row hidden>
+            <span class="checkout__summary-label">Preis pro Ticket:</span>
+            <span class="checkout__summary-value" data-summary-extra-unit></span>
+          </div>
+          <div class="checkout__summary-divider"></div>
+          <div class="checkout__summary-row checkout__summary-row--total">
+            <span class="checkout__summary-label">Gesamtpreis</span>
+            <span class="checkout__summary-value" data-summary-total></span>
+          </div>
+        </div>
+
+        <div class="checkout__actions">
+          <button type="submit" class="checkout__submit">Jetzt mit Stripe bezahlen</button>
+          <p class="checkout__error" data-checkout-error hidden></p>
+        </div>
+      </form>
+      <% } %>
+    </div>
+  </section>
+</article>
+
+<script src="/js/checkout.js<%= assetSuffix || '' %>"></script>

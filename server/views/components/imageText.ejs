@@ -1,0 +1,18 @@
+<section class="imageText">
+  <div class="imageText__grid">
+    <div>
+      <% if (block.title) { %><h2><%- renderTextWithLinks(block.title) %></h2><% } %>
+      <% if (block.text) { %>
+      <% const paragraphs = String(block.text).split(/\r?\n+/).map((paragraph) => paragraph.trim()).filter(Boolean); %>
+      <% paragraphs.forEach((paragraph) => { %>
+      <p><%- renderTextWithLinks(paragraph) %></p>
+      <% }) %>
+      <% } %>
+    </div>
+    <div>
+      <% if (block.img && block.img.src) { %>
+      <img src="<%= block.img.src %>" alt="<%= block.img.alt || '' %>" />
+      <% } %>
+    </div>
+  </div>
+</section>

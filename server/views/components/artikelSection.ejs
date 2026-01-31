@@ -1,0 +1,76 @@
+<%
+  const articles = Array.isArray(newsArticles) ? newsArticles : [];
+  const featuredArticles = articles.slice(0, 3);
+  const locale = String(page?.locale || block?.locale || '').toLowerCase();
+  const localeKey = locale.startsWith('en') ? 'en' : (locale.startsWith('ku') ? 'ku' : 'de');
+  const newsLink = `/news-${localeKey}`;
+    const labels = {
+    de: {
+      empty: 'Momentan gibt es keine News.',
+      previous: 'Zurück',
+      next: 'Weiter',
+      cta: 'Alle Artikel ansehen'
+    },
+    en: {
+      empty: 'There are no news items at the moment.',
+      previous: 'Previous',
+      next: 'Next',
+      cta: 'View all articles'
+    },
+    ku: {
+      empty: 'Niha nûçe tune ne.',
+      previous: 'Paşve',
+      next: 'Pêş',
+      cta: 'Hemû gotaran bibîne'
+    }
+  };
+  const localeLabels = labels[localeKey] || labels.de;
+%>
+
+<section class="section section--align-left news-section " data-component="news-section" id="news">
+  <div class="section__inner news-section__inner animate-on-scroll-left">
+    <header class="news-section__header">
+      <% if (block?.headline) { %>
+      <h2 class="news-section__title"><%- renderTextWithLinks(block.headline) %></h2>
+      <% } %>
+      <% if (block?.text) { %>
+      <% const leadParagraphs = String(block.text).split(/\r?\n+/).map((paragraph) => paragraph.trim()).filter(Boolean); %>
+      <% leadParagraphs.forEach((paragraph) => { %>
+      <p class="news-section__lead"><%- renderTextWithLinks(paragraph) %></p>
+      <% }) %> <% } %>
+    </header>
+
+    <div class="news-section__content">
+      <div class="news-section__carousel" data-carousel>
+        <% if (!featuredArticles.length) { %>
+        <div class="news-section__empty" data-empty>
+          <%= localeLabels.empty %>
+        </div>
+        <% } %>
+        <% featuredArticles.forEach((article) => { %>
+        <%- include('./artikelblock', { article, localeKey }) %>
+        <% }) %>
+      </div>
+
+      <button class="news-section__scroll-hint news-section__scroll-hint--left" type="button" data-scroll="left" aria-label="<%= localeLabels.previous %>">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M15 5l-7 7 7 7 1.5-1.5L10.5 12 16.5 6.5 15 5z"></path>
+        </svg>
+      </button>
+
+      <button class="news-section__scroll-hint news-section__scroll-hint--right" type="button" data-scroll="right" aria-label="<%= localeLabels.next %>">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M9 5l7 7-7 7-1.5-1.5L13 12 7.5 6.5 9 5z"></path>
+        </svg>
+      </button>
+
+      <div class="news-section__dots" data-dots aria-hidden="true"></div>
+    </div>
+
+    <div class="news-section__cta">
+      <a class="news-section__cta-button" href="<%= newsLink %>">
+        <%= localeLabels.cta %>
+      </a>
+    </div>
+  </div>
+</section>

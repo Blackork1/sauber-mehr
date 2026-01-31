@@ -1,0 +1,17 @@
+<section class="admin-shell">
+  <section class="admin-content">
+    <header class="admin-content__header">
+      <h2>Spendenquittung anzeigen</h2>
+      <p>Spende von <strong><%= [donation.first_name, donation.last_name].filter(Boolean).join(' ') %></strong></p>
+      <div class="admin-panel__actions admin-panel__actions--inline">
+        <a class="admin-button" href="<%= downloadUrl %>">Quittung speichern</a>
+        <a class="admin-button admin-button--secondary" href="/adminbackend?nav=tickets&ticketsTab=donations">Zurück</a>
+      </div>
+    </header>
+    <section class="admin-panel">
+      <div class="admin-panel__section">
+        <iframe class="admin-receipt-frame" src="<%= receiptUrl %>" title="Spendenquittung"></iframe>
+      </div>
+    </section>
+  </section>
+</section>

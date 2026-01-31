@@ -1,0 +1,23 @@
+<%
+  const locale = page?.locale || 'de-DE';
+  const localeKey = locale.startsWith('en') ? 'en' : (locale.startsWith('ku') ? 'ku' : 'de');
+  const defaultsByLocale = {
+    de: {
+      title: 'Unsere Sponsoren',
+    },
+    en: {
+      title: 'Our Supporters',
+    },
+    ku: {
+      title: 'Piştgiranên Me',
+    }
+  };
+  const defaults = defaultsByLocale[localeKey] || defaultsByLocale.de;
+  const title = block?.title || page?.title || defaults.title;
+%>
+
+<section class="sponsor-hero">
+  <div class="sponsor-hero__inner">
+    <h1 class="sponsor-hero__title"><%- renderTextWithLinks(title) %></h1>
+  </div>
+</section>

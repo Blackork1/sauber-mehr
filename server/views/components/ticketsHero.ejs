@@ -1,0 +1,82 @@
+<%
+  const kino = block?.kino || {};
+  const online = block?.online || {};
+  const defaultChoice = block?.defaultChoice === 'online' ? 'online' : 'kino';
+
+  const tabs = Array.isArray(block?.tabs) && block.tabs.length
+    ? block.tabs
+    : [
+        { key: 'kino', label: kino.tabLabel || 'Kino-Ticket' },
+        { key: 'online', label: online.tabLabel || 'Online-Pass' }
+      ];
+
+  const kinoTitle = kino.title || 'Kino-Ticket';
+  const kinoText = kino.text || 'Unsere Filme und Videos werden lokal im Kino Babylon Berlin im Herzens Berlin übertragen. Du hast die Möglichkeit online Tickets für das Kino zu erwerben.';
+  const kinoButtonLabel = kino.buttonLabel || 'Kinoticket kaufen';
+  const kinoButtonUrl = kino.buttonUrl || '#tickets-kino';
+  const kinoImage = ticketShowcase?.kino?.heroImage || kino.image || {};
+  const kinoImageSrc = kinoImage.src || '';
+  const kinoImageAlt = kinoImage.alt || kinoTitle;
+
+  const onlineTitle = online.title || 'Online-Pass';
+  const onlineText = online.text || 'Erhalte Zugriff zu allen Videos und Filmen des diesjährigen Filmfestivals. Du kannst von überall und jederzeit auf die Inhalte in unserer Onlinemediathek zugreifen.';
+  const onlineButtonLabel = online.buttonLabel || 'Onlinezugang erlangen';
+  const onlineButtonUrl = online.buttonUrl || '#tickets-online';
+  const onlineImage = ticketShowcase?.online?.heroImage || online.image || {};
+  const onlineImageSrc = onlineImage.src || '';
+  const onlineImageAlt = onlineImage.alt || onlineTitle;
+%>
+
+<section class="tickets-hero" data-component="tickets-hero" data-default-choice="<%= defaultChoice %>">
+  <div class="tickets-hero__inner">
+    <div class="tickets-hero__panel <%= defaultChoice === 'kino' ? 'is-active' : '' %>" data-ticket-panel="kino" role="tabpanel" <%= defaultChoice === 'kino' ? '' : 'hidden' %>>
+      <div class="tickets-hero__media">
+        <% if (kinoImageSrc) { %>
+        <img src="<%= kinoImageSrc %>" alt="<%= kinoImageAlt %>" loading="lazy">
+        <% } %>
+      </div>
+      <div class="tickets-hero__content">
+        <h1 class="tickets-hero__title"><%- renderTextWithLinks(kinoTitle) %></h1>
+        <p class="tickets-hero__text"><%- renderTextWithLinks(kinoText) %></p>
+        <a class="tickets-hero__button" href="<%= kinoButtonUrl %>" data-ticket-scroll="kino">
+          <span><%= kinoButtonLabel %></span>
+          <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path d="M7.6 13.4L3.4 9.2l1.4-1.4 2.8 2.8 7.4-7.4 1.4 1.4-8.8 8.8z"></path>
+          </svg>
+        </a>
+        <div class="tickets-hero__controls" role="tablist" aria-label="Ticket-Auswahl">
+          <% tabs.forEach((tab) => { %>
+          <button class="tickets-hero__tab <%= tab.key === defaultChoice ? 'is-active' : '' %>" type="button" data-ticket-choice="<%= tab.key %>" role="tab" aria-selected="<%= tab.key === defaultChoice ? 'true' : 'false' %>">
+            <%= tab.label || '' %>
+          </button>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="tickets-hero__panel <%= defaultChoice === 'online' ? 'is-active' : '' %>" data-ticket-panel="online" role="tabpanel" <%= defaultChoice === 'online' ? '' : 'hidden' %>>
+      <div class="tickets-hero__media">
+        <% if (onlineImageSrc) { %>
+        <img src="<%= onlineImageSrc %>" alt="<%= onlineImageAlt %>" loading="lazy">
+        <% } %>
+      </div>
+      <div class="tickets-hero__content">
+        <h1 class="tickets-hero__title"><%- renderTextWithLinks(onlineTitle) %></h1>
+        <p class="tickets-hero__text"><%- renderTextWithLinks(onlineText) %></p>
+        <a class="tickets-hero__button" href="<%= onlineButtonUrl %>" data-ticket-scroll="online">
+          <span><%= onlineButtonLabel %></span>
+          <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path d="M7.6 13.4L3.4 9.2l1.4-1.4 2.8 2.8 7.4-7.4 1.4 1.4-8.8 8.8z"></path>
+          </svg>
+        </a>
+        <div class="tickets-hero__controls" role="tablist" aria-label="Ticket-Auswahl">
+          <% tabs.forEach((tab) => { %>
+          <button class="tickets-hero__tab <%= tab.key === defaultChoice ? 'is-active' : '' %>" type="button" data-ticket-choice="<%= tab.key %>" role="tab" aria-selected="<%= tab.key === defaultChoice ? 'true' : 'false' %>">
+            <%= tab.label || '' %>
+          </button>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

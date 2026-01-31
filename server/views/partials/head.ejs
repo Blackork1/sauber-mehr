@@ -1,0 +1,174 @@
+<%
+// views/partials/head.ejs
+// Erwartet locals (aus res.render / res.locals):
+// - meta: object (buildMeta(...))
+// - schemaGraphJson: string (JSON.stringify(buildSchemaGraph(...)))
+// - buildVersion: string (optional; cache busting)
+// - assetSuffix: string (optional; precomputed ?v=... for assets)
+// - stylesheets: array of additional css hrefs (optional)
+// - gaEnabled: boolean (aus consentMiddleware -> res.locals.gaEnabled)
+// - clarityEnabled: boolean (aus consentMiddleware -> res.locals.clarityEnabled)
+// - clarityId: string (aus consentMiddleware -> res.locals.clarityId)
+// - stripeEnabled: boolean (optional; wenn du stripe.js global laden willst)
+// - stripePublishableKey: string (optional; falls du es im Head brauchst)
+// - availableCssFiles: array (optional; wenn du admin/editor css-picker nutzt)
+// - meta.alternates: [{hreflang, href}] (optional)
+// Hinweis: EJS hat Zugriff auf `process.env` im Node-Kontext.
+%>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Robots / Canonical -->
+<meta name="robots" content="<%= meta?.robots || 'index,follow' %>">
+<link rel="canonical" href="<%= meta?.canonical || '' %>">
+
+<!-- Title / Description -->
+<title><%- meta?.title || 'Website' %></title>
+<meta name="description" content="<%- meta?.description || '' %>">
+
+<!-- UX/Browser Feinheiten -->
+<meta name="theme-color" content="<%= meta?.themeColor || '#ffffff' %>">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="format-detection" content="telephone=no">
+
+<!-- Language -->
+<meta http-equiv="content-language" content="<%= meta?.locale || 'de-DE' %>">
+
+<!-- Favicons / PWA (Passe Pfade an dein public/ an) -->
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+<link rel="manifest" href="/icons/site.webmanifest">
+<link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#c2a486">
+<meta name="msapplication-TileColor" content="#ffffff">
+
+<!-- Open Graph (Facebook/Instagram/Threads; kein Twitter) -->
+<meta property="og:locale" content="<%= (meta?.locale || 'de-DE').replace('-', '_') %>">
+<meta property="og:type" content="<%= meta?.og?.type || 'website' %>">
+<meta property="og:site_name" content="<%- meta?.og?.site_name || meta?.siteName || '' %>">
+<meta property="og:title" content="<%- meta?.og?.title || meta?.title || '' %>">
+<meta property="og:description" content="<%- meta?.og?.description || meta?.description || '' %>">
+<meta property="og:url" content="<%= meta?.og?.url || meta?.canonical || '' %>">
+
+<% if (meta?.og?.image?.url) { %>
+<meta property="og:image" content="<%= meta.og.image.url %>">
+<% if (meta.og.image.width) { %>
+<meta property="og:image:width" content="<%= meta.og.image.width %>"><% } %>
+<% if (meta.og.image.height) { %>
+<meta property="og:image:height" content="<%= meta.og.image.height %>"><% } %>
+<% if (meta.og.image.alt) { %>
+<meta property="og:image:alt" content="<%- meta.og.image.alt %>"><% } %>
+<% } %>
+
+<!-- hreflang (nur wenn du echte Sprach-URLs hast) -->
+<% if (Array.isArray(meta?.alternates) && meta.alternates.length) { %>
+<% meta.alternates.forEach(a => { %>
+<link rel="alternate" hreflang="<%= a.hreflang %>" href="<%= a.href %>">
+<% }) %>
+<link rel="alternate" hreflang="x-default" href="<%= meta?.xDefault || meta?.canonical || '' %>">
+<% } %>
+
+<!-- Performance hints (nur wenn du es wirklich nutzt) -->
+<link rel="dns-prefetch" href="//www.googletagmanager.com">
+<link rel="dns-prefetch" href="//www.clarity.ms">
+<link rel="dns-prefetch" href="//js.stripe.com">
+<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+<link rel="preconnect" href="https://www.clarity.ms" crossorigin>
+<link rel="preconnect" href="https://js.stripe.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&display=swap" rel="stylesheet">
+<!-- Theme bootstrap: so früh wie möglich, vor CSS, verhindert Flash -->
+<script>
+  (function() {
+    try {
+      var root = document.documentElement;
+
+      // 1) Theme: localStorage > system preference
+      var storedTheme = localStorage.getItem('theme'); // 'light' | 'dark' | 'system' | null
+      var systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      var theme =
+        storedTheme === 'light' ? 'light' :
+        storedTheme === 'dark' ? 'dark' :
+        systemDark ? 'dark' : 'light';
+
+      root.setAttribute('data-theme', theme);
+
+      // 2) Accent: preset oder frei (hex)
+      var accentPreset = localStorage.getItem('accentPreset'); // z.B. 'gold' | 'red' | ...
+      if (accentPreset) root.setAttribute('data-accent', accentPreset);
+
+      var accentHex = localStorage.getItem('accentHex'); // z.B. '#c2a486'
+      if (accentHex && /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(accentHex)) {
+        root.style.setProperty('--accent', accentHex);
+      }
+
+      // Optional: theme-color Meta dynamisch (Fallback bleibt im HTML)
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'dark' ? '#0b0f17' : '#ffffff');
+    } catch (e) {}
+  })();
+</script>
+
+
+<!-- CSS: Main -->
+<link rel="stylesheet" href="/css/main.css<%= assetSuffix || '' %>">
+
+<!-- Optional: weitere Stylesheets (z.B. pro Seite / pro Layout) -->
+<% if (Array.isArray(stylesheets) && stylesheets.length) { %>
+<% stylesheets.forEach(href => { %>
+<link rel="stylesheet" href="<%= href %><%= assetSuffix || '' %>">
+<% }) %>
+<% } %>
+
+<!-- Optional: Admin/CSS Picker (falls du in Views darauf zugreifst) -->
+<% if (Array.isArray(availableCssFiles) && availableCssFiles.length) { %>
+<!-- availableCssFiles bereitgestellt (nur Info; kein Output nötig) -->
+<% } %>
+
+<!-- JSON-LD Schema Graph (WebSite + Organization + WebPage + optional FAQ/Event) -->
+<% if (typeof schemaGraphJson === 'string' && schemaGraphJson.trim().length) { %>
+<script type="application/ld+json">
+  <%- schemaGraphJson %>
+</script>
+<% } %>
+
+<!-- Analytics nur bei Consent -->
+<% if (gaEnabled && process.env.GA_ID) { %>
+<script async src="https://www.googletagmanager.com/gtag/js?id=<%= process.env.GA_ID %>"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', '<%= process.env.GA_ID %>', {
+    anonymize_ip: true
+  });
+</script>
+<% } %>
+
+<% if (clarityEnabled && clarityId) { %>
+<script>
+  (function(c, l, a, r, i, t, y) {
+    c[a] = c[a] || function() {
+      (c[a].q = c[a].q || []).push(arguments)
+    };
+    t = l.createElement(r);
+    t.async = 1;
+    t.src = "https://www.clarity.ms/tag/" + i;
+    y = l.getElementsByTagName(r)[0];
+    y.parentNode.insertBefore(t, y);
+  })(window, document, "clarity", "script", "<%= clarityId %>");
+</script>
+<% } %>
+
+<!-- Stripe (optional; nur wenn du Stripe im Frontend brauchst) -->
+<% if (typeof stripeEnabled !== 'undefined' ? stripeEnabled : false) { %>
+<script src="https://js.stripe.com/v3/" defer></script>
+<% } %>

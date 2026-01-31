@@ -1,0 +1,86 @@
+<%
+  const detailTitle = article?.h1_title || article?.title || '';
+  const detailSubtitle = article?.meta_description || article?.description_short || '';
+  const introTitle = article?.h2_title || '';
+  const introText = article?.article_text || article?.description_short || '';
+  const heroImage = article?.title_image_url || '';
+  const heroMediaType = article?.title_media_type || 'image';
+  const bodyTitle = article?.body_title || article?.title || '';
+  const galleryList = Array.isArray(galleryItems) ? galleryItems : [];
+  const paragraphs = Array.isArray(bodyParagraphs) ? bodyParagraphs : [];
+%>
+
+<article class="news-detail">
+  <header class="news-detail__hero">
+    <div class="news-detail__hero-inner">
+      <h1><%- renderTextWithLinks(detailTitle) %></h1>
+      <% if (detailSubtitle) { %>
+      <p class="news-detail__subtitle"><%- renderTextWithLinks(detailSubtitle) %></p>
+      <% } %>
+    </div>
+  </header>
+
+  <section class="news-detail__intro">
+    <div class="news-detail__intro-card">
+      <div class="news-detail__intro-text">
+        <% if (introTitle) { %>
+        <h2><%- renderTextWithLinks(introTitle) %></h2>
+        <% } %>
+        <% if (introText) { %>
+        <p><%- renderTextWithLinks(introText) %></p>
+        <% } %>
+      </div>
+      <% if (heroImage) { %>
+      <div class="news-detail__intro-media">
+        <% if (heroMediaType === 'video') { %>
+        <video controls preload="metadata">
+          <source src="<%= heroImage %>" type="video/mp4">
+        </video>
+        <% } else { %>
+        <img src="<%= heroImage %>" alt="<%= detailTitle || 'News Bild' %>">
+        <% } %>
+      </div>
+      <% } %>
+    </div>
+  </section>
+
+  <% if (paragraphs.length) { %>
+  <section class="news-detail__body">
+    <h2 class="news-detail__body-title"><%- renderTextWithLinks(bodyTitle) %></h2>
+    <div class="news-detail__body-text">
+      <% paragraphs.forEach((paragraph) => { %>
+      <p><%- renderTextWithLinks(paragraph) %></p>
+      <% }) %>
+    </div>
+  </section>
+  <% } %>
+
+  <% if (galleryList.length) { %>
+  <section class="news-detail__gallery" data-component="news-gallery">
+    <div class="news-detail__gallery-header">
+      <h3>Galerie</h3>
+      <p>Weitere Eindrücke, Videos und Bilder zum Artikel.</p>
+    </div>
+    <div class="news-detail__gallery-stage" data-gallery-stage>
+      <% galleryList.forEach((item, index) => { %>
+      <button class="news-detail__gallery-item" type="button" data-index="<%= index %>" aria-label="<%= item?.alt || detailTitle || 'Galerie Element' %>">
+        <div class="news-detail__gallery-frame">
+          <% if (item?.type === 'video') { %>
+          <video preload="metadata" muted playsinline>
+            <source src="<%= item?.url %>" type="video/mp4">
+          </video>
+          <% } else { %>
+          <img src="<%= item?.url %>" alt="<%= item?.alt || detailTitle || 'Galerie Bild' %>">
+          <% } %>
+        </div>
+      </button>
+      <% }) %>
+      <button class="news-detail__gallery-arrow" type="button" data-gallery-next aria-label="Nächstes Bild">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m8.5 19 6.5-7-6.5-7 1.5-1.5 8 8-8 8z"></path>
+        </svg>
+      </button>
+    </div>
+  </section>
+  <% } %>
+</article>

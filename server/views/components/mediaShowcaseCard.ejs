@@ -1,0 +1,22 @@
+<%
+  const videoEmbed = String(video.video_url || '').trim();
+  const hasVideoLink = Boolean(videoEmbed && !/<\s*(iframe|video|embed|object)/i.test(videoEmbed));
+    const detailHref = video?.id
+    ? `${videoDetailBase}/${video.id}`
+    : (hasVideoLink ? videoEmbed : '#');
+  const categoryLabel = (categoryLabels && video?.category && categoryLabels[video.category]) ? categoryLabels[video.category] : (video.category || '');
+  const expandLabel = labels?.expand || 'erweitern';
+%>
+<a class="media-showcase__card" href="<%= detailHref %>">
+  <div class="media-showcase__thumb" style="<%= video.thumbnail_url ? `´background-image: url('${video.thumbnail_url}'), var(--media-thumb-fallback);` : '' %>">
+    <span class="media-showcase__badge"><%- renderTextWithLinks(String(categoryLabel || '').toUpperCase()) %></span>
+    <span class="media-showcase__play" aria-hidden="true">▶</span>
+  </div>
+  <div class="media-showcase__body">
+    <h4 class="media-showcase__card-title"><%- renderTextWithLinks(video.title) %></h4>
+    <p class="media-showcase__card-text"><%- renderTextWithLinks(video.description_short || video.description) %></p>
+    <div class="media-showcase__meta">
+      <span><%- renderTextWithLinks(video.duration ? `${video.duration} min` : '') %></span>
+    </div>
+  </div>
+</a>

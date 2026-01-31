@@ -1,0 +1,20 @@
+<section class="auth-card">
+  <h1><%= t?.loginHeadline || 'Nutzer Login' %></h1>
+  <p><%= t?.loginIntro || 'Melde dich mit deiner E-Mail-Adresse und deinem Passwort an.' %></p>
+  <% if (error) { %>
+    <p class="auth-error"><%= error %></p>
+  <% } %>
+  <form method="post" action="/login" class="auth-form">
+    <label><%= t?.email || 'E-Mail' %>
+      <input name="email" type="email" required>
+    </label>
+    <label><%= t?.password || 'Passwort' %>
+      <input name="password" type="password" required>
+    </label>
+    <button type="submit" class="auth-button"><%= t?.loginButton || 'Login' %></button>
+  </form>
+  <a class="auth-google" href="/auth/google<%= locale ? `?lang=${locale}` : '' %>">
+    <span><%= t?.loginGoogle || 'Mit Google anmelden' %></span>
+  </a>
+  <p class="auth-note"><%= t?.loginNote || 'Noch kein Konto?' %> <a href="/register"><%= t?.loginNoteLink || 'Jetzt registrieren' %></a></p>
+</section>

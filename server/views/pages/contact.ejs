@@ -1,0 +1,14 @@
+<%- include('../layouts/main', { meta, body: (function(){ %>
+  <section class="card">
+    <h1>Kontakt</h1>
+    <% if (typeof query !== 'undefined' && query.sent) { %>
+      <p class="success">Danke! Deine Nachricht wurde gesendet.</p>
+    <% } %>
+    <form method="post" action="/kontakt" class="form">
+      <label>Name<br><input name="name" required></label>
+      <label>E-Mail<br><input name="email" type="email" required></label>
+      <label>Nachricht<br><textarea name="message" rows="6" required></textarea></label>
+      <button type="submit">Absenden</button>
+    </form>
+  </section>
+<% return ''; })() }) %>

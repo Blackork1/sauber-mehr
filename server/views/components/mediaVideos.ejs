@@ -1,0 +1,157 @@
+<%
+  const videos = Array.isArray(mediaVideos) ? mediaVideos : [];
+  const locale = String(page?.locale || block?.locale || '').toLowerCase();
+  const localeKey = locale.startsWith('en') ? 'en' : (locale.startsWith('ku') ? 'ku' : 'de');
+  const allCategoryLabel = {
+    de: 'Alle Filme',
+    en: 'All Films',
+    ku: 'Hemû fîlm'
+  };
+  const categoryTranslations = {
+    de: {
+      Fokus: 'Fokus',
+      Dokumentar: 'Dokumentar',
+      Kurzfilm: 'Kurzfilm',
+      Kinder: 'Kinder',
+      Spielfilm: 'Spielfilm'
+    },
+    en: {
+      Fokus: 'Focus',
+      Dokumentar: 'Documentary',
+      Kurzfilm: 'Short film',
+      Kinder: 'Kids',
+      Spielfilm: 'Feature film'
+    },
+    ku: {
+      Fokus: 'Fokus',
+      Dokumentar: 'Belgefîlm',
+      Kurzfilm: 'Fîlma kurt',
+      Kinder: 'Zarok',
+      Spielfilm: 'Fîlmê dirêj'
+    }
+  };
+  const defaultCategoryKeys = ['Fokus', 'Dokumentar', 'Kurzfilm', 'Kinder'];
+  const rawCategories = Array.isArray(block?.categories) && block.categories.length
+    ? block.categories
+    : defaultCategoryKeys;
+  const normalizedCategories = rawCategories
+    .map((category) => String(category || '').trim())
+    .filter((category) => category && !Object.values(allCategoryLabel).includes(category));
+  if (!normalizedCategories.includes('Spielfilm')) {
+    normalizedCategories.push('Spielfilm');
+  }
+  const categoryLabels = normalizedCategories.reduce((acc, category) => {
+    acc[category] = categoryTranslations[localeKey]?.[category] || category;
+    return acc;
+  }, {});
+  const categories = [
+    { key: 'all', label: allCategoryLabel[localeKey] || allCategoryLabel.de },
+    ...normalizedCategories.map((category) => ({ key: category, label: categoryLabels[category] }))
+  ];
+  const defaultCategory = categories[0]?.key || 'all';
+  const initialPool = defaultCategory === 'all'
+      ? videos
+    : videos.filter((video) => video.category === defaultCategory);
+  const initialVideos = initialPool.slice(0, 3);
+  const labels = {
+    emptyState: {
+      de: 'Bislang liegen keine Videos zu dieser Kategorie vor',
+      en: 'No videos are available for this category yet.',
+      ku: 'Hîn vîdyoyek ji bo vê kategoriya tune ye.'
+    }[localeKey] || 'Bislang liegen keine Videos zu dieser Kategorie vor',
+    expand: {
+      de: 'erweitern',
+      en: 'Expand',
+      ku: 'Fireh bike'
+    }[localeKey] || 'erweitern',
+    previous: {
+      de: 'Zurück',
+      en: 'Previous',
+      ku: 'Paşve'
+    }[localeKey] || 'Zurück',
+    next: {
+      de: 'Weiter',
+      en: 'Next',
+      ku: 'Pêş'
+    }[localeKey] || 'Weiter',
+    cta: {
+      de: 'Alle Medien ansehen',
+      en: 'View all media',
+      ku: 'Hemû medyayê bibîne'
+    }[localeKey] || 'Alle Medien ansehen'
+  };
+  const payload = {
+    videos,
+    categories,
+    defaultCategory,
+    labels: {
+      allKey: 'all',
+      emptyState: labels.emptyState,
+      expand: labels.expand
+    },
+    categoryLabels
+  };
+  const videoLink = `/video-${localeKey}`;
+  const videoDetailBase = videoLink;
+  %>
+
+<section class="section section--align-right media-showcase" data-component="media-showcase" id="video">
+  <div class="section__inner media-showcase__inner animate-on-scroll-right">
+    <header class="media-showcase__header">
+      <% if (block?.headline) { %>
+      <h2 class="media-showcase__title"><%- renderTextWithLinks(block.headline) %></h2>
+      <% } %>
+      <% if (block?.text) { %>
+      <% const leadParagraphs = String(block.text).split(/\r?\n+/).map((paragraph) => paragraph.trim()).filter(Boolean); %>
+      <% leadParagraphs.forEach((paragraph) => { %>
+      <p class="media-showcase__lead"><%- renderTextWithLinks(paragraph) %></p>
+      <% }) %>
+      <% } %>
+    </header>
+
+    <div class="media-showcase__filters" role="tablist" aria-label="Medienfilter">
+      <% categories.forEach((category, index) => { %>
+      <button class="media-showcase__filter <%= index === 0 ? 'is-active' : '' %>" type="button" data-filter="<%= category.key %>" role="tab" aria-selected="<%= index === 0 ? 'true' : 'false' %>">
+        <%= category.label %>
+      </button>
+      <% }) %>
+    </div>
+
+    <div class="media-showcase__content">
+      <div class="media-showcase__carousel" data-carousel>
+        <% if (!initialVideos.length) { %>
+        <div class="media-showcase__empty" data-empty>
+          <%= labels.emptyState %>
+        </div>
+        <% } %>
+        <% initialVideos.forEach((video) => { %>
+        <%- include('./mediaShowcaseCard', { video, categoryLabels, labels, videoDetailBase }) %>
+        <% }) %>
+      </div>
+
+      <button class="media-showcase__scroll-hint media-showcase__scroll-hint--left" type="button" data-scroll="left" aria-label="<%= labels.previous %>">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M15 5l-7 7 7 7 1.5-1.5L10.5 12 16.5 6.5 15 5z"></path>
+        </svg>
+      </button>
+
+      <button class="media-showcase__scroll-hint media-showcase__scroll-hint--right" type="button" data-scroll="right" aria-label="<%= labels.next %>">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M9 5l7 7-7 7-1.5-1.5L13 12 7.5 6.5 9 5z"></path>
+        </svg>
+      </button>
+
+      <div class="media-showcase__dots" data-dots aria-hidden="true"></div>
+    </div>
+
+    <div class="media-showcase__cta">
+      <a class="media-showcase__cta-button" href="<%= videoLink %>">
+        <%= labels.cta %> →
+      </a>
+    </div>
+  </div>
+
+  <script type="application/json" data-media-data>
+    <%- JSON.stringify({ ...payload, videoDetailBase }) %>
+  </script>
+</section>

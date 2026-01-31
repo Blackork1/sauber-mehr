@@ -1,0 +1,94 @@
+<%
+  const headline = block?.headline || 'Was erwartet dich hier?';
+    const locale = String(page?.locale || block?.locale || '').toLowerCase();
+  const localeKey = locale.startsWith('en') ? 'en' : (locale.startsWith('ku') ? 'ku' : 'de');
+  const labels = {
+    de: {
+      aria: 'Schnellzugriffe',
+      programme: 'Programm',
+      news: 'News',
+      onlineTickets: 'Online-Tickets',
+      cinemaTickets: 'Kino-Tickets',
+      videoUnsupported: 'Dein Browser unterstützt das Video-Tag nicht.'
+    },
+    en: {
+      aria: 'Quick links',
+      programme: 'Programme',
+      news: 'News',
+      onlineTickets: 'Online tickets',
+      cinemaTickets: 'Cinema tickets',
+      videoUnsupported: 'Your browser does not support the video tag.'
+    },
+    ku: {
+      aria: 'Lînkên zû',
+      programme: 'Bername',
+      news: 'Nûçe',
+      onlineTickets: 'Bilêtên online',
+      cinemaTickets: 'Bilêtên sînemayê',
+      videoUnsupported: 'Lêgeroka te video tagê napejirîne.'
+    }
+  };
+  const localeLabels = labels[localeKey] || labels.de;
+  const video = block?.video || {};
+  const media = block?.media || {};
+  const mediaSrc = media.src || video.src || block?.videoSrc || '';
+  const mediaType = media.type || (mediaSrc && mediaSrc.match(/\.(mp4|webm|ogg)$/i) ? 'video' : 'image');
+  const defaultLinks = [
+    { label: localeLabels.news, href: '#news', enabled: true },
+    { label: localeLabels.onlineTickets, href: '#ticket', enabled: true },
+    { label: localeLabels.cinemaTickets, href: '#ticket', enabled: true },
+    { label: localeLabels.programme, href: '#video', enabled: true }
+  ];
+  const labelForLink = (link) => {
+    const href = String(link?.href || '').toLowerCase();
+    if (href.includes('news')) return localeLabels.news;
+    if (href.includes('online')) return localeLabels.onlineTickets;
+    if (href.includes('kino') || href.includes('cinema')) return localeLabels.cinemaTickets;
+    if (href.includes('programm') || href.includes('programme') || href.includes('video')) return localeLabels.programme;
+    return link?.label || '';
+  };
+  const rawLinks = Array.isArray(block?.links) && block.links.length ? block.links : defaultLinks;
+  const links = rawLinks.map((link) => ({
+    ...link,
+    label: localeKey === 'de' && link?.label ? link.label : (labelForLink(link) || link?.label || '')
+  }));
+  const activeLinks = links.filter((link) => link && link.enabled !== false);
+%>
+
+<section class="section section--align-right welcome " data-component="welcome">
+  <div class="section__inner welcome__inner animate-on-scroll">
+    <div class="welcome__header">
+      <h2 class="welcome__headline"><%- renderTextWithLinks(headline) %></h2>
+    </div>
+
+    <div class="welcome__video">
+      <% if (mediaSrc) { %>
+      <% if (mediaType === 'image') { %>
+      <img class="welcome__image" src="<%= mediaSrc %>" alt="<%= headline %>">
+      <% } else { %>
+      <video class="welcome__video-element" controls poster="<%= videoPoster %>">
+        <source src="<%= mediaSrc %>" type="video/mp4" />
+        <%= localeLabels.videoUnsupported %>
+      </video>
+      <% } %>
+      <% } else { %>
+      <div class="welcome__video-placeholder" aria-hidden="true">
+        <span class="welcome__video-play">▶</span>
+      </div>
+      <% } %>
+    </div>
+
+    <% if (activeLinks.length) { %>
+    <nav class="welcome__links" aria-label="<%= localeLabels.aria %>">
+      <% activeLinks.forEach((link) => { %>
+      <a class="welcome__link" href="<%= link.href || '#' %>">
+        <span><%= link.label || '' %></span>
+        <svg class="welcome__link-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 16.5l-6.5-6.5 1.4-1.4L12 13.7l5.1-5.1 1.4 1.4-6.5 6.5z"></path>
+        </svg>
+      </a>
+      <% }) %>
+    </nav>
+    <% } %>
+  </div>
+</section>

@@ -1,0 +1,43 @@
+<% const members = Array.isArray(teamMembers) ? teamMembers : []; %>
+<div class="team-slider" data-component="team-slider">
+  <div class="team-slider__content">
+    <button class="team-slider__arrow team-slider__arrow--left" type="button" data-team-scroll="left" aria-label="Vorheriges Teammitglied">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15.4 6.4 10 12l5.4 5.6-1.4 1.4L7.2 12l6.8-6.9 1.4 1.3z"></path>
+      </svg>
+    </button>
+
+    <div class="team-slider__carousel" data-team-carousel>
+      <% if (!members.length) { %>
+      <div class="team-slider__empty" data-empty>Aktuell sind keine Teammitglieder vorhanden.</div>
+      <% } %>
+      <% members.forEach((member) => { %>
+      <article class="team-card" data-team-card>
+        <button class="team-card__inner" type="button" data-team-flip aria-pressed="false">
+          <div class="team-card__face team-card__face--front">
+            <% if (member.image_url) { %>
+            <img src="<%= member.image_url %>" alt="<%= member.image_alt_text || member.name %>" draggable="false">
+            <% } else { %>
+            <div class="team-card__placeholder"></div>
+            <% } %>
+          </div>
+          <div class="team-card__face team-card__face--back">
+            <div class="team-card__meta">
+              <h3 class="team-card__name"><%= member.name %></h3>
+              <p class="team-card__role"><%= member.role || '' %></p>
+            </div>
+            <p class="team-card__description"><%= member.description || '' %></p>
+          </div>
+        </button>
+      </article>
+      <% }) %>
+    </div>
+
+    <button class="team-slider__arrow team-slider__arrow--right" type="button" data-team-scroll="right" aria-label="Nächstes Teammitglied">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m8.6 17.6 5.4-5.6-5.4-5.6 1.4-1.4 6.8 6.9-6.8 6.9-1.4-1.2z"></path>
+      </svg>
+    </button>
+  </div>
+  <div class="team-slider__dots" data-team-dots></div>
+</div>

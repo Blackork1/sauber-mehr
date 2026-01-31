@@ -1,0 +1,91 @@
+:root{
+  --bg:#0b0b0d;
+  --card:#14151a;
+  --text:#f2f4f8;
+  --muted:#b9c0cc;
+  --accent:#e94a1b;
+  --border:#2a2f3a;
+}
+
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial;
+  background:var(--bg);
+  color:var(--text);
+}
+a{ color:var(--text); text-decoration:none; }
+a:hover{ text-decoration:underline; }
+
+.container{ width:min(1100px, 92vw); margin:0 auto; padding: 24px 0; }
+
+.nav{
+  border-bottom:1px solid var(--border);
+  padding: 14px 0;
+}
+.nav__brand{ font-weight:700; letter-spacing: .2px; }
+.nav__links{ float:right; display:flex; gap:14px; }
+
+.footer{
+  border-top:1px solid var(--border);
+  margin-top: 48px;
+  padding: 24px 0;
+}
+.footer__inner{ display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+}
+
+.btn{
+  display:inline-block;
+  background:var(--accent);
+  color:#fff;
+  padding:10px 14px;
+  border-radius:12px;
+  font-weight:600;
+}
+.btn:hover{ text-decoration:none; filter: brightness(1.05); }
+
+.hero{ padding: 42px 0; }
+.hero h1{ font-size: clamp(28px, 4vw, 44px); margin:0 0 10px; }
+.hero p{ color:var(--muted); max-width: 70ch; }
+
+.richtext .prose, .faq .prose{
+  color: var(--muted);
+  line-height: 1.65;
+}
+.prose a{ color: var(--accent); }
+.prose h3{ color: var(--text); }
+
+.cta__box{ background: linear-gradient(180deg, rgba(233,74,27,.12), rgba(233,74,27,.02)); }
+
+.imageText__grid{
+  display:grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 18px;
+  align-items: start;
+}
+.imageText img{
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  border:1px solid var(--border);
+}
+@media (max-width: 900px){
+  .nav__links{ float:none; margin-top:10px; }
+  .imageText__grid{ grid-template-columns: 1fr; }
+}
+.form{ display:grid; gap: 12px; }
+input, textarea{
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #0f1014;
+  color: var(--text);
+}
+.success{ color: #7ee081; }

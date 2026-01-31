@@ -1,0 +1,12 @@
+<section class="richtext">
+  <% if (block.title) { %><h2><%= block.title %></h2><% } %>
+  <% if (block.html) { %>
+  <div class="prose"><%- block.html %></div>
+  <% } else if (block.text) { %>
+  <% const paragraphs = String(block.text).split(/\r?\n+/).map((paragraph) => paragraph.trim()).filter(Boolean); %>
+  <div class="prose">
+    <% paragraphs.forEach((paragraph) => { %>
+    <p><%= paragraph %></p>
+    <% }) %>
+  </div> <% } %>
+</section>

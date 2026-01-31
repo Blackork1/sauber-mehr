@@ -1,0 +1,130 @@
+<%
+  const heroItems = Array.isArray(heroArticles) ? heroArticles : [];
+  const listItems = Array.isArray(newsArticles) ? newsArticles : [];
+  const overviewIntro = overviewBlock?.text || '';
+  const overviewHeadline = overviewBlock?.headline || '';
+  const loadMoreLabel = overviewBlock?.buttonLabel || overviewBlock?.button_label || '';
+  const newsletterHeadline = newsletterBlock?.headline || '';
+  const newsletterText = newsletterBlock?.text || '';
+  const newsletterPlaceholder = newsletterBlock?.placeholder || '';
+  const newsletterButton = newsletterBlock?.buttonLabel || newsletterBlock?.button_label || '';
+  const newsletterImage =
+    newsletterBlock?.image?.src
+    || newsletterBlock?.image?.url
+    || newsletterBlock?.image_url
+    || '';
+  const newsletterImageAlt =
+    newsletterBlock?.image?.alt
+    || newsletterBlock?.image_alt
+    || '';
+  const locale = String(page?.locale || '').toLowerCase();
+  const localeKey = locale.startsWith('en') ? 'en' : (locale.startsWith('ku') ? 'ku' : 'de');
+%>
+
+<article class="news-page">
+  <section class="news-hero" data-component="news-hero">
+    <div class="news-hero__carousel" data-carousel>
+      <% if (!heroItems.length) { %>
+      <div class="news-hero__empty">Keine News verfügbar.</div>
+      <% } %>
+      <% heroItems.forEach((article) => { %>
+      <article class="news-hero__slide">
+        <a class="news-hero__link" href="<%= article.slug || `/news/${article.id}` %>">
+          <div class="news-hero__image">
+            <% if (article?.title_image_url) { %>
+            <% if (article?.title_media_type === 'video') { %>
+            <video preload="metadata" muted playsinline>
+              <source src="<%= article.title_image_url %>" type="video/mp4">
+            </video>
+            <% } else { %>
+            <img src="<%= article.title_image_url %>" alt="<%= article?.title || 'News Bild' %>">
+            <% } %>
+            <% } %>
+          </div>
+          <div class="news-hero__overlay"></div>
+          <div class="news-hero__content">
+            <span class="news-hero__category"><%- renderTextWithLinks(article?.h2_title || 'News') %></span>
+            <h1 class="news-hero__title"><%- renderTextWithLinks(article?.title || '') %></h1>
+            <p class="news-hero__intro"><%- renderTextWithLinks(article?.description_short || article?.meta_description || '') %></p>
+          </div>
+        </a>
+      </article>
+      <% }) %>
+    </div>
+    <button class="news-hero__arrow news-hero__arrow--left" type="button" data-scroll="left" aria-label="Zurück">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15.5 5.5 9 12l6.5 6.5-1.5 1.5L6 12l8-8z"></path>
+      </svg>
+    </button>
+    <button class="news-hero__arrow news-hero__arrow--right" type="button" data-scroll="right" aria-label="Weiter">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m8.5 19 6.5-7-6.5-7 1.5-1.5 8 8-8 8z"></path>
+      </svg>
+    </button>
+    <div class="news-hero__dots" data-dots aria-hidden="true"></div>
+  </section>
+
+  <section class="news-overview" data-component="news-overview">
+    <header class="news-overview__header">
+      <% if (overviewIntro) { %>
+      <p class="news-overview__intro"><%- renderTextWithLinks(overviewIntro) %></p>
+      <% } %>
+      <% if (overviewHeadline) { %>
+      <h2 class="news-overview__title"><%- renderTextWithLinks(overviewHeadline) %></h2>
+      <% } %>
+    </header>
+
+    <div class="news-overview__grid" data-news-list>
+      <% if (!listItems.length) { %>
+      <p class="news-overview__empty">Aktuell gibt es keine News-Artikel.</p>
+      <% } %>
+      <% listItems.forEach((article, index) => { %>
+      <div class="news-overview__item" data-news-item data-index="<%= index %>">
+        <%- include('../components/newsCard', { article, localeKey }) %>
+      </div>
+      <% }) %>
+    </div>
+
+    <% if (newsletterHeadline || newsletterText || newsletterImage) { %>
+    <div class="news-overview__newsletter" data-news-newsletter>
+      <div class="news-overview__newsletter-content">
+        <% if (newsletterHeadline) { %>
+        <h3><%- renderTextWithLinks(newsletterHeadline) %></h3>
+        <% } %>
+        <% if (newsletterText) { %>
+        <p><%- renderTextWithLinks(newsletterText) %></p>
+        <% } %>
+        <form class="news-overview__newsletter-form" action="/newsletter" method="post">
+          <label class="sr-only" for="news-newsletter-email">E-Mail</label>
+          <div class="news-overview__newsletter-input">
+            <input id="news-newsletter-email" type="email" name="email" placeholder="<%= newsletterPlaceholder %>" required>
+            <% if (newsletterButton) { %>
+            <button type="submit"><%= newsletterButton %></button>
+            <% } %>
+          </div>
+          <input type="hidden" name="language" value="<%= page?.locale || 'de-DE' %>">
+          <div class="news-overview__newsletter-options">
+            <label>
+              <input type="checkbox" name="news" value="yes" checked>
+              News
+            </label>
+          </div>
+        </form>
+      </div>
+      <% if (newsletterImage) { %>
+      <div class="news-overview__newsletter-media">
+        <img src="<%= newsletterImage %>" alt="<%= newsletterImageAlt %>">
+      </div>
+      <% } %>
+    </div>
+    <% } %>
+
+    <% if (loadMoreLabel) { %>
+    <div class="news-overview__load">
+      <button class="news-overview__load-button" type="button" data-news-load>
+        <span><%= loadMoreLabel %></span>
+      </button>
+    </div>
+    <% } %>
+  </section>
+</article>

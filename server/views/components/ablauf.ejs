@@ -1,0 +1,25 @@
+<%
+  const heading = block?.headline || 'So läuft die Reinigung ab';
+  const steps = Array.isArray(block?.steps) && block.steps.length
+    ? block.steps
+    : [
+        { title: 'Anfrage stellen', text: 'Schreiben Sie uns kurz, was gereinigt werden soll.' },
+        { title: 'Besichtigung & Angebot', text: 'Wir besichtigen vor Ort und erstellen ein faires Angebot.' },
+        { title: 'Reinigung starten', text: 'Unser Team reinigt zuverlässig nach Ihrem Zeitplan.' }
+      ];
+%>
+
+<section class="sauber-ablauf section" id="ablauf">
+  <div class="section__inner">
+    <h2 class="sauber-ablauf__title"><%- renderTextWithLinks(heading) %></h2>
+    <div class="sauber-ablauf__grid">
+      <% steps.forEach((step, index) => { %>
+        <article class="sauber-ablauf__card">
+          <span class="sauber-ablauf__index"><%= String(index + 1).padStart(2, '0') %></span>
+          <h3 class="sauber-ablauf__card-title"><%- renderTextWithLinks(step.title) %></h3>
+          <p class="sauber-ablauf__card-text"><%- renderTextWithLinks(step.text) %></p>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>

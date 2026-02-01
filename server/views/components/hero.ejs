@@ -1,25 +1,18 @@
- <%
-  const heroHeadline = block?.headline || 'Kurdisches Filmfestival Berlin';
-  const heroDate = block?.subline || '12-13 September 2026';
-  const heroFocus = block?.focus || 'Fokus: Historie';
+<%
+  const heroHeadline = block?.headline || 'Ihre Gebäudereinigung in Berlin';
+  const heroSubline = block?.subline || 'zuverlässig, schnell und günstig Gebäude in Berlin reinigen lassen';
+  const heroCtaLabel = block?.ctaLabel || 'Beratungstermin buchen';
+  const heroCtaHref = block?.ctaHref || '#kontakt';
+  const heroImage = block?.image || '/images/team.webp';
 %>
- <section class="hero">
-   <div class="hero__banner" aria-hidden="true">
-     <img class="hero__image" src="/images/background.png" alt="banner für das kurdische filmfestival berlin">
-   </div>
-   <div class="hero__inner">
-     <div class="hero__headline">
-       <span class="hero__icon hero__icon--left" aria-hidden="true">
-         <img class="hero__icon-image hero__icon-image--light" src="/icons/bird-light.svg" alt="">
-         <img class="hero__icon-image hero__icon-image--dark" src="/icons/bird-dark.svg" alt="">
-       </span>
-       <h1 class="hero__title"><%- renderTextWithLinks(heroHeadline) %></h1>
-       <span class="hero__icon hero__icon--right" aria-hidden="true">
-         <img class="hero__icon-image hero__icon-image--light" src="/icons/bird-light.svg" alt="">
-         <img class="hero__icon-image hero__icon-image--dark" src="/icons/bird-dark.svg" alt="">
-       </span>
-     </div>
-     <p class="hero__date"><%- renderTextWithLinks(heroDate) %></p>
-     <p class="hero__focus"><%- renderTextWithLinks(heroFocus) %></p>
-   </div>
- </section>
+<section class="sauber-hero" aria-labelledby="sauber-hero-title">
+  <div class="sauber-hero__media" style="--hero-image: url('<%= heroImage %>')"></div>
+  <div class="sauber-hero__content">
+    <span class="sauber-hero__logo" aria-hidden="true">
+      <img src="/icons/iconLight.png" alt="">
+    </span>
+    <h1 class="sauber-hero__title" id="sauber-hero-title"><%- renderTextWithLinks(heroHeadline) %></h1>
+    <p class="sauber-hero__subtitle"><%- renderTextWithLinks(heroSubline) %></p>
+    <a class="sauber-hero__button" href="<%= heroCtaHref %>"><%= heroCtaLabel %></a>
+  </div>
+</section>

@@ -1,199 +1,31 @@
 <%
-  const navItems = Array.isArray(navPages) ? navPages : [];
   const sessionData = typeof session !== 'undefined' ? session : {};
   const isLoggedIn = Boolean(sessionData?.user);
-  const ticketsItem = navItems.find(item => String(item.slug || '').includes('tickets'));
-  const ctaLabel = ticketsItem?.title || 'Tickets';
-  const ctaHref = ticketsItem?.canonical_path || (ticketsItem?.slug ? `/${ticketsItem.slug}` : '/tickets');
   const localeKey = String(meta?.locale || '').toLowerCase();
   const homeHref = localeKey.startsWith('en') ? '/en' : (localeKey.startsWith('ku') ? '/ku' : '/');
-  const iconConfig = [
-    { matches: ['home', 'start'], icon: '/icons/Home1.svg' },
-    { matches: ['team', 'crew'], icon: '/icons/Team1.svg' },
-    { matches: ['gallery', 'galerie'], icon: '/icons/Gallery1.svg' },
-    { matches: ['ticket', 'tickets'], icon: '/icons/Ticket1.svg' },
-    { matches: ['film', 'movie', 'filme'], icon: '/icons/Movie1.svg' },
-    { matches: ['rahmenplan', 'schedule', 'programm', 'plan'], icon: '/icons/Rahmenplan1.svg' },
-    { matches: ['sponsor', 'sponsoren', 'partner'], icon: '/icons/Sponsoren1.svg' },
-    { matches: ['spenden', 'spende', 'donation', 'donate'], icon: '/icons/Spenden1.svg' },
-    { matches: ['news', 'aktuelles', 'neuigkeiten'], icon: '/icons/News1.svg' }
-  ];
-  const normalizeText = (value) =>
-    String(value || '')
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/\p{Diacritic}/gu, '')
-      .replace(/[^a-z0-9]+/g, ' ')
-      .trim();
-  const findIcon = (item) => {
-    const combined = [
-      normalizeText(item?.slug),
-      normalizeText(item?.title),
-      normalizeText(item?.canonical_path)
-    ].join(' ');
-    const match = iconConfig.find((entry) =>
-      entry.matches.some((key) => combined.includes(key))
-    );
-    return match?.icon || '/icons/HomeIcon.svg';
-  };
-  const iconItems = navItems.slice(0, 9).map((item) => ({
-    ...item,
-    icon: findIcon(item)
-  }));
 %>
 
-<header class="festival-nav">
-  <div class="festival-nav__inner">
-    <button class="festival-nav__burger" type="button" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Menü öffnen">
-      <span class="festival-nav__burger-line"></span>
-      <span class="festival-nav__burger-line"></span>
-      <span class="festival-nav__burger-line"></span>
-    </button>
-
-    <a class="festival-nav__logo" href="<%= homeHref %>" aria-label="Kurdisches Filmfestival">
-      <img class="logo--light" src="/icons/bird-light.svg" alt="Kurdisches Filmfestival">
-      <img class="logo--dark" src="/icons/bird-dark.svg" alt="Kurdisches Filmfestival">
+<header class="sauber-nav">
+  <div class="sauber-nav__inner">
+    <a class="sauber-nav__logo" href="<%= homeHref %>" aria-label="Sauber Mehr">
+      <img src="/icons/iconLight.png" alt="Sauber Mehr Logo">
     </a>
 
-    <div class="festival-nav__actions">
-      <% if (isLoggedIn) { %>
-      <form class="festival-nav__logout" method="post" action="/logout">
-        <button class="festival-nav__cta festival-nav__cta--secondary festival-nav__cta-button" type="submit">Log-Out</button>
-      </form>
-      <% } else { %>
-      <a class="festival-nav__cta festival-nav__cta--secondary" href="/login">Log-In</a>
-      <% } %>
-      <a class="festival-nav__cta" href="<%= ctaHref %>"><%= ctaLabel %></a>
-    </div>
+    <nav class="sauber-nav__links" aria-label="Hauptnavigation">
+      <a class="sauber-nav__link" href="#kontakt">Kontakt</a>
+      <details class="sauber-nav__dropdown">
+        <summary class="sauber-nav__link" aria-haspopup="true">
+          Leistungen <span class="sauber-nav__chevron" aria-hidden="true"></span>
+        </summary>
+        <div class="sauber-nav__dropdown-menu" role="menu">
+          <a class="sauber-nav__dropdown-link" href="/leistungen/haushalt" role="menuitem">Haushaltsreinigung</a>
+          <a class="sauber-nav__dropdown-link" href="/leistungen/buero" role="menuitem">Büroreinigung</a>
+          <a class="sauber-nav__dropdown-link" href="/leistungen/treppenhaus" role="menuitem">Treppenhausreinigung</a>
+          <a class="sauber-nav__dropdown-link" href="/leistungen/fenster" role="menuitem">Fensterreinigung</a>
+        </div>
+      </details>
+      <a class="sauber-nav__link" href="#ueber">Über</a>
+      <a class="sauber-nav__cta" href="#kontakt">Jetzt anrufen</a>
+    </nav>
   </div>
-
-  <nav class="festival-nav__menu" id="navMenu" hidden>
-    <div class="festival-nav__menu-grid">
-      <div class="festival-nav__icon-menu" aria-label="Navigation">
-        <div class="festival-nav__icon-menu-ring">
-          <% iconItems.forEach((item, index) => { %>
-          <a class="festival-nav__icon-link" href="<%= item.canonical_path || `/${item.slug}` %>" style="--index: <%= index %>;">
-            <span class="festival-nav__icon-shell">
-              <img src="<%= item.icon %>" alt="<%= item.title %> Icon">
-            </span>
-            <span class="festival-nav__icon-label"><%= item.title %></span>
-          </a>
-          <% }) %>
-        </div>
-      </div>
-
-      <div class="festival-nav__controls">
-        <div class="festival-nav__control">
-          <label for="langSelect">Sprache</label>
-          <select id="langSelect" class="festival-nav__select">
-            <option value="<%= translations?.de || '' %>" <%= (meta?.locale === 'de-DE' ? 'selected' : '') %>>DE</option>
-            <option value="<%= translations?.en || '' %>" <%= (String(meta?.locale).startsWith('en') ? 'selected' : '') %>>EN</option>
-            <option value="<%= translations?.ku || '' %>" <%= (meta?.locale === 'ku' ? 'selected' : '') %>>KU</option>
-          </select>
-        </div>
-
-        <div class="festival-nav__control">
-          <label for="themeSelect">Farben</label>
-          <select id="themeSelect" class="festival-nav__select">
-            <option value="system">System</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </nav>
-
-  <script>
-    (function() {
-      const sel = document.getElementById('langSelect');
-      if (sel) {
-        sel.addEventListener('change', function() {
-          if (this.value) window.location.href = this.value;
-        });
-      }
-
-      const toggle = document.getElementById('navToggle');
-      const menu = document.getElementById('navMenu');
-      const nav = document.querySelector('.festival-nav');
-
-      if (!toggle || !menu || !nav) return;
-
-      const openMenu = () => {
-        menu.removeAttribute('hidden');
-        requestAnimationFrame(() => {
-          positionIconMenu();
-          nav.classList.add('is-menu-open');
-        });
-        toggle.setAttribute('aria-expanded', 'true');
-      };
-
-      const closeMenu = () => {
-        nav.classList.remove('is-menu-open');
-        toggle.setAttribute('aria-expanded', 'false');
-      };
-
-      menu.addEventListener('transitionend', (event) => {
-        if (event.propertyName !== 'transform') return;
-        if (!nav.classList.contains('is-menu-open')) {
-          menu.setAttribute('hidden', '');
-        }
-      });
-
-
-      toggle.addEventListener('click', () => {
-        const isOpen = !menu.hasAttribute('hidden');
-        if (isOpen) {
-          closeMenu();
-        } else {
-          openMenu();
-        }
-      });
-
-      document.addEventListener('click', (event) => {
-        if (!menu.contains(event.target) && !toggle.contains(event.target)) {
-          closeMenu();
-        }
-      });
-
-      const positionIconMenu = () => {
-        const iconLinks = Array.from(menu.querySelectorAll('.festival-nav__icon-link'));
-        if (!iconLinks.length || !toggle) return;
-        const count = iconLinks.length;
-        const toggleRect = toggle.getBoundingClientRect();
-        const menuRect = menu.getBoundingClientRect();
-        const baseX = Math.round(toggleRect.left - menuRect.left);
-        const baseY = Math.round(toggleRect.top - menuRect.top);
-        const offsets = [
-          { x: -40, y: 30 },
-          { x: 40, y: 30 },
-          { x: 140, y: 30 },
-
-          { x: -40, y: 130 },
-          { x: 40, y: 130},
-          { x: 140, y: 130 },
-
-          { x: -40, y: 230 },
-          { x: 40, y: 230 },
-          { x: 140, y: 230 },
-        ];
-
-        iconLinks.forEach((link, index) => {
-          const offset = offsets[index] || { x: 0, y: 0 };
-          const x = baseX + offset.x;
-          const y = baseY + offset.y;
-          link.style.setProperty('--x', `${x}px`);
-          link.style.setProperty('--y', `${y}px`);
-          link.style.setProperty('--delay', `${index * 0.06}s`);
-          link.style.setProperty('--reverse-delay', `${(count - 1 - index) * 0.05}s`);
-        });
-      };
-
-      window.addEventListener('resize', positionIconMenu);
-
-      menu.querySelectorAll('a').forEach((link) => {
-        link.addEventListener('click', () => closeMenu());
-      });
-    })();
-  </script>
 </header>

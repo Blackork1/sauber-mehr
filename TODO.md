@@ -78,3 +78,4 @@ export const SITE = {
 9. Server richtig auf postgresql, session umbauen
 10. middleware/accessLog.js anpassen und datenbank anlegen, auth.js anlegen, authMiddleware.js anlegen, consent middleware richtig anlegen
 11. Nodemon json behalten und uploads in data/uploads, data/downloads, data/postgres verschieben
+12. Mail service auf sauber-mehr anpassen

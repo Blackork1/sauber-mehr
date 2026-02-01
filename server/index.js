@@ -11,6 +11,7 @@ import cloudinary from './util/cloudinary.js';
 import mainRoutes from './routes/main.js';
 import pagesRoutes from './routes/pages.js';
 import * as errorController from './controllers/errorController.js';
+import { renderTextWithLinks } from './helpers/textRenderer.js';
 
 dotenv.config();
 
@@ -43,12 +44,19 @@ app.use(express.json());
 
 /** App locals (DB-first rendering helpers) */
 app.set('db', pool);
+app.locals.renderTextWithLinks = renderTextWithLinks;
 
 app.use((req, res, next) => {
   if (typeof res.locals.meta === 'undefined') res.locals.meta = {};
   if (typeof res.locals.schemaGraphJson === 'undefined') res.locals.schemaGraphJson = '';
   if (typeof res.locals.assetSuffix === 'undefined') res.locals.assetSuffix = '';
   if (typeof res.locals.translations === 'undefined') res.locals.translations = null;
+  if (typeof res.locals.stylesheets === 'undefined') res.locals.stylesheets = [];
+  if (typeof res.locals.newsletterStatus === 'undefined') res.locals.newsletterStatus = '';
+  if (typeof res.locals.availableCssFiles === 'undefined') res.locals.availableCssFiles = [];
+  if (typeof res.locals.gaEnabled === 'undefined') res.locals.gaEnabled = false;
+  if (typeof res.locals.clarityEnabled === 'undefined') res.locals.clarityEnabled = false;
+  if (typeof res.locals.clarityId === 'undefined') res.locals.clarityId = '';
   next();
 });
 

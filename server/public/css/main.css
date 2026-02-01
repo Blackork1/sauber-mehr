@@ -644,7 +644,7 @@ input[type="reset"]:hover,
   color: var(--sauber-white);
   overflow: hidden;
   background: var(--sauber-off-white);
-  height: 980px;
+  height: 100vh;
 }
 
 .sauber-hero__media {
@@ -654,8 +654,8 @@ input[type="reset"]:hover,
     linear-gradient(
       180deg,
       rgba(0, 0, 0, 0.7) 3%,
-      rgba(0, 0, 0, 0.08) 80%,
-      rgba(255, 255, 255, 1) 100%
+      rgba(255, 255, 255, 0.1) 80%,
+      rgba(255, 255, 255, 0.4) 100%
     ),
     var(--hero-image);
   background-size: cover;
@@ -670,11 +670,10 @@ input[type="reset"]:hover,
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  gap: 18px;
+  justify-content: center;
+  gap: 50px;
   max-width: 960px;
-  padding: 120px 24px 80px;
-  height: 60%;
+  height: 100%;
 }
 
 .sauber-hero__logo {

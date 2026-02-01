@@ -1,0 +1,53 @@
+<%
+  const heading = block?.headline || 'Was wird die Reinigung kosten?';
+  const subtitle = block?.subline || 'In 3 einfachen Schritten zu deinem unverbindlichen Angebot';
+  const steps = Array.isArray(block?.steps) && block.steps.length
+    ? block.steps
+    : [
+        { title: 'Anruf oder Buchungsformular', imageUrl: '/images/anruf.webp', imageAlt: 'Anruf' },
+        { title: 'kostenlose Besichtigung', imageUrl: '/images/besichtigung.webp', imageAlt: 'Besichtigung' },
+        { title: 'individuelles Angebot', imageUrl: '/images/angebot.webp', imageAlt: 'Angebot' }
+      ];
+  const leadText = block?.leadText
+    || 'Ab 01.26 sind wir in der Unterhaltsreinigung bei 15 Euro Mindestlohn, dazu kommen Nacht-, Sonn- und Feiertagszuschläge. In der Glasreinigung liegen wir bei 18,40 Euro Mindestlohn.';
+  const detailText = block?.detailText
+    || 'Wir unterliegen dem allgemein gültigen Rahmentarifvertrag (RTV), Lohntarifvertrag (LTV) verpflichtend für alle, die Reinigungsdienstleistungen anbieten.';
+  const primaryButton = block?.primaryButton || { label: 'zum Buchungsformular', href: '#Kontakt' };
+  const secondaryButton = block?.secondaryButton || { label: 'Whats App', href: 'https://wa.me/491795163864' };
+%>
+
+<section class="sauber-kosten section section--align-center" aria-labelledby="sauber-kosten-title">
+  <div class="section__inner">
+    <h2 class="sauber-kosten__title" id="sauber-kosten-title"><%- renderTextWithLinks(heading) %></h2>
+    <p class="sauber-kosten__subtitle"><%- renderTextWithLinks(subtitle) %></p>
+
+    <div class="sauber-kosten__flow">
+      <% steps.slice(0, 3).forEach((step, index) => { %>
+      <% const baseDelay = (index * 0.6); %>
+      <div class="sauber-kosten__item">
+        <span class="sauber-kosten__index animate-on-scroll sauber-kosten__animate" style="--delay: <%= baseDelay.toFixed(1) %>s;"><%= index + 1 %></span>
+        <div class="sauber-kosten__card animate-on-scroll sauber-kosten__animate" style="--delay: <%= baseDelay.toFixed(1) %>s;">
+          <div class="sauber-kosten__card-inner">
+            <img class="sauber-kosten__image" src="<%= step.imageUrl %>" alt="<%= step.imageAlt || step.title %>">
+            <div class="sauber-kosten__label"><%= step.title %></div>
+          </div>
+        </div>
+      </div>
+      <% if (index < steps.slice(0, 3).length - 1) { %>
+      <div class="sauber-kosten__arrow animate-on-scroll-left sauber-kosten__animate" style="--delay: <%= (baseDelay + 0.3).toFixed(1) %>s;">
+        <img src="/icons/ArrowRight.svg" alt="" aria-hidden="true">
+      </div>
+      <% } %>
+      <% }) %>
+    </div>
+
+    <p class="sauber-kosten__lead"><%- renderTextWithLinks(leadText) %><%- renderTextWithLinks(detailText) %></p>
+    <p class="sauber-kosten__detail"></p>
+
+    <div class="sauber-kosten__buttons">
+      <a class="sauber-kosten__button sauber-kosten__button--primary" href="<%= primaryButton.href %>"><%= primaryButton.label %></a>
+      <a class="sauber-kosten__button sauber-kosten__button--secondary" href="<%= secondaryButton.href %>" target="_blank" rel="noopener noreferrer"><%= secondaryButton.label %></a>
+    </div>
+
+  </div>
+</section>

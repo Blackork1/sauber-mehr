@@ -4,6 +4,7 @@
  */
 export const COMPONENT_REGISTRY = {
   hero: 'hero',
+  kosten: 'kosten',
   richText: 'richText',
   cta: 'cta',
   imageText: 'imageText',

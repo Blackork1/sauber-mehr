@@ -3,22 +3,20 @@ set -euo pipefail
 
 
 # ROOT="/home/webadmin/apps/kurdischesfestival"
-ROOT="/apps/kurdischesfestival"
-REPO_DIR="$ROOT"                         # <-- Repo liegt jetzt im Root
+ROOT="/apps/sauber-mehr"
+REPO_DIR="$ROOT"
 COMPOSE_FILE="$ROOT/docker-compose.yml"
 BRANCH="${DEPLOY_BRANCH:-main}"
 
-# Services, die NICHT automatisch im selben Run recreated werden sollen
-# (webhook, weil Deploy darin läuft; optional auch db, wenn du die nie anfassen willst)
 EXCLUDE_REGEX='^(webhook)$'
 
-exec 9>/tmp/deploy-kurdischesfestival.lock
+exec 9>/tmp/deploy-sauber-mehr.lock
 if ! flock -n 9; then
   echo "[deploy] Deploy läuft bereits – Abbruch."
   exit 0
 fi
 
-echo "[deploy] 📦 Deployment: kurdischesfestival"
+echo "[deploy] 📦 Deployment: sauber-mehr"
 echo "[deploy] REPO: $REPO_DIR | BRANCH: $BRANCH"
 
 mkdir -p /root/.ssh
@@ -35,10 +33,6 @@ echo "[deploy] 🔄 Git Update (ROOT)…"
 git fetch origin --prune
 git checkout -f "$BRANCH"
 git reset --hard "origin/$BRANCH"
-
-# OPTIONAL (nur wenn du willst): Untracked Müll entfernen, aber .env/data behalten
-# Achtung: git clean kann dir sonst lokale Dateien löschen
-# git clean -fd -e .env -e data -e uploads
 
 echo "[deploy] 🧩 Ermittle Services…"
 SERVICES_RAW="$(docker compose -f "$COMPOSE_FILE" config --services | grep -Ev "$EXCLUDE_REGEX" || true)"

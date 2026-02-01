@@ -1,5 +1,5 @@
 {
-  "name": "komplettwebdesign-webhook",
+  "name": "sauber-mehr-webhook",
   "private": true,
   "type": "module",
   "scripts":{"start": "node server.js"},

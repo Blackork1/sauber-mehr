@@ -5,15 +5,14 @@ import { spawn } from "child_process";
 const app = express();
 const PORT = Number(process.env.WEBHOOK_PORT || 4000);
 const SECRET = process.env.WEBHOOK_SECRET;
-const DEPLOY_SCRIPT = process.env.DEPLOY_SCRIPT || "/apps/kurdischesfestival/deploy/deploy.sh";
-
+const DEPLOY_SCRIPT = process.env.DEPLOY_SCRIPT || "/apps/sauber-mehr/deploy/deploy.sh";
 if (!SECRET) {
   console.error("WEBHOOK_SECRET fehlt.");
   process.exit(1);
 }
 
-app.get(["/", "/kurdischesfestival"], (_req, res) => res.status(200).send("OK"));
-app.post(["/", "/kurdischesfestival"], express.raw({ type: "*/*" }), (req, res) => {
+app.get(["/", "/sauber-mehr"], (_req, res) => res.status(200).send("OK"));
+app.post(["/", "/sauber-mehr"], express.raw({ type: "*/*" }), (req, res) => {
   
   const sig = String(req.headers["x-hub-signature-256"] || "");
   const event = String(req.headers["x-github-event"] || "");

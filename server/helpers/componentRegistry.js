@@ -8,18 +8,6 @@ export const COMPONENT_REGISTRY = {
   cta: 'cta',
   imageText: 'imageText',
   faq: 'faq',
-  mediaVideos: 'mediaVideos',
-  mediaTickets: 'mediaTickets',
-  artikelSection: 'artikelSection',
-  welcome: 'welcome',
-  videoPage: 'videoPage',
-  ticketsHero: 'ticketsHero',
-  ticketsSection: 'ticketsSection',
-  donation: 'donation',
-  gallery: 'gallery',
-  rahmenplan: 'rahmenplan',
-  sponsorHero: 'sponsorHero',
-  sponsors: 'sponsors'
 };
 
 export function normalizeBlocks(blocks = []) {

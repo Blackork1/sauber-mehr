@@ -1,4 +1,4 @@
-name: kurdischesfestival
+name: sauber-mehr
 
 services:
   app:
@@ -16,31 +16,30 @@ services:
     expose:
       - "3000"
     environment:
-      - CANONICAL_HOST=www.kurdischesfilmfestival.komplettwebdesign.de
+      - CANONICAL_HOST=${CANONICAL_HOST}
     volumes:
-      - /home/webadmin/apps/kurdischesfestival/data/uploads:/app/public/uploads
-      - /home/webadmin/apps/kurdischesfestival/data/downloads:/app/downloads
+      - /home/webadmin/apps/sauber-mehr/data/uploads:/app/public/uploads
+      - /home/webadmin/apps/sauber-mehr/data/downloads:/app/downloads
      # - ./data/uploads:/app/public/uploads
      # - ./data/downloads:/app/downloads
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.services.kff-app.loadbalancer.server.port=3000"
-      - "traefik.http.routers.kff-www.rule=Host(`${SITE_HOST_WWW}`)"
-      - "traefik.http.routers.kff-www.entrypoints=websecure"
-      - "traefik.http.routers.kff-www.tls.certresolver=le"
-      - "traefik.http.routers.kff-www.service=kff-app"
-      - "traefik.http.routers.kff-www.priority=1000"
-      - "traefik.http.routers.kff-root.priority=1000"
-      - "traefik.http.routers.kff-root.rule=Host(`${SITE_HOST_ROOT}`)"
-      - "traefik.http.routers.kff-root.entrypoints=websecure"
-      - "traefik.http.routers.kff-root.tls.certresolver=le"
-      - "traefik.http.routers.kff-root.middlewares=kff-to-www"
-      - "traefik.http.routers.kff-root.service=kff-app"
-      - "traefik.http.middlewares.kff-to-www.redirectregex.regex=^https?://${SITE_DOMAIN}/(.*)"
-      - "traefik.http.middlewares.kff-to-www.redirectregex.replacement=https://${SITE_HOST_WWW}/$$1"
-      - "traefik.http.middlewares.kff-to-www.redirectregex.permanent=true"
-
+      - "traefik.http.services.sauber-mehr-app.loadbalancer.server.port=3000"
+      - "traefik.http.routers.sauber-mehr-www.rule=Host(`${SITE_HOST_WWW}`)"
+      - "traefik.http.routers.sauber-mehr-www.entrypoints=websecure"
+      - "traefik.http.routers.sauber-mehr-www.tls.certresolver=le"
+      - "traefik.http.routers.sauber-mehr-www.service=sauber-mehr-app"
+      - "traefik.http.routers.sauber-mehr-www.priority=1000"
+      - "traefik.http.routers.sauber-mehr-root.priority=1000"
+      - "traefik.http.routers.sauber-mehr-root.rule=Host(`${SITE_HOST_ROOT}`)"
+      - "traefik.http.routers.sauber-mehr-root.entrypoints=websecure"
+      - "traefik.http.routers.sauber-mehr-root.tls.certresolver=le"
+      - "traefik.http.routers.sauber-mehr-root.middlewares=sauber-mehr-to-www"
+      - "traefik.http.routers.sauber-mehr-root.service=sauber-mehr-app"
+      - "traefik.http.middlewares.sauber-mehr-to-www.redirectregex.regex=^https?://${SITE_DOMAIN}/(.*)"
+      - "traefik.http.middlewares.sauber-mehr-to-www.redirectregex.replacement=https://${SITE_HOST_WWW}/$$1"
+      - "traefik.http.middlewares.sauber-mehr-to-www.redirectregex.permanent=true"
   postgres:
     image: pgvector/pgvector:pg16
     env_file:
@@ -51,16 +50,16 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - /home/webadmin/apps/kurdischesfestival/data/postgres:/var/lib/postgresql/data
+      - /home/webadmin/apps/sauber-mehr/data/postgres:/var/lib/postgresql/data
      # - ./data/postgres:/var/lib/postgresql/data
     networks:
       default: {}
       dbadmin:
         aliases:
-          - kff-postgres
+          - sauber-mehr-postgres
     # VPN-only Zugriff von außen:
     ports:
-      - "10.10.0.1:5433:5432"
+      - "10.10.0.1:5434:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -83,18 +82,18 @@ services:
       - /home/webadmin/.ssh/github_ionos_ed25519:/root/.ssh/id_ed25519:ro
     environment:
       - WEBHOOK_PORT=4000
-      - DEPLOY_SCRIPT=/apps/kurdischesfestival/deploy/deploy.sh
+      - DEPLOY_SCRIPT=/apps/sauber-mehr/deploy/deploy.sh
       - DEPLOY_BRANCH=${DEPLOY_BRANCH}
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=proxy"
-      - "traefik.http.routers.kff-deploy.rule=Host(`${HOOKS_HOST}`) && PathPrefix(`/kurdischesfestival`)"
-      - "traefik.http.routers.kff-deploy.entrypoints=websecure"
-      - "traefik.http.routers.kff-deploy.tls.certresolver=le"
-      - "traefik.http.routers.kff-deploy.priority=1000"
-      - "traefik.http.routers.kff-deploy.middlewares=kff-deploy-strip"
-      - "traefik.http.middlewares.kff-deploy-strip.stripprefix.prefixes=/kurdischesfestival"
-      - "traefik.http.services.kff-deploy.loadbalancer.server.port=4000"
+      - "traefik.http.routers.sauber-mehr-deploy.rule=Host(`${HOOKS_HOST}`) && PathPrefix(`/sauber-mehr`)"
+      - "traefik.http.routers.sauber-mehr-deploy.entrypoints=websecure"
+      - "traefik.http.routers.sauber-mehr-deploy.tls.certresolver=le"
+      - "traefik.http.routers.sauber-mehr-deploy.priority=1000"
+      - "traefik.http.routers.sauber-mehr-deploy.middlewares=sauber-mehr-deploy-strip"
+      - "traefik.http.middlewares.sauber-mehr-deploy-strip.stripprefix.prefixes=/sauber-mehr"
+      - "traefik.http.services.sauber-mehr-deploy.loadbalancer.server.port=4000"
 
 networks:
   proxy:

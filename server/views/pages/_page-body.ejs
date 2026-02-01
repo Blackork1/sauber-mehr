@@ -1,4 +1,5 @@
 <article class="page">
   <% (blocks || []).forEach(block => { %>
-    <%- include('../components/' + block.view, { block, page, sponsors }) %>  <% }) %>
+  <%- include('../components/' + block.view, { block, page }) %>
+  <% }) %>
 </article>

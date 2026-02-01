@@ -2,11 +2,11 @@ INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, co
 VALUES
   (
     'de',
-    '/de',
+    '/',
     'Start',
     'Start – DB-first Starter',
     'DB-first Rendering mit EJS + PostgreSQL',
-    '[{"type":"hero","headline":"DB-first Node.js Starter (EJS + PostgreSQL)","subline":"Jede Seite lädt ihren Hauptinhalt aus der Datenbank und rendert ihn als EJS-Komponenten.","cta":{"href":"/kontakt-de","label":"Kontakt"}},{"type":"mediaVideos","headline":"Momente vom Festival","text":"Hier findest du alle Filme und Videos des diesjährigen Filmfestivals. Dabei handelt es sich jedoch zunächst um Einblicke und Vorschaubilder zu den Filmen. Möchtest du die vollständigen Inhalte sehen, dann kannst du entweder ein Ticket für das Kino-Babylon Berlin kaufen oder unser Onlineticket erwerben. Somit hast du Zugriff auf alle Filme, egal wo du gerade bist.","categories":["Alle Filme","Fokus","Featured","Dokumentar","Kurzfilm","Kinder"]},{"type":"mediaTickets","headline":"Tickets & Online-Zugang","text":"Mit dem Online-Pass sicherst du dir den Zugriff auf alle Festival-Videos und kannst die Beiträge jederzeit bequem online anschauen. Wenn du das Festival lieber im Kino erleben möchtest, wirst du direkt zum Babylon Berlin weitergeleitet. So entscheidest du selbst: flexibel online oder als echtes Kino-Erlebnis vor Ort."},{"type":"richText","title":"Wie es funktioniert","html":"<p>Die Tabelle <code>pages</code> enthält pro Seite ein <code>content</code>-JSON (Array von Blocks). Der Controller normalisiert die Blocks (Whitelist) und rendert die passenden EJS-Partial-Komponenten.</p><p>So kannst du später im Admin-Bereich Blocks editieren, speichern und live ausspielen.</p>"},{"type":"cta","title":"Nächster Schritt","text":"Baue jetzt deinen Admin-Editor (Pages/Components) auf Basis deines bestehenden Projekts ein.","button":{"href":"/kontakt-de","label":"Beispielseite"}},{"type":"faq","title":"FAQ","items":[{"q":"Kann ich auch die Startseite aus der DB rendern?","a":"<p>Ja. Im Starter ist <code>/de</code> die Seite mit dem Slug <code>de</code>.</p>"},{"q":"Wie verhindere ich, dass jemand beliebige Includes lädt?","a":"<p>Über eine Whitelist: Block-Typen werden auf erlaubte Partials gemappt. Alles andere wird zu <code>_unknown</code>.</p>"}]}]'::jsonb,    
+    '[{"type":"hero","headline":"Sauber Mehr Gebäudereinigung","subline":"Zuverlässige Reinigung für Haushalt, Büro und Gewerbe in Berlin.","cta":{"href":"#kontakt","label":"Angebot anfragen"}},{"type":"imageText","title":"Reinigung mit System","text":"Wir arbeiten strukturiert, transparent und mit festen Ansprechpartnern. So behalten Sie jederzeit den Überblick über Leistungen und Termine.","imageUrl":"/images/placeholder-cleaning.webp","imageAlt":"Reinigungsteam von Sauber Mehr"},{"type":"richText","title":"Warum Sauber Mehr?","html":"<p>Wir stehen für klare Kommunikation, faire Angebote und gründliche Ergebnisse. Ob regelmäßige Unterhaltsreinigung oder einmaliger Einsatz – wir liefern zuverlässig.</p><ul><li>Persönliche Beratung</li><li>Flexible Einsatzzeiten</li><li>Geschulte Teams</li></ul>"},{"type":"cta","headline":"Jetzt Beratung sichern","subline":"Wir melden uns innerhalb von 24 Stunden zurück.","button":{"href":"#kontakt","label":"Kontakt aufnehmen"}},{"type":"faq","title":"Häufige Fragen","items":[{"q":"Welche Leistungen bietet Sauber Mehr?","a":"<p>Wir reinigen Haushalte, Büros, Treppenhäuser und bieten individuelle Lösungen für Gewerbeflächen.</p>"},{"q":"Wie schnell erhalte ich ein Angebot?","a":"<p>In der Regel melden wir uns innerhalb von 24 Stunden mit einem persönlichen Angebot.</p>"}]}]'::jsonb,    
     true, false, true
   )
 ON CONFLICT (slug) DO UPDATE SET
@@ -21,15 +21,15 @@ ON CONFLICT (slug) DO UPDATE SET
 
 INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display)
 VALUES
-  ('ueber-uns', '/ueber-uns/', 'Über', 'Über – DB-first Starter', 'Beispielseite aus der Datenbank', '[]'::jsonb, true, false, true)
-ON CONFLICT (slug) DO NOTHING;
+  ('leistungen', '/leistungen', 'Leistungen', 'Leistungen – Sauber Mehr', 'Reinigungsleistungen für Haushalt, Büro und Treppenhaus.', '[]'::jsonb, true, true, true)
+  ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display)
 VALUES
-  ('impressum', '/impressum/', 'Impressum', 'Impressum', 'Impressum', '[]'::jsonb, false, false, true)
-ON CONFLICT (slug) DO NOTHING;
+  ('impressum', '/impressum', 'Impressum', 'Impressum – Sauber Mehr', 'Impressum von Sauber Mehr.', '[]'::jsonb, false, false, true)
+  ON CONFLICT (slug) DO NOTHING;
 
 INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display)
 VALUES
-  ('datenschutz', '/datenschutz/', 'Datenschutz', 'Datenschutz', 'Datenschutz', '[]'::jsonb, false, false, true)
+  ('datenschutz', '/datenschutz/', 'Datenschutz', 'Datenschutz – Sauber Mehr', 'Datenschutz von Sauber Mehr.', '[]'::jsonb, false, false, true)
 ON CONFLICT (slug) DO NOTHING;

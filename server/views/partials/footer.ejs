@@ -2,15 +2,15 @@
   <div class="site-footer__container">
     <div class="site-footer__top">
       <div class="site-footer__brand">
-        <div class="site-footer__logo" aria-label="Kurdisches Filmfestival">
+        <div class="site-footer__logo" aria-label="Sauber Mehr">
           <svg viewBox="0 0 64 64" role="img" aria-hidden="true">
-            <path d="M32 6c-7.2 6.9-11 15-11 23.3 0 7 3 13.3 8.4 18.6l2.6 2.6 2.6-2.6C40 42.6 43 36.3 43 29.3 43 21 39.2 12.9 32 6z" fill="currentColor" opacity="0.9"/>
-            <path d="M16 52c7.6-3.5 15-5.2 22.1-5.2 7.4 0 14.8 1.9 22.3 5.6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+            <path d="M32 6c-7.2 6.9-11 15-11 23.3 0 7 3 13.3 8.4 18.6l2.6 2.6 2.6-2.6C40 42.6 43 36.3 43 29.3 43 21 39.2 12.9 32 6z" fill="currentColor" opacity="0.9" />
+            <path d="M16 52c7.6-3.5 15-5.2 22.1-5.2 7.4 0 14.8 1.9 22.3 5.6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
           </svg>
         </div>
         <div class="site-footer__brand-text">
-          <span class="site-footer__brand-name">Kurdisches Filmfestival</span>
-          <span class="site-footer__brand-sub">Kurdische Festivals in Berlin</span>
+          <span class="site-footer__brand-name">Sauber Mehr</span>
+          <span class="site-footer__brand-sub">Gebäudereinigung in Berlin</span>
         </div>
       </div>
 
@@ -18,79 +18,54 @@
         <div class="site-footer__column">
           <h3>Unternehmen</h3>
           <ul>
-            <li><a href="/team">Team</a></li>
-            <li><a href="/kontakt">Kontakt</a></li>
+            <li><a href="/leistungen">Leistungen</a></li>
+            <li><a href="#ueber">Über uns</a></li>
+            <li><a href="#kontakt">Kontakt</a></li>
           </ul>
         </div>
         <div class="site-footer__column">
-          <h3>Angebot</h3>
+          <h3>Leistungen</h3>
           <ul>
-            <li><a href="/kinotickets">Kinotickets</a></li>
-            <li><a href="/online-tickets">Online-Tickets</a></li>
-            <li><a href="/filme">Filme</a></li>
+            <li><a href="/leistungen/haushalt">Haushaltsreinigung</a></li>
+            <li><a href="/leistungen/buero">Büroreinigung</a></li>
+            <li><a href="/leistungen/treppenhaus">Treppenhausreinigung</a></li>
+            <li><a href="/leistungen/fenster">Fensterreinigung</a></li>
           </ul>
         </div>
         <div class="site-footer__column">
           <h3>Kontakt</h3>
           <ul>
-            <li><a href="mailto:info@mitosfilm.com">info@mitosfilm.com</a></li>
-            <li><a href="tel:+493054719462">+49 (0)30 54 71 94 62</a></li>
-            <li>Oranienstr. 191<br>10999 Berlin</li>
+            <li><a href="mailto:info@sauber-mehr.de">info@sauber-mehr.de</a></li>
+            <li><a href="tel:+493000000000">+49 (0)30 000 000 00</a></li>
+            <li>Berlin</li>
           </ul>
-        </div>
-        <div class="site-footer__column">
-          <h3>Neuigkeiten</h3>
-          <p>Für Newsletter anmelden!</p>
-          <form class="newsletter" action="/newsletter" method="post">
-            <input type="hidden" name="language" value="<%= meta?.locale || 'de-DE' %>">
-            <label class="sr-only" for="newsletter-email">E-Mail</label>
-            <div class="newsletter__input">
-              <input id="newsletter-email" type="email" name="email" placeholder="Email" required>
-              <button type="submit" aria-label="Newsletter anmelden">
-                <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-                  <path d="M3 10h12.6l-4.3 4.3 1.4 1.4L19 10l-6.3-5.7-1.4 1.4 4.3 4.3H3z" fill="currentColor"/>
-                </svg>
-              </button>
-            </div>
-            <fieldset class="newsletter__options">
-              <legend class="sr-only">Newsletter Optionen</legend>
-              <label>
-                <input type="checkbox" name="news" value="yes">
-                News
-              </label>
-              <label>
-                <input type="checkbox" name="video" value="yes">
-                Videoveröffentlichungen
-              </label>
-            </fieldset>
-            <% if (newsletterStatus === 'success') { %>
-              <p class="newsletter__status">Danke! Wir haben deine Anmeldung gespeichert.</p>
-            <% } else if (newsletterStatus === 'error') { %>
-              <p class="newsletter__status newsletter__status--error">Bitte wähle mindestens eine Option und eine gültige E-Mail.</p>
-            <% } %>
-          </form>
         </div>
       </div>
     </div>
 
     <div class="site-footer__bottom">
-      <p>&copy; MITOSFILM <%= new Date().getFullYear() %></p>
+      <p>&copy; Sauber Mehr <%= new Date().getFullYear() %></p>
       <div class="site-footer__legal">
         <a href="/impressum">Impressum</a>
         <a href="/datenschutz">Datenschutzerklärung</a>
       </div>
       <div class="site-footer__social">
-        <a href="https://x.com/Filmfestkurdi" aria-label="X">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23.2 22h-6.4l-5-6.4-5.6 6.4H2.9l7.3-8.4L.8 2h6.5l4.5 5.8L18.9 2z" fill="currentColor"/></svg>
+        <a href="https://www.instagram.com/" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M16.7 3H7.3A4.3 4.3 0 0 0 3 7.3v9.4A4.3 4.3 0 0 0 7.3 21h9.4a4.3 4.3 0 0 0 4.3-4.3V7.3A4.3 4.3 0 0 0 16.7 3zm2.4 13.7a2.4 2.4 0 0 1-2.4 2.4H7.3a2.4 2.4 0 0 1-2.4-2.4V7.3a2.4 2.4 0 0 1 2.4-2.4h9.4a2.4 2.4 0 0 1 2.4 2.4z" fill="currentColor" />
+            <path d="M12 7.6A4.4 4.4 0 1 0 16.4 12 4.4 4.4 0 0 0 12 7.6zm0 7.1A2.7 2.7 0 1 1 14.7 12 2.7 2.7 0 0 1 12 14.7z" fill="currentColor" />
+            <circle cx="16.6" cy="7.4" r="1.2" fill="currentColor" />
+          </svg>
         </a>
-        <a href="https://www.facebook.com/KurdischesFilmfestival" aria-label="Facebook">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.1h-3.1V9c0-.9.3-1.5 1.6-1.5H17V4.7c-.4-.1-1.7-.2-3.1-.2-3 0-5 1.8-5 5.2v1.3H6.2V14h2.7v8h4.6z" fill="currentColor"/></svg>
+        <a href="https://www.facebook.com/" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M13.5 22v-8h2.7l.4-3.1h-3.1V9c0-.9.3-1.5 1.6-1.5H17V4.7c-.4-.1-1.7-.2-3.1-.2-3 0-5 1.8-5 5.2v1.3H6.2V14h2.7v8h4.6z" fill="currentColor" />
+          </svg>
         </a>
-        <a href="https://www.linkedin.com" aria-label="LinkedIn">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.9 3.5a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8zM3 9.1h3.8V21H3zM9.4 9.1H13v1.6h.1c.5-.9 1.8-1.8 3.6-1.8 3.9 0 4.6 2.5 4.6 5.8V21h-3.8v-5.3c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9V21H9.4z" fill="currentColor"/></svg>
-        </a>
-        <a href="/rss.xml" aria-label="RSS">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm-2-9v3a8 8 0 0 1 8 8h3c0-6.1-4.9-11-11-11zm0-5v3c8.3 0 15 6.7 15 15h3C21 12 12 3 1 3z" fill="currentColor"/></svg>
+        <a href="https://www.linkedin.com/" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4.9 3.5a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8zM3 9.1h3.8V21H3zM9.4 9.1H13v1.6h.1c.5-.9 1.8-1.8 3.6-1.8 3.9 0 4.6 2.5 4.6 5.8V21h-3.8v-5.3c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9V21H9.4z" fill="currentColor" />
+          </svg>
         </a>
       </div>
     </div>

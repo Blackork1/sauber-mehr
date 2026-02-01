@@ -28,7 +28,7 @@ export const pool = new Pool({
   max: Number(process.env.DB_POOL_MAX || 10),
   idleTimeoutMillis: Number(process.env.DB_IDLE_TIMEOUT_MS || 30000),
   connectionTimeoutMillis: Number(process.env.DB_CONN_TIMEOUT_MS || 10000),
-  application_name: process.env.DB_APP_NAME || "kurdischesfestival",
+  application_name: process.env.DB_APP_NAME || "sauber-mehr",
 });
 
 pool.on("connect", () => console.log("✅ Mit Datenbank verbunden"));

@@ -1,26 +1,28 @@
+const BASE_URL = (process.env.SITE_BASE_URL || 'https://sauber-mehr.de').replace(/\/$/, '');
+const SITE_NAME = process.env.SITE_NAME || 'Sauber Mehr';
+
 const SITE = {
-  name: 'Kurdisches Filmfestival',
-  baseUrl: 'https://kurdisches-filmfestival.de',
-  defaultLocale: 'de-DE',
+  name: SITE_NAME,
+  baseUrl: BASE_URL,
+  defaultLocale: process.env.SITE_DEFAULT_LOCALE || 'de-DE',
   defaultOgImage: {
-    url: 'https://kurdisches-filmfestival.de/images/og-default.jpg',
+    url: `${BASE_URL}/images/og-default.jpg`,
     width: 1200,
     height: 630,
-    alt: 'Kurdisches Filmfestival'
+    alt: SITE_NAME
   },
   organization: {
-    id: 'https://kurdisches-filmfestival.de/#organization',
-    name: 'Kurdisches Filmfestival',
-    url: 'https://kurdisches-filmfestival.de/',
+    id: `${BASE_URL}/#organization`,
+    name: SITE_NAME,
+    url: BASE_URL + '/',
     logo: {
-      url: 'https://kurdisches-filmfestival.de/images/logo.png',
+      url: `${BASE_URL}/images/logo.png`,
       width: 545,
       height: 545
     },
     sameAs: [
-      'https://www.facebook.com/KurdischesFilmfestival',
-      'https://www.instagram.com/kurdisches.filmfestival/',
-      'https://x.com/Filmfestkurdi'
+      'https://www.facebook.com/saubermehr',
+      'https://www.instagram.com/saubermehr/'
     ]
   }
 };

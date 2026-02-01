@@ -8,6 +8,7 @@ export const COMPONENT_REGISTRY = {
   richText: 'richText',
   cta: 'cta',
   imageText: 'imageText',
+  imageSlider: 'imageSlider',
   faq: 'faq',
 };
 

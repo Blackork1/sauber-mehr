@@ -8,8 +8,10 @@
 <section class="sauber-hero" aria-labelledby="sauber-hero-title">
   <div class="sauber-hero__media" style="--hero-image: url('<%= heroImage %>')"></div>
   <div class="sauber-hero__content">
-    <h1 class="sauber-hero__title" id="sauber-hero-title"><%- renderTextWithLinks(heroHeadline) %></h1>
-    <p class="sauber-hero__subtitle"><%- renderTextWithLinks(heroSubline) %></p>
+    <div class="sauber-hero__upper">
+      <h1 class="sauber-hero__title" id="sauber-hero-title"><%- renderTextWithLinks(heroHeadline) %></h1>
+      <p class="sauber-hero__subtitle"><%- renderTextWithLinks(heroSubline) %></p>
+    </div>
     <a class="sauber-hero__button" href="<%= heroCtaHref %>"><%= heroCtaLabel %></a>
   </div>
 </section>

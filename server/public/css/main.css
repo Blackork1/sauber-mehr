@@ -395,7 +395,6 @@ input[type="reset"]:hover,
   text-decoration: none;
 }
 
-
 .site-footer {
   background: #d8f2f6;
   color: #5a6770;
@@ -539,8 +538,6 @@ input[type="reset"]:hover,
   }
 }
 
-
-
 .nav-settings {
   display: flex;
   gap: 10px;
@@ -647,6 +644,12 @@ input[type="reset"]:hover,
   height: 100vh;
 }
 
+.sauber-hero__upper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .sauber-hero__media {
   position: absolute;
   inset: 0;
@@ -670,7 +673,7 @@ input[type="reset"]:hover,
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   gap: 50px;
   max-width: 960px;
   height: 100%;

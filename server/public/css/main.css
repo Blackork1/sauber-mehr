@@ -213,7 +213,7 @@ input[type="reset"]:hover,
   width: 100%;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(180deg, #ffffff3b 0%, #ffffff00 100%);
+  background: linear-gradient(180deg, #ffffff87 0%, #ffffff00 100%);
 }
 
 .sauber-nav__inner {
@@ -994,7 +994,7 @@ input[type="reset"]:hover,
 .image-slider__carousel {
   position: relative;
   width: 100%;
-  height: clamp(520px, 80vh, 780px);
+  height: clamp(520px, 90vh, 980px);
   overflow: hidden;
 }
 

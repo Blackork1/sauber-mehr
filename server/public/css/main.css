@@ -1283,7 +1283,7 @@ input[type="reset"]:hover,
 
 .sauber-offers__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
   gap: 24px;
 }
 
@@ -1312,7 +1312,11 @@ input[type="reset"]:hover,
 .sauber-offers__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.65) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
 }
 
 .sauber-offers__content {
@@ -1327,11 +1331,14 @@ input[type="reset"]:hover,
 .sauber-offers__card-title {
   margin: 0 0 8px;
   color: var(--sauber-hero-aqua);
+  text-align: right;
 }
 
 .sauber-offers__card-text {
   margin: 0;
   color: var(--sauber-white);
+  text-align: right;
+  font-size: 12px;
 }
 
 @media (max-width: 1024px) {

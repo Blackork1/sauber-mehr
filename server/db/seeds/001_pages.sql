@@ -6,7 +6,136 @@ VALUES
     'Start',
     'Start – DB-first Starter',
     'DB-first Rendering mit EJS + PostgreSQL',
-    '[{"type":"hero","headline":"Sauber Mehr Gebäudereinigung","subline":"Zuverlässige Reinigung für Haushalt, Büro und Gewerbe in Berlin.","cta":{"href":"#kontakt","label":"Angebot anfragen"}},{"type":"kosten","headline":"Was wird die Reinigung kosten?","subline":"In 3 einfachen Schritten zu deinem unverbindlichen Angebot","leadText":"Ab 01.26 sind wir in der Unterhaltsreinigung bei 15 Euro Mindestlohn, dazu kommen Nacht-, Sonn- und Feiertagszuschläge. In der Glasreinigung liegen wir bei 18,40 Euro Mindestlohn.","detailText":"Wir unterliegen dem allgemein gültigen Rahmentarifvertrag (RTV), Lohntarifvertrag (LTV) verpflichtend für alle, die Reinigungsdienstleistungen anbieten.","primaryButton":{"label":"zum Buchungsformular","href":"#Kontakt"},"secondaryButton":{"label":"Whats App","href":"https://wa.me/491795163864"},"steps":[{"title":"Anruf oder Buchungsformular","imageUrl":"/images/anruf.webp","imageAlt":"Anruf"},{"title":"kostenlose Besichtigung","imageUrl":"/images/besichtigung.webp","imageAlt":"Besichtigung"},{"title":"individuelles Angebot","imageUrl":"/images/angebot.webp","imageAlt":"Angebot"}]},{"type":"imageText","title":"Reinigung mit System","text":"Wir arbeiten strukturiert, transparent und mit festen Ansprechpartnern. So behalten Sie jederzeit den Überblick über Leistungen und Termine.","imageUrl":"/images/placeholder-cleaning.webp","imageAlt":"Reinigungsteam von Sauber Mehr"},{"type":"richText","title":"Warum Sauber Mehr?","html":"<p>Wir stehen für klare Kommunikation, faire Angebote und gründliche Ergebnisse. Ob regelmäßige Unterhaltsreinigung oder einmaliger Einsatz – wir liefern zuverlässig.</p><ul><li>Persönliche Beratung</li><li>Flexible Einsatzzeiten</li><li>Geschulte Teams</li></ul>"},{"type":"cta","headline":"Jetzt Beratung sichern","subline":"Wir melden uns innerhalb von 24 Stunden zurück.","button":{"href":"#kontakt","label":"Kontakt aufnehmen"}},{"type":"faq","title":"Häufige Fragen","items":[{"q":"Welche Leistungen bietet Sauber Mehr?","a":"<p>Wir reinigen Haushalte, Büros, Treppenhäuser und bieten individuelle Lösungen für Gewerbeflächen.</p>"},{"q":"Wie schnell erhalte ich ein Angebot?","a":"<p>In der Regel melden wir uns innerhalb von 24 Stunden mit einem persönlichen Angebot.</p>"}]}]'::jsonb,        true, false, true
+    '[
+  {
+    "type": "hero",
+    "headline": "Sauber Mehr Gebäudereinigung",
+    "subline": "Zuverlässige Reinigung für Haushalt, Büro und Gewerbe in Berlin.",
+    "cta": {
+      "href": "#kontakt",
+      "label": "Angebot anfragen"
+    }
+  },
+  {
+    "type": "kosten",
+    "headline": "Was wird die Reinigung kosten?",
+    "subline": "In 3 einfachen Schritten zu deinem unverbindlichen Angebot",
+    "leadText": "Ab 01.26 sind wir in der Unterhaltsreinigung bei 15 Euro Mindestlohn, dazu kommen Nacht-, Sonn- und Feiertagszuschläge. In der Glasreinigung liegen wir bei 18,40 Euro Mindestlohn.",
+    "detailText": "Wir unterliegen dem allgemein gültigen Rahmentarifvertrag (RTV), Lohntarifvertrag (LTV) verpflichtend für alle, die Reinigungsdienstleistungen anbieten.",
+    "primaryButton": {
+      "label": "zum Buchungsformular",
+      "href": "#Kontakt"
+    },
+    "secondaryButton": {
+      "label": "Whats App",
+      "href": "https://wa.me/491795163864"
+    },
+    "steps": [
+      {
+        "title": "Anruf oder Buchungsformular",
+        "imageUrl": "/images/anruf.webp",
+        "imageAlt": "Anruf"
+      },
+      {
+        "title": "kostenlose Besichtigung",
+        "imageUrl": "/images/besichtigung.webp",
+        "imageAlt": "Besichtigung"
+      },
+      {
+        "title": "individuelles Angebot",
+        "imageUrl": "/images/angebot.webp",
+        "imageAlt": "Angebot"
+      }
+    ]
+  },
+  {
+    "type": "imageSlider",
+    "button": {
+      "label": "Leistung entdecken"
+    },
+    "slides": [
+      {
+        "title": "Haushaltsreinigung",
+        "description": "Sauberkeit für Zuhause – flexibel und gründlich.",
+        "link": "/leistungen/haushalt",
+        "image": {
+          "src": "/images/unterhaltsreinigung.webp",
+          "alt": "Haushaltsreinigung"
+        }
+      },
+      {
+        "title": "Büroreinigung",
+        "description": "Gepflegte Arbeitsplätze für Ihr Team und Ihre Kundschaft.",
+        "link": "/leistungen/buero",
+        "image": {
+          "src": "/images/büroreinigung.webp",
+          "alt": "Büroreinigung"
+        }
+      },
+      {
+        "title": "Treppenhausreinigung",
+        "description": "Saubere Aufgänge für Bewohner und Besucher.",
+        "link": "/leistungen/treppenhaus",
+        "image": {
+          "src": "/images/aufgangsreinigung.webp",
+          "alt": "Treppenhausreinigung"
+        }
+      },
+      {
+        "title": "Fensterreinigung",
+        "description": "Klare Sicht und streifenfreie Ergebnisse.",
+        "link": "/leistungen/fenster",
+        "image": {
+          "src": "/images/fensterreinigung.webp",
+          "alt": "Fensterreinigung"
+        }
+      }
+    ]
+  },
+  {
+    "type": "angebote",
+    "title": "Was bieten wir dir?",
+    "description": "Mit unserem kleinen starken Team steht bei uns Persönlichkeit und direkter Kontakt im Mittelpunkt. Wir sind bei Fragen und Problemen immer für Sie erreichbar und lösen Probleme schnell und unkompliziert. Dabei steht Ihre Zufriedenheit immer an erster Stelle.",
+    "cards": [
+      {
+        "title": "Nachhaltig",
+        "description": "Wir arbeiten ressourcenschonend mit Mehrwegmaterialien und klaren Abläufen – sauber, effizient und verantwortungsvoll im Betrieb.",
+        "imageUrl": "/images/nachhaltig.webp",
+        "imageAlt": "Nachhaltige Reinigung"
+      },
+      {
+        "title": "Persönlich",
+        "description": "Feste Ansprechpartner, kurze Wege und direkte Kommunikation – du erreichst uns schnell, ohne Hotline, mit echter Verantwortung.",
+        "imageUrl": "/images/angebot.webp",
+        "imageAlt": "Persönliche Betreuung"
+      },
+      {
+        "title": "Zufrieden",
+        "description": "Zuverlässige Qualität durch Checklisten, Abnahmen und schnelle Nachbesserung – damit Büros und Teams dauerhaft zufrieden bleiben.",
+        "imageUrl": "/images/büroreinigung.webp",
+        "imageAlt": "Zufriedene Teams"
+      },
+      {
+        "title": "Individuell",
+        "description": "Reinigungskonzepte nach Objekt, Branche und Frequenz – von Praxis bis Büro, mit abgestimmten Leistungen und Prioritäten.",
+        "imageUrl": "/images/individuell.webp",
+        "imageAlt": "Individuelle Lösungen"
+      },
+      {
+        "title": "Flexibel",
+        "description": "Termine auch früh, spät oder am Wochenende – wir passen uns deinen Betriebszeiten an und reagieren kurzfristig.",
+        "imageUrl": "/images/flexibel.webp",
+        "imageAlt": "Flexible Einsätze"
+      },
+      {
+        "title": "Lokal",
+        "description": "Regional vor Ort in Berlin, schnell einsatzbereit – kurze Anfahrten, planbare Zeiten und verlässlicher Service für deine Standorte.",
+        "imageUrl": "/images/lokal.webp",
+        "imageAlt": "Lokaler Service"
+      }
+    ]
+  }
+]'::jsonb,        true, false, true
   )
 ON CONFLICT (slug) DO UPDATE SET
   canonical_path = EXCLUDED.canonical_path,

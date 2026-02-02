@@ -4,11 +4,16 @@ import compression from 'compression';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 
 import pool from './util/db.js';
 import cloudinary from './util/cloudinary.js';
 
 import mainRoutes from './routes/main.js';
+import adminRoutes from './routes/admin.js';
+import authRoutes from './routes/auth.js';
 import pagesRoutes from './routes/pages.js';
 import * as errorController from './controllers/errorController.js';
 import { renderTextWithLinks } from './helpers/textRenderer.js';
@@ -41,6 +46,23 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0 }));
 /** Body + Cookies */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
+
+const PgSession = connectPgSimple(session);
+app.use(session({
+  store: new PgSession({
+    pool,
+    createTableIfMissing: true
+  }),
+  secret: process.env.SESSION_SECRET || 'dev-session-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production'
+  }
+}));
 
 /** App locals (DB-first rendering helpers) */
 app.set('db', pool);
@@ -61,6 +83,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/', mainRoutes);
+app.use('/', authRoutes);
+app.use('/', adminRoutes);
 app.use('/', pagesRoutes);
 app.use(errorController.get404);
 app.use(errorController.get500);

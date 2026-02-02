@@ -10,6 +10,7 @@ export const COMPONENT_REGISTRY = {
   imageText: 'imageText',
   imageSlider: 'imageSlider',
   faq: 'faq',
+  angebote: 'angebote',
 };
 
 export function normalizeBlocks(blocks = []) {

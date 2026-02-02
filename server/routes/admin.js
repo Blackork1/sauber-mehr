@@ -4,51 +4,14 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import {
   getAdminPanel,
-  createOnlineAccessCodeAdminAction,
+  updatePage,
   createGalleryImageAdmin,
   createGalleryVideoAdmin,
-  createTeamMemberAdmin,
-  deleteOnlineAccessCodeAdminAction,
   deleteGalleryImageAdmin,
   deleteGalleryVideoAdmin,
-  deleteTeamMemberAdmin,
-  createNewsArticleAdmin,
-  createMediaVideoAdmin,
-  createMediaTicketAdmin,
-  updateNewsArticleActionAdmin,
-  updateNewsArticleAdmin,
-  updateMediaTicketActionAdmin,
-  updateMediaTicketAdmin,
-  updateMediaVideoActionAdmin,
-  updateMediaVideoAdmin,
   updateGalleryVisibilityAdmin,
-  updateGalleryImageVisibilityAdmin,
-  updateGalleryPage,
   updateGalleryImageSortAdmin,
-  updateGalleryVideoSortAdmin,
-  updateGalleryVideoVisibilityAdmin,
-  updateDonationPage,
-  updateHomePage,
-  sendNewsletterAdmin,
-  updateNewsletterFooterAdmin,
-  updateNewsPage,
-  updateOnlineTicketsPage,
-  updateTeamMemberAdmin,
-  updateTeamMemberDisplayAdmin,
-  updateTeamPage,
-  updateSponsorPage,
-  updateRahmenplanPage,
-  updateTicketsPage,
-  updateVideoPage,
-  createDirectorAdmin,
-  updateDirectorAdmin,
-  deleteDirectorAdmin,
-  createSponsorAdmin,
-  updateSponsorAdmin,
-  deleteSponsorAdmin,
-  updateStandardKinoTicketAdmin,
-  renderDonationReceiptAdmin,
-  renderDonationReceiptPdfAdmin
+  updateGalleryVideoSortAdmin
 } from '../controllers/adminController.js';
 import { requireAdmin } from '../middleware/authMiddleware.js';
 
@@ -58,10 +21,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const imageUploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
 const videoUploadDir = path.join(__dirname, '..', 'public', 'video', 'uploads');
-const downloadsUploadDir = path.join(__dirname, '..', 'public', 'Downloads');
 fs.mkdirSync(imageUploadDir, { recursive: true });
 fs.mkdirSync(videoUploadDir, { recursive: true });
-fs.mkdirSync(downloadsUploadDir, { recursive: true });
 
 function splitMultipart(buffer, boundary) {
   const boundaryBuffer = Buffer.from(`--${boundary}`);
@@ -158,35 +119,7 @@ function parseMultipart({ targetDir, resolveTargetDir } = {}) {
 
 
 router.get('/adminbackend', requireAdmin, getAdminPanel);
-router.post('/adminbackend/startseite', requireAdmin, parseMultipart(), updateHomePage);
-router.post('/adminbackend/news', requireAdmin, parseMultipart({ targetDir: imageUploadDir }), updateNewsPage);
-router.post(
-  '/adminbackend/rahmenplan',
-  requireAdmin,
-  parseMultipart({
-    resolveTargetDir: ({ field }) => (field?.includes('rahmenplan_') && field.includes('_download_file_') ? downloadsUploadDir : null)
-  }),
-  updateRahmenplanPage
-);
-router.post('/adminbackend/gallery-page', requireAdmin, updateGalleryPage);
-router.post('/adminbackend/videos', requireAdmin, updateVideoPage);
-router.post('/adminbackend/team', requireAdmin, updateTeamPage);
-router.post('/adminbackend/sponsor', requireAdmin, updateSponsorPage);
-router.post('/adminbackend/tickets', requireAdmin, parseMultipart(), updateTicketsPage);
-router.post('/adminbackend/online-tickets', requireAdmin, parseMultipart(), updateOnlineTicketsPage);
-router.post('/adminbackend/standard-kino-ticket', requireAdmin, parseMultipart(), updateStandardKinoTicketAdmin);
-router.post('/adminbackend/online-access', requireAdmin, createOnlineAccessCodeAdminAction);
-router.post('/adminbackend/online-access/:id/delete', requireAdmin, deleteOnlineAccessCodeAdminAction);
-router.post('/adminbackend/spenden', requireAdmin, updateDonationPage);
-router.post('/adminbackend/newsletter/send', requireAdmin, sendNewsletterAdmin);
-router.post(
-  '/adminbackend/newsletter/footer',
-  requireAdmin,
-  parseMultipart({ targetDir: imageUploadDir }),
-  updateNewsletterFooterAdmin
-);
-router.post('/adminbackend/team-members', requireAdmin, parseMultipart(), createTeamMemberAdmin);
-router.post('/adminbackend/sponsors', requireAdmin, parseMultipart(), createSponsorAdmin);
+router.post('/adminbackend/pages/:id', requireAdmin, updatePage);
 router.post(
   '/adminbackend/gallery/images',
   requireAdmin,
@@ -203,28 +136,6 @@ router.post('/adminbackend/gallery/images/:id/delete', requireAdmin, deleteGalle
 router.post('/adminbackend/gallery/videos/:id/delete', requireAdmin, deleteGalleryVideoAdmin);
 router.post('/adminbackend/gallery/visibility', requireAdmin, updateGalleryVisibilityAdmin);
 router.post('/adminbackend/gallery/images/sort', requireAdmin, updateGalleryImageSortAdmin);
-router.post('/adminbackend/gallery/images/:id/visibility', requireAdmin, updateGalleryImageVisibilityAdmin);
 router.post('/adminbackend/gallery/videos/sort', requireAdmin, updateGalleryVideoSortAdmin);
-router.post('/adminbackend/gallery/videos/:id/visibility', requireAdmin, updateGalleryVideoVisibilityAdmin);
-router.post('/adminbackend/team-members/:id/display', requireAdmin, updateTeamMemberDisplayAdmin);
-router.post('/adminbackend/team-members/:id/update', requireAdmin, parseMultipart(), updateTeamMemberAdmin);
-router.post('/adminbackend/sponsors/:id/update', requireAdmin, parseMultipart(), updateSponsorAdmin);
-router.post('/adminbackend/team-members/:id/delete', requireAdmin, deleteTeamMemberAdmin);
-router.post('/adminbackend/sponsors/:id/delete', requireAdmin, deleteSponsorAdmin);
-router.post('/adminbackend/directors', requireAdmin, parseMultipart(), createDirectorAdmin);
-router.post('/adminbackend/directors/:id', requireAdmin, parseMultipart(), updateDirectorAdmin);
-router.post('/adminbackend/directors/:id/delete', requireAdmin, deleteDirectorAdmin);
-router.post('/adminbackend/articles', requireAdmin, parseMultipart(), createNewsArticleAdmin);
-router.post('/adminbackend/articles/actions', requireAdmin, updateNewsArticleActionAdmin);
-router.post('/adminbackend/articles/:groupId', requireAdmin, parseMultipart(), updateNewsArticleAdmin);
-router.post('/adminbackend/films', requireAdmin, parseMultipart(), createMediaVideoAdmin);
-router.post('/adminbackend/films/actions', requireAdmin, updateMediaVideoActionAdmin);
-router.post('/adminbackend/films/:groupId', requireAdmin, parseMultipart(), updateMediaVideoAdmin);
-router.post('/adminbackend/media-tickets', requireAdmin, parseMultipart(), createMediaTicketAdmin);
-router.post('/adminbackend/media-tickets/actions', requireAdmin, updateMediaTicketActionAdmin);
-router.post('/adminbackend/media-tickets/:groupId', requireAdmin, parseMultipart(), updateMediaTicketAdmin);
-router.get('/adminbackend/donations/:id/receipt', requireAdmin, renderDonationReceiptAdmin);
-router.get('/adminbackend/donations/:id/receipt.pdf', requireAdmin, renderDonationReceiptPdfAdmin);
-
 
 export default router;

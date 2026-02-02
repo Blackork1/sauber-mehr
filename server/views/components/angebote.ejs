@@ -1,0 +1,58 @@
+<%
+  const title = block?.title || 'Was bieten wir dir?';
+  const description = block?.description || 'Mit unserem kleinen starken Team steht bei uns Persönlichkeit und direkter Kontakt im Mittelpunkt.';
+  const defaultCards = [
+    {
+      title: 'Nachhaltig',
+      description: 'Wir arbeiten ressourcenschonend mit Mehrwegmaterialien und klaren Abläufen – sauber, effizient und verantwortungsvoll im Betrieb.',
+      imageUrl: '/images/nachhaltig.webp',
+      imageAlt: 'Nachhaltige Reinigung'
+    },
+    {
+      title: 'Persönlich',
+      description: 'Feste Ansprechpartner, kurze Wege und direkte Kommunikation – du erreichst uns schnell, ohne Hotline, mit echter Verantwortung.',
+      imageUrl: '/images/angebot.webp',
+      imageAlt: 'Persönlicher Service'
+    },
+    {
+      title: 'Zufrieden',
+      description: 'Zuverlässige Qualität durch Checklisten, Abnahmen und schnelle Nachbesserung – damit Büros und Teams dauerhaft zufrieden bleiben.',
+      imageUrl: '/images/büroreinigung.webp',
+      imageAlt: 'Zufriedene Kunden'
+    }
+  ];
+  const rawCards = Array.isArray(block?.cards) && block.cards.length ? block.cards : defaultCards;
+  const cards = rawCards.slice(0, 6);
+%>
+
+<section class="sauber-offers section" id="angebote" data-component="angebote">
+  <div class="section__inner">
+    <header class="sauber-offers__header">
+      <h2 class="sauber-offers__title"><%- renderTextWithLinks(title) %></h2>
+      <% if (description) { %>
+        <p class="sauber-offers__description"><%- renderTextWithLinks(description) %></p>
+      <% } %>
+    </header>
+
+    <% if (cards.length) { %>
+      <div class="sauber-offers__grid" style="--offers-columns: <%= Math.min(cards.length, 3) %>;">
+        <% cards.forEach((card) => { %>
+          <article class="sauber-offers__card">
+            <div class="sauber-offers__media">
+              <% if (card?.imageUrl) { %>
+                <img src="<%= card.imageUrl %>" alt="<%= card.imageAlt || card.title || '' %>">
+              <% } %>
+            </div>
+            <div class="sauber-offers__overlay"></div>
+            <div class="sauber-offers__content">
+              <h3 class="sauber-offers__card-title"><%- renderTextWithLinks(card?.title || '') %></h3>
+              <% if (card?.description) { %>
+                <p class="sauber-offers__card-text"><%- renderTextWithLinks(card.description) %></p>
+              <% } %>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</section>

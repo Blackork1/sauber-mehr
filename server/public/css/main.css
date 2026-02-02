@@ -1063,7 +1063,7 @@ input[type="reset"]:hover,
 .image-slider__thumbnails {
   position: absolute;
   bottom: clamp(-40px, -8vh, -80px);
-  right: clamp(24px, 6vw, 80px);
+  right: clamp(24px, 6vw, 400px);
   display: flex;
   gap: 16px;
   z-index: 2;

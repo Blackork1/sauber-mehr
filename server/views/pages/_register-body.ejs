@@ -2,7 +2,7 @@
   <h1><%= t?.registerHeadline || 'Registrierung' %></h1>
   <p><%= t?.registerIntro || 'Erstelle ein Konto, um Tickets und Newsletter zu verwalten.' %></p>
   <% if (error) { %>
-    <p class="auth-error"><%= error %></p>
+  <p class="auth-error"><%= error %></p>
   <% } %>
   <form method="post" action="/register" class="auth-form">
     <label><%= t?.firstName || 'Vorname' %>
@@ -17,6 +17,13 @@
     <label><%= t?.password || 'Passwort' %>
       <input name="password" type="password" required>
     </label>
+
+    <% if (adminRegistrationEnabled) { %>
+    <label><%= t?.registerAdminKeyLabel || 'Admin-Code' %>
+      <input name="adminKey" type="password" autocomplete="off">
+    </label>
+    <p class="auth-note"><%= t?.registerAdminKeyHelp || 'Nur für Admins mit gültigem Code.' %></p>
+    <% } %>
 
     <fieldset class="auth-fieldset">
       <legend><%= t?.newsletter || 'Newsletter' %></legend>

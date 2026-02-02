@@ -95,6 +95,7 @@ function getAuthCopy(locale) {
       registerIntro: 'Erstelle ein Konto, um Tickets und Newsletter zu verwalten.',
       registerErrorMissing: 'Bitte alle Pflichtfelder ausfüllen.',
       registerErrorExists: 'Diese E-Mail ist bereits registriert.',
+      registerErrorAdminKey: 'Der Admin-Code ist ungültig.',
       registerButton: 'Registrieren',
       registerGoogle: 'Mit Google registrieren',
       registerNote: 'Schon registriert?',
@@ -106,7 +107,9 @@ function getAuthCopy(locale) {
       newsletter: 'Newsletter',
       newsletterArticles: 'Artikel-News abonnieren',
       newsletterVideos: 'Video-News abonnieren',
-      registerAdmin: 'Als Admin registrieren'
+      registerAdmin: 'Als Admin registrieren',
+      registerAdminKeyLabel: 'Admin-Code',
+      registerAdminKeyHelp: 'Nur für Admins mit gültigem Code.'
     },
     en: {
       localeTag: 'en-US',
@@ -123,6 +126,7 @@ function getAuthCopy(locale) {
       registerIntro: 'Create an account to manage tickets and newsletters.',
       registerErrorMissing: 'Please fill in all required fields.',
       registerErrorExists: 'This email is already registered.',
+      registerErrorAdminKey: 'The admin code is invalid.',
       registerButton: 'Register',
       registerGoogle: 'Register with Google',
       registerNote: 'Already registered?',
@@ -134,7 +138,9 @@ function getAuthCopy(locale) {
       newsletter: 'Newsletter',
       newsletterArticles: 'Subscribe to article news',
       newsletterVideos: 'Subscribe to video news',
-      registerAdmin: 'Register as admin'
+      registerAdmin: 'Register as admin',
+      registerAdminKeyLabel: 'Admin code',
+      registerAdminKeyHelp: 'Only for admins with a valid code.'
     },
     ku: {
       localeTag: 'ku',
@@ -151,6 +157,7 @@ function getAuthCopy(locale) {
       registerIntro: 'Hesabek biafirîne da ku bilêt û nûçe-manage bikî.',
       registerErrorMissing: 'Ji kerema xwe hemû qutîyên pêwîst tijî bike.',
       registerErrorExists: 'Ev e-name berê hatiye tomarkirin.',
+      registerErrorAdminKey: 'Koda adminê ne rast e.',
       registerButton: 'Tomar bike',
       registerGoogle: 'Bi Google tomar bike',
       registerNote: 'Berê hatî tomarkirin?',
@@ -235,7 +242,8 @@ export async function getRegister(req, res) {
     meta: { title: t.registerTitle, description: t.registerTitle, locale: t.localeTag },
     error: null,
     t,
-    locale
+    locale,
+    adminRegistrationEnabled: Boolean(process.env.ADMIN_REGISTRATION_KEY)
   });
 }
 
@@ -246,7 +254,10 @@ export async function postRegister(req, res, next) {
     const lastName = String(req.body?.lastName || '').trim();
     const email = normalizeEmail(req.body?.email);
     const password = String(req.body?.password || '');
-    const isAdmin = req.body?.isAdmin === 'on';
+    const adminRegistrationKey = process.env.ADMIN_REGISTRATION_KEY;
+    const adminKey = String(req.body?.adminKey || '');
+    const wantsAdmin = Boolean(adminKey);
+    const isAdmin = adminRegistrationKey ? adminKey === adminRegistrationKey : false;
     const newsletterArticles = req.body?.newsletterArticles === 'on';
     const newsletterVideos = req.body?.newsletterVideos === 'on';
 
@@ -258,7 +269,17 @@ export async function postRegister(req, res, next) {
         meta: { title: t.registerTitle, description: t.registerTitle, locale: t.localeTag },
         error: t.registerErrorMissing,
         t,
-        locale
+        locale,
+        adminRegistrationEnabled: Boolean(adminRegistrationKey)
+      });
+    }
+    if (wantsAdmin && !isAdmin) {
+      return res.status(403).render('pages/register', {
+        meta: { title: t.registerTitle, description: t.registerTitle, locale: t.localeTag },
+        error: t.registerErrorAdminKey,
+        t,
+        locale,
+        adminRegistrationEnabled: Boolean(adminRegistrationKey)
       });
     }
 
@@ -268,7 +289,8 @@ export async function postRegister(req, res, next) {
         meta: { title: t.registerTitle, description: t.registerTitle, locale: t.localeTag },
         error: t.registerErrorExists,
         t,
-        locale
+        locale,
+        adminRegistrationEnabled: Boolean(adminRegistrationKey)
       });
     }
 
@@ -321,8 +343,8 @@ export async function postRegister(req, res, next) {
     if (newsletterArticles || newsletterVideos) {
       await pool.query(
         `INSERT INTO newsletter_subscriptions
-          (email, wants_news, wants_video, active, language, token)
-         VALUES ($1, $2, $3, true, $4, $5)`,
+          (email, newsletter_articles, newsletter_videos, active, newsletter_language, token)
+                   VALUES ($1, $2, $3, true, $4, $5)`,
         [email, newsletterArticles, newsletterVideos, newsletterLanguage, unsubscribeKey]
       );
 

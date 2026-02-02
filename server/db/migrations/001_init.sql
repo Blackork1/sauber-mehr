@@ -174,6 +174,7 @@ CREATE TABLE IF NOT EXISTS gallery_images (
   alt_en TEXT,
   alt_ku TEXT,
   show_in_gallery BOOLEAN NOT NULL DEFAULT true,
+  gallery_category TEXT NOT NULL DEFAULT 'moments',
   sort_order INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -192,6 +193,7 @@ CREATE TABLE IF NOT EXISTS gallery_videos (
   alt_en TEXT,
   alt_ku TEXT,
   show_in_gallery BOOLEAN NOT NULL DEFAULT true,
+  gallery_category TEXT NOT NULL DEFAULT 'moments',
   sort_order INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

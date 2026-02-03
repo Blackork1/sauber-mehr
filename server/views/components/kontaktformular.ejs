@@ -1,34 +1,67 @@
 <%
-  const heading = block?.headline || 'Kontakt';
-  const intro = block?.intro || 'Schreiben Sie uns kurz, wir melden uns schnell bei Ihnen.';
   const action = block?.action || '/contact';
+  const badge = block?.badge || 'Kontakt';
+  const headline = block?.headline || 'Kontaktiere uns noch';
+  const headlineAccent = block?.headlineAccent || 'Heute';
+  const intro = block?.intro || 'Du suchst eine zuverlässige B2B-Reinigung, die mit einem kleinen, eingespielten Team fast alle Leistungen aus einer Hand abdeckt? Dann lass uns kurz sprechen.';
+  const details = block?.details || 'In einem 10-Minuten-Call klären wir Objekt, Turnus und Sonderwünsche – danach erhältst du ein transparentes, unverbindliches Angebot.';
+  const services = block?.services || [];
+  const contactItems = block?.contactItems || [];
 %>
 
 <section class="sauber-kontakt section" id="kontakt">
   <div class="section__inner sauber-kontakt__inner">
-    <div class="sauber-kontakt__copy">
-      <h2 class="sauber-kontakt__title"><%- renderTextWithLinks(heading) %></h2>
-      <p class="sauber-kontakt__text"><%- renderTextWithLinks(intro) %></p>
-    </div>
+    <div class="sauber-kontakt__content">
+      <div class="sauber-kontakt__badge">
+        <span class="sauber-kontakt__badge-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" role="img" focusable="false">
+            <path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="2" />
+            <path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="2" />
+          </svg>
+        </span>
+        <span><%= badge %></span>
+      </div>
+      <h2 class="sauber-kontakt__headline">
+        <span><%= headline %></span>
+        <span class="sauber-kontakt__headline-accent"><%= headlineAccent %></span>
+      </h2>
+      <p class="sauber-kontakt__intro"><%= intro %></p>
+      <p class="sauber-kontakt__intro"><%= details %></p>
 
-    <form class="sauber-kontakt__form" method="post" action="<%= action %>">
+      <div class="sauber-kontakt__items">
+        <% contactItems.forEach(item => { %>
+        <div class="sauber-kontakt__item">
+          <span class="sauber-kontakt__item-icon" aria-hidden="true">
+            <%- item.icon %>
+          </span>
+          <span class="sauber-kontakt__item-text"><%= item.text %></span>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="sauber-kontakt__card-wrap">
+    <form class="sauber-kontakt__card" method="post" action="<%= action %>">
       <label class="sauber-kontakt__field">
-        <span>Name</span>
-        <input type="text" name="name" placeholder="Ihr Name" required>
+        <span>Dein Name</span>
+        <input type="text" name="name" placeholder="Name" required>
       </label>
       <label class="sauber-kontakt__field">
-        <span>E-Mail</span>
-        <input type="email" name="email" placeholder="name@beispiel.de" required>
+        <span>Deine Mail</span>
+        <input type="email" name="email" placeholder="Mail" required>
       </label>
       <label class="sauber-kontakt__field">
-        <span>Telefon</span>
-        <input type="tel" name="phone" placeholder="+49 30 123456">
+        <span>Leistung auswählen</span>
+        <select name="service" required>
+          <option value="" disabled selected>Leistungen</option>
+          <% services.forEach(service => { %>
+          <option value="<%= service %>"><%= service %></option>
+          <% }) %>
+        </select>
       </label>
-      <label class="sauber-kontakt__field">
-        <span>Nachricht</span>
-        <textarea name="message" rows="4" placeholder="Wie können wir helfen?" required></textarea>
-      </label>
-      <button class="sauber-kontakt__button" type="submit">Anfrage senden</button>
+      <button class="sauber-kontakt__button" type="submit">Absenden</button>
     </form>
+  </div>
   </div>
 </section>

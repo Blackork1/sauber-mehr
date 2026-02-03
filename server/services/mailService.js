@@ -77,6 +77,23 @@ export async function sendRequestMail({ to, name }) {
   return transporter.sendMail(mail);
 }
 
+export async function sendContactConfirmationMail({ to, name, service }) {
+  const subject = 'Vielen Dank für Ihre Kontaktaufnahme';
+  const html = `
+    <p>Hallo ${name}</p>
+    <p>Vielen Dank für Ihre Kontaktaufnahme.</p>
+    <p>Ihre Anfrage ist eingegangen und wir melden uns in Kürze bei Ihnen per Mail.</p>
+    <p>Haben Sie noch weitere Fragen, dann rufen Sie uns gerne unter +49 30 28641-263 an oder schreiben Sie ein Mail an info@sauber-mehr.de.</p>
+    <p><strong>Gewünschte Reinigungsleistung:</strong> ${service}</p>
+  `;
+  const mail = {
+    from: process.env.SMTP_FROM || '"Sauber Mehr" <info@sauber-mehr.de>',
+    to,
+    subject,
+    html
+  };
+  return transporter.sendMail(mail);
+}
 
 function escapeHtml(value = '') {
   return String(value)

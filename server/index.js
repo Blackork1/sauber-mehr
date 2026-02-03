@@ -14,6 +14,7 @@ import cloudinary from './util/cloudinary.js';
 import mainRoutes from './routes/main.js';
 import adminRoutes from './routes/admin.js';
 import authRoutes from './routes/auth.js';
+import contactRoutes from './routes/contact.js';
 import pagesRoutes from './routes/pages.js';
 import * as errorController from './controllers/errorController.js';
 import { renderTextWithLinks } from './helpers/textRenderer.js';
@@ -85,6 +86,7 @@ app.use((req, res, next) => {
 app.use('/', mainRoutes);
 app.use('/', authRoutes);
 app.use('/', adminRoutes);
+app.use('/contact', contactRoutes);
 app.use('/', pagesRoutes);
 app.use(errorController.get404);
 app.use(errorController.get500);

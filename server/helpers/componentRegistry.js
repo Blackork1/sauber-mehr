@@ -11,6 +11,7 @@ export const COMPONENT_REGISTRY = {
   imageSlider: 'imageSlider',
   faq: 'faq',
   angebote: 'angebote',
+  kontaktformular: 'kontaktformular',
 };
 
 export function normalizeBlocks(blocks = []) {

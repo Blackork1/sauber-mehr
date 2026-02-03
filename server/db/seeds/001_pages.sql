@@ -134,6 +134,35 @@ VALUES
         "imageAlt": "Lokaler Service"
       }
     ]
+  },
+  {
+    "type": "kontaktformular",
+    "action": "/contact",
+    "badge": "Kontakt",
+    "headline": "Kontaktiere uns noch",
+    "headlineAccent": "Heute",
+    "intro": "Du suchst eine zuverlässige B2B-Reinigung, die mit einem kleinen, eingespielten Team fast alle Leistungen aus einer Hand abdeckt? Dann lass uns kurz sprechen.",
+    "details": "In einem 10-Minuten-Call klären wir Objekt, Turnus und Sonderwünsche – danach erhältst du ein transparentes, unverbindliches Angebot.",
+    "services": [
+      "Haushaltsreinigung",
+      "Büroreinigung",
+      "Treppenhausreinigung",
+      "Fensterreinigung"
+    ],
+    "contactItems": [
+      {
+        "text": "+49 30 28641-263",
+        "icon": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M6 4h4l2 5-2 1c1 2 3 4 5 5l1-2 5 2v4c0 1-1 2-2 2-8 0-14-6-14-14 0-1 1-2 2-2z\" fill=\"currentColor\"/></svg>"
+      },
+      {
+        "text": "Berlin",
+        "icon": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M12 2c-3 0-6 2-6 6 0 4.4 6 12 6 12s6-7.6 6-12c0-4-3-6-6-6zm0 9a3 3 0 1 1 0-6 3 3 0 0 1 0 6z\" fill=\"currentColor\"/></svg>"
+      },
+      {
+        "text": "info@sauber-mehr.de",
+        "icon": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\"><path d=\"M4 6h16v12H4z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"m4 7 8 6 8-6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/></svg>"
+      }
+    ]
   }
 ]'::jsonb,        true, false, true
   )

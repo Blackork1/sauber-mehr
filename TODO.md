@@ -3,7 +3,7 @@ export const SITE = {
   name: "Kurdisches Filmfestival",
   baseUrl: "https://kurdisches-filmfestival.de",
   defaultLocale: "de-DE",          // deine “primäre” Sprache pro URL
-  locales: ["de-DE", "en-US", "ku"],
+  locales: ["de-DE", "en-US"],
 
   themeColor: "#ffffff",
 

@@ -1,40 +1,54 @@
 <%
   const slides = Array.isArray(block?.slides) ? block.slides : [];
   const buttonLabel = block?.button?.label || 'Mehr erfahren';
+    const variant = block?.variant || 'default';
 %>
 
 <% if (slides.length) { %>
-<section class="image-slider" data-component="image-slider">
+<section class="image-slider <%= variant === 'bereiche' ? 'image-slider--bereiche' : '' %>" data-component="image-slider">
   <div class="image-slider__carousel" data-image-carousel>
     <div class="image-slider__list" data-image-list>
       <% slides.forEach((slide) => { %>
-        <div class="image-slider__item" data-link="<%= slide?.link || slide?.href || '' %>">
-          <% if (slide?.image?.src) { %>
-          <img src="<%= slide.image.src %>" alt="<%= slide.image.alt || '' %>" loading="lazy" />
-          <% } %>
-          <div class="image-slider__content">
-            <% if (slide?.title) { %><h3><%- renderTextWithLinks(slide.title) %></h3><% } %>
-            <% if (slide?.description) { %>
-              <% const paragraphs = String(slide.description).split(/\r?\n+/).map((paragraph) => paragraph.trim()).filter(Boolean); %>
-              <% paragraphs.forEach((paragraph) => { %>
-              <p><%- renderTextWithLinks(paragraph) %></p>
-              <% }) %>
-            <% } %>
-          </div>
+      <% const link = slide?.link || slide?.href || ''; %>
+      <% const label = slide?.buttonLabel || (slide?.title ? `Zur ${slide.title}` : 'Zur Leistung'); %>
+      <div class="image-slider__item" data-link="<%= link %>">
+        <% if (slide?.image?.src) { %>
+        <img src="<%= slide.image.src %>" alt="<%= slide.image.alt || '' %>" loading="lazy" />
+        <% } %>
+        <% if (variant === 'bereiche') { %>
+        <div class="image-slider__overlay">
+          <a class="image-slider__overlay-button" href="<%= link || '#' %>"><%= label %></a>
         </div>
+        <% } else { %>
+        <div class="image-slider__content">
+          <% if (slide?.title) { %><h3><%- renderTextWithLinks(slide.title) %></h3><% } %>
+          <% if (slide?.description) { %>
+          <% const paragraphs = String(slide.description).split(/\r?\n+/).map((paragraph) => paragraph.trim()).filter(Boolean); %>
+          <% paragraphs.forEach((paragraph) => { %>
+          <p><%- renderTextWithLinks(paragraph) %></p>
+          <% }) %>
+          <% } %>
+        </div>
+        <% } %>
+      </div>
       <% }) %>
     </div>
 
+    <% if (variant !== 'bereiche') { %>
     <div class="image-slider__thumbnails" data-image-thumbnails aria-hidden="true">
       <% slides.forEach((slide) => { %>
-        <div class="image-slider__thumb">
-          <% if (slide?.thumbnail?.src || slide?.image?.src) { %>
-          <img src="<%= slide?.thumbnail?.src || slide?.image?.src %>" alt="" loading="lazy" />
-          <% } %>
-        </div>
+      <div class="image-slider__thumb">
+        <% if (slide?.thumbnail?.src || slide?.image?.src) { %>
+        <img src="<%= slide?.thumbnail?.src || slide?.image?.src %>" alt="" loading="lazy" />
+        <% } %>
+      </div>
       <% }) %>
     </div>
+    <% } %>
 
+    <% if (variant === 'bereiche') { %>
+    <button class="image-slider__arrow image-slider__arrow--right" type="button" data-image-next aria-label="Nächstes Bild">›</button>
+    <% } else { %>
     <div class="image-slider__arrows">
       <button class="image-slider__arrow image-slider__arrow--left" type="button" data-image-prev aria-label="Vorheriges Bild">‹</button>
       <button class="image-slider__arrow image-slider__arrow--right" type="button" data-image-next aria-label="Nächstes Bild">›</button>
@@ -43,6 +57,7 @@
     <div class="image-slider__cta">
       <a class="image-slider__button" data-image-cta href="<%= slides[0]?.link || slides[0]?.href || '#' %>"><%= buttonLabel %></a>
     </div>
+    <% } %>
   </div>
 </section>
 <% } %>

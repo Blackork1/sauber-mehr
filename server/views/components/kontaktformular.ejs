@@ -1,16 +1,33 @@
 <%
   const action = block?.action || '/contact';
+const layout = block?.layout || 'default';
   const badge = block?.badge || 'Kontakt';
   const headline = block?.headline || 'Kontaktiere uns noch';
   const headlineAccent = block?.headlineAccent || 'Heute';
   const intro = block?.intro || 'Du suchst eine zuverlässige B2B-Reinigung, die mit einem kleinen, eingespielten Team fast alle Leistungen aus einer Hand abdeckt? Dann lass uns kurz sprechen.';
   const details = block?.details || 'In einem 10-Minuten-Call klären wir Objekt, Turnus und Sonderwünsche – danach erhältst du ein transparentes, unverbindliches Angebot.';
-  const services = block?.services || [];
+  const sideTitle = block?.sideTitle || 'Professionelle Reinigung in Berlin';
+  const sideDescription = block?.sideDescription || 'Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.';
+  const sideSubheading = block?.sideSubheading || 'folgende Leistungen bieten wir an';
+  const services = Array.isArray(block?.services) ? block.services : [];
+  const normalizedServices = services
+    .map((service) => {
+      if (!service) return null;
+      if (typeof service === 'string') {
+        return { label: service, href: '' };
+      }
+      return {
+        label: service.label || service.title || '',
+        href: service.href || service.link || ''
+      };
+    })
+    .filter((service) => service?.label);
   const contactItems = block?.contactItems || [];
 %>
 
 <section class="sauber-kontakt section" id="kontakt">
-  <div class="section__inner sauber-kontakt__inner">
+  <div class="section__inner sauber-kontakt__inner <%= layout === 'services' ? 'sauber-kontakt__inner--services' : '' %>">
+    <% if (layout !== 'services') { %>
     <div class="sauber-kontakt__content">
       <div class="sauber-kontakt__badge">
         <span class="sauber-kontakt__badge-icon" aria-hidden="true">
@@ -39,8 +56,10 @@
         <% }) %>
       </div>
     </div>
+    <%} %>
+
     <div class="sauber-kontakt__card-wrap">
-      <form class="sauber-kontakt__card" method="post" action="<%= action %>">
+      <form class="sauber-kontakt__card" method="post" action="<%= action %>" enctype="multipart/form-data">
         <label class="sauber-kontakt__field">
           <span>Dein Name</span>
           <input type="text" name="name" placeholder="Name" required>
@@ -53,13 +72,41 @@
           <span>Leistung auswählen</span>
           <select name="service" required>
             <option value="" disabled selected>Leistungen</option>
-            <% services.forEach(service => { %>
-            <option value="<%= service %>"><%= service %></option>
+            <% normalizedServices.forEach(service => { %>
+            <option value="<%= service.label %>"><%= service.label %></option>
             <% }) %>
           </select>
+        </label>
+        <label class="sauber-kontakt__field">
+          <span>Bilder hochladen (optional)</span>
+          <input type="file" name="attachments" accept="image/*" multiple>
         </label>
         <button class="sauber-kontakt__button" type="submit">Absenden</button>
       </form>
     </div>
+
+    <% if (layout === 'services') { %>
+    <div class="sauber-kontakt__aside">
+      <h2 class="sauber-kontakt__aside-title"><%- renderTextWithLinks(sideTitle) %></h2>
+      <p class="sauber-kontakt__aside-text"><%- renderTextWithLinks(sideDescription) %></p>
+      <h3 class="sauber-kontakt__aside-subtitle"><%- renderTextWithLinks(sideSubheading) %></h3>
+      <ul class="sauber-kontakt__service-list">
+        <% normalizedServices.forEach(service => { %>
+        <li class="sauber-kontakt__service-item">
+          <span class="sauber-kontakt__service-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" focusable="false">
+              <path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <% if (service.href) { %>
+          <a href="<%= service.href %>"><%= service.label %></a>
+          <% } else { %>
+          <span><%= service.label %></span>
+          <% } %>
+        </li>
+        <% }) %>
+      </ul>
+    </div>
+    <% } %>
   </div>
 </section>

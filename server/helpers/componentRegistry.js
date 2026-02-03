@@ -9,6 +9,7 @@ export const COMPONENT_REGISTRY = {
   cta: 'cta',
   imageText: 'imageText',
   imageSlider: 'imageSlider',
+  bereiche: 'bereiche',
   faq: 'faq',
   angebote: 'angebote',
   kontaktformular: 'kontaktformular',

@@ -176,10 +176,464 @@ ON CONFLICT (slug) DO UPDATE SET
   display = EXCLUDED.display,
   updated_at = now();
 
-INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display)
+INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display, locale, i18n_group)
 VALUES
-  ('leistungen', '/leistungen', 'Leistungen', 'Leistungen – Sauber Mehr', 'Reinigungsleistungen für Haushalt, Büro und Treppenhaus.', '[]'::jsonb, true, true, true)
-  ON CONFLICT (slug) DO NOTHING;
+  (
+    'leistungen',
+    '/leistungen',
+    'Leistungen',
+    'Leistungen – Sauber Mehr',
+    'Reinigungsleistungen für Haushalt, Büro und Treppenhaus.',
+    '[
+  {
+    "type": "hero",
+    "headline": "Unsere Reinigungsleistungen im Überblick",
+    "subline": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und individuell erstellt.",
+    "ctaLabel": "Jetzt anrufen",
+    "ctaHref": "#kontakt",
+    "image": "/images/team.webp"
+  },
+  {
+    "type": "kosten",
+    "headline": "Was kostet die Büroreinigung?",
+    "description": "Unsere Preise werden individuell berechnet. Dazu kommen wir zu einer kostenlosen Besichtigung vorbei und erstellen daraufhin dein unverbindliches Angebot.",
+    "subheading": "Und so einfach geht’s.",
+    "subline": "In 3 einfachen Schritten zu deinem unverbindlichen Angebot",
+    "leadText": "Ab 01.26 sind wir in der Unterhaltsreinigung bei 15 Euro Mindestlohn, dazu kommen Nacht-, Sonn- und Feiertagszuschläge. In der Glasreinigung liegen wir bei 18,40 Euro Mindestlohn.",
+    "detailText": "Wir unterliegen dem allgemein gültigen Rahmentarifvertrag (RTV), Lohntarifvertrag (LTV) verpflichtend für alle, die Reinigungsdienstleistungen anbieten.",
+    "primaryButton": {
+      "label": "Zum Buchungsformular",
+      "href": "#kontakt"
+    },
+    "secondaryButton": {
+      "label": "Whats App",
+      "href": "https://wa.me/491795163864"
+    },
+    "steps": [
+      {
+        "title": "Anruf oder Buchungsformular",
+        "imageUrl": "/images/anruf.webp",
+        "imageAlt": "Anruf"
+      },
+      {
+        "title": "kostenlose Besichtigung",
+        "imageUrl": "/images/besichtigung.webp",
+        "imageAlt": "Besichtigung"
+      },
+      {
+        "title": "individuelles Angebot",
+        "imageUrl": "/images/angebot.webp",
+        "imageAlt": "Angebot"
+      }
+    ]
+  },
+  {
+    "type": "kontaktformular",
+    "layout": "services",
+    "action": "/contact",
+    "sideTitle": "Professionelle Reinigung in Berlin",
+    "sideDescription": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.",
+    "sideSubheading": "folgende Leistungen bieten wir an",
+    "services": [
+      "Haushaltsreinigung",
+      "Büroreinigung",
+      "Treppenhausreinigung",
+      "Fensterreinigung"
+    ]
+  },
+  {
+    "type": "bereiche",
+    "title": "In diesen Bereichen reinigen wir Berlin:",
+    "description": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.\\nHast du weitere Fragen, dann ruf uns gerne an oder schreib uns auf WhatsApp.",
+    "slider": {
+      "slides": [
+        {
+          "title": "Haushaltsreinigung",
+          "link": "/leistungen/haushalt",
+          "image": {
+            "src": "/images/unterhaltsreinigung.webp",
+            "alt": "Haushaltsreinigung"
+          }
+        },
+        {
+          "title": "Büroreinigung",
+          "link": "/leistungen/buero",
+          "image": {
+            "src": "/images/büroreinigung.webp",
+            "alt": "Büroreinigung"
+          }
+        },
+        {
+          "title": "Treppenhausreinigung",
+          "link": "/leistungen/treppenhaus",
+          "image": {
+            "src": "/images/aufgangsreinigung.webp",
+            "alt": "Treppenhausreinigung"
+          }
+        },
+        {
+          "title": "Fensterreinigung",
+          "link": "/leistungen/fenster",
+          "image": {
+            "src": "/images/fensterreinigung.webp",
+            "alt": "Fensterreinigung"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "type": "faq",
+    "title": "Typische Fragen zur Reinigung",
+    "description": "Wir sind rund um die Uhr telefonisch erreichbar. Eine Antwort erfolgt garantiert innerhalb von 24 Stunden nach Eingang deiner Nachricht.",
+    "button": {
+      "label": "jetzt anrufen",
+      "href": "tel:+493028641263"
+    },
+    "items": [
+      {
+        "q": "Wie schnell meldet ihr euch zurück?",
+        "a": "In der Regel innerhalb von 24 Stunden nach Eingang deiner Anfrage."
+      },
+      {
+        "q": "Muss ich für die Besichtigung etwas vorbereiten?",
+        "a": "Nein. Wir sehen uns das Objekt vor Ort an und besprechen alle Details direkt mit dir."
+      },
+      {
+        "q": "Können wir den Turnus flexibel anpassen?",
+        "a": "Ja, wir passen den Reinigungsplan flexibel an deine Anforderungen und Zeiten an."
+      },
+      {
+        "q": "Welche Leistungen sind im Angebot enthalten?",
+        "a": "Wir erstellen ein individuelles Angebot, das alle gewünschten Leistungen beinhaltet."
+      }
+    ]
+  }
+]'::jsonb,
+    true,
+    true,
+    true,
+    'de-DE',
+    'leistungen'
+  )
+  ON CONFLICT (slug) DO UPDATE SET
+    canonical_path = EXCLUDED.canonical_path,
+    title = EXCLUDED.title,
+    meta_title = EXCLUDED.meta_title,
+    meta_description = EXCLUDED.meta_description,
+    content = EXCLUDED.content,
+    nav = EXCLUDED.nav,
+    show_in_nav = EXCLUDED.show_in_nav,
+    display = EXCLUDED.display,
+    locale = EXCLUDED.locale,
+    i18n_group = EXCLUDED.i18n_group,
+    updated_at = now();
+
+INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display, locale, i18n_group)
+VALUES
+  (
+    'leistungen-de',
+    '/leistungen-de',
+    'Leistungen (DE)',
+    'Leistungen – Sauber Mehr',
+    'Reinigungsleistungen für Haushalt, Büro und Treppenhaus.',
+    '[
+  {
+    "type": "hero",
+    "headline": "Unsere Reinigungsleistungen im Überblick",
+    "subline": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und individuell erstellt.",
+    "ctaLabel": "Jetzt anrufen",
+    "ctaHref": "#kontakt",
+    "image": "/images/team.webp"
+  },
+  {
+    "type": "kosten",
+    "headline": "Was kostet die Büroreinigung?",
+    "description": "Unsere Preise werden individuell berechnet. Dazu kommen wir zu einer kostenlosen Besichtigung vorbei und erstellen daraufhin dein unverbindliches Angebot.",
+    "subheading": "Und so einfach geht’s.",
+    "subline": "In 3 einfachen Schritten zu deinem unverbindlichen Angebot",
+    "leadText": "Ab 01.26 sind wir in der Unterhaltsreinigung bei 15 Euro Mindestlohn, dazu kommen Nacht-, Sonn- und Feiertagszuschläge. In der Glasreinigung liegen wir bei 18,40 Euro Mindestlohn.",
+    "detailText": "Wir unterliegen dem allgemein gültigen Rahmentarifvertrag (RTV), Lohntarifvertrag (LTV) verpflichtend für alle, die Reinigungsdienstleistungen anbieten.",
+    "primaryButton": {
+      "label": "Zum Buchungsformular",
+      "href": "#kontakt"
+    },
+    "secondaryButton": {
+      "label": "Whats App",
+      "href": "https://wa.me/491795163864"
+    },
+    "steps": [
+      {
+        "title": "Anruf oder Buchungsformular",
+        "imageUrl": "/images/anruf.webp",
+        "imageAlt": "Anruf"
+      },
+      {
+        "title": "kostenlose Besichtigung",
+        "imageUrl": "/images/besichtigung.webp",
+        "imageAlt": "Besichtigung"
+      },
+      {
+        "title": "individuelles Angebot",
+        "imageUrl": "/images/angebot.webp",
+        "imageAlt": "Angebot"
+      }
+    ]
+  },
+  {
+    "type": "kontaktformular",
+    "layout": "services",
+    "action": "/contact",
+    "sideTitle": "Professionelle Reinigung in Berlin",
+    "sideDescription": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.",
+    "sideSubheading": "folgende Leistungen bieten wir an",
+    "services": [
+      "Haushaltsreinigung",
+      "Büroreinigung",
+      "Treppenhausreinigung",
+      "Fensterreinigung"
+    ]
+  },
+  {
+    "type": "bereiche",
+    "title": "In diesen Bereichen reinigen wir Berlin:",
+    "description": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.\\nHast du weitere Fragen, dann ruf uns gerne an oder schreib uns auf WhatsApp.",
+    "slider": {
+      "slides": [
+        {
+          "title": "Haushaltsreinigung",
+          "link": "/leistungen/haushalt",
+          "image": {
+            "src": "/images/unterhaltsreinigung.webp",
+            "alt": "Haushaltsreinigung"
+          }
+        },
+        {
+          "title": "Büroreinigung",
+          "link": "/leistungen/buero",
+          "image": {
+            "src": "/images/büroreinigung.webp",
+            "alt": "Büroreinigung"
+          }
+        },
+        {
+          "title": "Treppenhausreinigung",
+          "link": "/leistungen/treppenhaus",
+          "image": {
+            "src": "/images/aufgangsreinigung.webp",
+            "alt": "Treppenhausreinigung"
+          }
+        },
+        {
+          "title": "Fensterreinigung",
+          "link": "/leistungen/fenster",
+          "image": {
+            "src": "/images/fensterreinigung.webp",
+            "alt": "Fensterreinigung"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "type": "faq",
+    "title": "Typische Fragen zur Reinigung",
+    "description": "Wir sind rund um die Uhr telefonisch erreichbar. Eine Antwort erfolgt garantiert innerhalb von 24 Stunden nach Eingang deiner Nachricht.",
+    "button": {
+      "label": "jetzt anrufen",
+      "href": "tel:+493028641263"
+    },
+    "items": [
+      {
+        "q": "Wie schnell meldet ihr euch zurück?",
+        "a": "In der Regel innerhalb von 24 Stunden nach Eingang deiner Anfrage."
+      },
+      {
+        "q": "Muss ich für die Besichtigung etwas vorbereiten?",
+        "a": "Nein. Wir sehen uns das Objekt vor Ort an und besprechen alle Details direkt mit dir."
+      },
+      {
+        "q": "Können wir den Turnus flexibel anpassen?",
+        "a": "Ja, wir passen den Reinigungsplan flexibel an deine Anforderungen und Zeiten an."
+      },
+      {
+        "q": "Welche Leistungen sind im Angebot enthalten?",
+        "a": "Wir erstellen ein individuelles Angebot, das alle gewünschten Leistungen beinhaltet."
+      }
+    ]
+  }
+]'::jsonb,
+    false,
+    false,
+    true,
+    'de',
+    'leistungen'
+  )
+  ON CONFLICT (slug) DO UPDATE SET
+    canonical_path = EXCLUDED.canonical_path,
+    title = EXCLUDED.title,
+    meta_title = EXCLUDED.meta_title,
+    meta_description = EXCLUDED.meta_description,
+    content = EXCLUDED.content,
+    nav = EXCLUDED.nav,
+    show_in_nav = EXCLUDED.show_in_nav,
+    display = EXCLUDED.display,
+    locale = EXCLUDED.locale,
+    i18n_group = EXCLUDED.i18n_group,
+    updated_at = now();
+
+INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display, locale, i18n_group)
+VALUES
+  (
+    'leistungen-en',
+    '/leistungen-en',
+    'Services',
+    'Services – Sauber Mehr',
+    'Cleaning services for households, offices, and stairwells.',
+    '[
+  {
+    "type": "hero",
+    "headline": "Our cleaning services at a glance",
+    "subline": "We reply within 24 hours. Your quote is free and tailored to your needs.",
+    "ctaLabel": "Call now",
+    "ctaHref": "#kontakt",
+    "image": "/images/team.webp"
+  },
+  {
+    "type": "kosten",
+    "headline": "How much does office cleaning cost?",
+    "description": "Our prices are calculated individually. We visit you for a free inspection and then prepare your non-binding quote.",
+    "subheading": "And it’s that simple.",
+    "subline": "Your free quote in 3 easy steps",
+    "leadText": "From 01.26 we apply a minimum wage of 15 euros in regular cleaning, plus night, Sunday and holiday surcharges. For glass cleaning we apply 18.40 euros minimum wage.",
+    "detailText": "We are bound by the generally applicable framework collective agreement (RTV) and wage agreement (LTV) for cleaning services.",
+    "primaryButton": {
+      "label": "Go to booking form",
+      "href": "#kontakt"
+    },
+    "secondaryButton": {
+      "label": "Whats App",
+      "href": "https://wa.me/491795163864"
+    },
+    "steps": [
+      {
+        "title": "Call or booking form",
+        "imageUrl": "/images/anruf.webp",
+        "imageAlt": "Call"
+      },
+      {
+        "title": "Free inspection",
+        "imageUrl": "/images/besichtigung.webp",
+        "imageAlt": "Inspection"
+      },
+      {
+        "title": "Individual quote",
+        "imageUrl": "/images/angebot.webp",
+        "imageAlt": "Quote"
+      }
+    ]
+  },
+  {
+    "type": "kontaktformular",
+    "layout": "services",
+    "action": "/contact",
+    "sideTitle": "Professional cleaning in Berlin",
+    "sideDescription": "We respond within 24 hours. Your quote is free and tailored to your needs.",
+    "sideSubheading": "these services are available",
+    "services": [
+      "Household cleaning",
+      "Office cleaning",
+      "Stairwell cleaning",
+      "Window cleaning"
+    ]
+  },
+  {
+    "type": "bereiche",
+    "title": "We clean these areas in Berlin:",
+    "description": "We respond within 24 hours. Your quote is free and tailored to your needs.\\nIf you have more questions, feel free to call or message us on WhatsApp.",
+    "slider": {
+      "slides": [
+        {
+          "title": "Household cleaning",
+          "link": "/leistungen/haushalt",
+          "image": {
+            "src": "/images/unterhaltsreinigung.webp",
+            "alt": "Household cleaning"
+          }
+        },
+        {
+          "title": "Office cleaning",
+          "link": "/leistungen/buero",
+          "image": {
+            "src": "/images/büroreinigung.webp",
+            "alt": "Office cleaning"
+          }
+        },
+        {
+          "title": "Stairwell cleaning",
+          "link": "/leistungen/treppenhaus",
+          "image": {
+            "src": "/images/aufgangsreinigung.webp",
+            "alt": "Stairwell cleaning"
+          }
+        },
+        {
+          "title": "Window cleaning",
+          "link": "/leistungen/fenster",
+          "image": {
+            "src": "/images/fensterreinigung.webp",
+            "alt": "Window cleaning"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "type": "faq",
+    "title": "Typical questions about cleaning",
+    "description": "We are available by phone around the clock. You will receive a response within 24 hours of your message.",
+    "button": {
+      "label": "call now",
+      "href": "tel:+493028641263"
+    },
+    "items": [
+      {
+        "q": "How quickly will you get back to us?",
+        "a": "Usually within 24 hours after receiving your request."
+      },
+      {
+        "q": "Do we need to prepare anything for the inspection?",
+        "a": "No. We inspect the location and clarify all details with you on site."
+      },
+      {
+        "q": "Can we adjust the schedule later?",
+        "a": "Yes, we adapt the cleaning plan flexibly to your requirements and timings."
+      },
+      {
+        "q": "Which services are included in the offer?",
+        "a": "We create an individual offer that includes all requested services."
+      }
+    ]
+  }
+]'::jsonb,
+    false,
+    false,
+    true,
+    'en',
+    'leistungen'
+  )
+  ON CONFLICT (slug) DO UPDATE SET
+    canonical_path = EXCLUDED.canonical_path,
+    title = EXCLUDED.title,
+    meta_title = EXCLUDED.meta_title,
+    meta_description = EXCLUDED.meta_description,
+    content = EXCLUDED.content,
+    nav = EXCLUDED.nav,
+    show_in_nav = EXCLUDED.show_in_nav,
+    display = EXCLUDED.display,
+    locale = EXCLUDED.locale,
+    i18n_group = EXCLUDED.i18n_group,
+    updated_at = now();
 
 INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display)
 VALUES

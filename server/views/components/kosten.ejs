@@ -10,7 +10,9 @@
     return value || '';
   };
   const heading = block?.headline || 'Was wird die Reinigung kosten?';
+  const description = block?.description || '';
   const subtitle = block?.subline || 'In 3 einfachen Schritten zu deinem unverbindlichen Angebot';
+  const subheading = block?.subheading || '';
   const steps = Array.isArray(block?.steps) && block.steps.length
     ? block.steps
     : [
@@ -24,12 +26,24 @@
     || 'Wir unterliegen dem allgemein gültigen Rahmentarifvertrag (RTV), Lohntarifvertrag (LTV) verpflichtend für alle, die Reinigungsdienstleistungen anbieten.';
   const primaryButton = block?.primaryButton || { label: 'zum Buchungsformular', href: '#Kontakt' };
   const secondaryButton = block?.secondaryButton || { label: 'Whats App', href: 'https://wa.me/491795163864' };
+  const descriptionParts = String(description || '')
+    .split(/\r?\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
 %>
 
 <section class="sauber-kosten section section--align-center" aria-labelledby="sauber-kosten-title">
   <div class="section__inner">
     <h2 class="sauber-kosten__title" id="sauber-kosten-title"><%- renderTextWithLinks(heading) %></h2>
+    <% descriptionParts.forEach((paragraph) => { %>
+    <p class="sauber-kosten__description"><%- renderTextWithLinks(paragraph) %></p>
+    <% }) %>
+    <% if (subheading) { %>
+    <h3 class="sauber-kosten__subheading"><%- renderTextWithLinks(subheading) %></h3>
+    <% } %>
+    <% if (subtitle) { %>
     <p class="sauber-kosten__subtitle"><%- renderTextWithLinks(subtitle) %></p>
+    <% } %>
 
     <div class="sauber-kosten__flow">
       <% steps.slice(0, 3).forEach((step, index) => { %>

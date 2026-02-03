@@ -1,0 +1,24 @@
+<%
+  const title = block?.title || 'In diesen Bereichen reinigen wir Berlin:';
+  const description = block?.description || '';
+  const slider = block?.slider || {};
+  const sliderBlock = { ...slider, variant: 'bereiche' };
+  const descriptionParts = String(description || '')
+    .split(/\r?\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+%>
+
+<section class="sauber-bereiche section">
+  <div class="section__inner sauber-bereiche__inner">
+    <div class="sauber-bereiche__content">
+      <h2 class="sauber-bereiche__title"><%- renderTextWithLinks(title) %></h2>
+      <% descriptionParts.forEach((paragraph) => { %>
+      <p class="sauber-bereiche__text"><%- renderTextWithLinks(paragraph) %></p>
+      <% }) %>
+    </div>
+    <div class="sauber-bereiche__slider">
+      <%- include('./imageSlider', { block: sliderBlock, page }) %>
+    </div>
+  </div>
+</section>

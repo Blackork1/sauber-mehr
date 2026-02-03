@@ -1349,6 +1349,85 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const initDynamicList = (container) => {
+    const itemsContainer = container.querySelector('[data-dynamic-list-items]');
+    if (!itemsContainer) return;
+    const max = Number(container.dataset.max || 8);
+
+    const ensureTrailingInput = () => {
+      const inputs = Array.from(itemsContainer.querySelectorAll('[data-dynamic-list-input]'));
+      const lastInput = inputs[inputs.length - 1];
+      if (!lastInput || inputs.length >= max) return;
+      if (lastInput.value.trim()) {
+        const newInput = document.createElement('input');
+        newInput.type = 'text';
+        newInput.name = lastInput.name;
+        newInput.setAttribute('data-dynamic-list-input', '');
+        itemsContainer.appendChild(newInput);
+        attachInputListener(newInput);
+      }
+    };
+
+    const attachInputListener = (input) => {
+      input.addEventListener('input', () => {
+        ensureTrailingInput();
+      });
+    };
+
+    Array.from(itemsContainer.querySelectorAll('[data-dynamic-list-input]')).forEach(attachInputListener);
+    ensureTrailingInput();
+  };
+
+  const initDynamicFaq = (container) => {
+    const itemsContainer = container.querySelector('[data-dynamic-faq-items]');
+    if (!itemsContainer) return;
+    const max = Number(container.dataset.max || 8);
+
+    const ensureTrailingRow = () => {
+      const rows = Array.from(itemsContainer.querySelectorAll('[data-dynamic-faq-row]'));
+      const lastRow = rows[rows.length - 1];
+      if (!lastRow || rows.length >= max) return;
+      const lastQuestion = lastRow.querySelector('[data-dynamic-faq-question]');
+      const lastAnswer = lastRow.querySelector('[data-dynamic-faq-answer]');
+      const hasValue = Boolean(lastQuestion?.value.trim() || lastAnswer?.value.trim());
+      if (!hasValue) return;
+
+      const newRow = document.createElement('div');
+      newRow.className = 'admin-dynamic-faq__row';
+      newRow.setAttribute('data-dynamic-faq-row', '');
+      const questionInput = document.createElement('input');
+      questionInput.type = 'text';
+      questionInput.name = lastQuestion?.name || 'leistungen_faq_q';
+      questionInput.placeholder = 'Frage';
+      questionInput.setAttribute('data-dynamic-faq-question', '');
+      const answerInput = document.createElement('textarea');
+      answerInput.name = lastAnswer?.name || 'leistungen_faq_a';
+      answerInput.placeholder = 'Antwort';
+      answerInput.rows = 2;
+      answerInput.setAttribute('data-dynamic-faq-answer', '');
+      newRow.appendChild(questionInput);
+      newRow.appendChild(answerInput);
+      itemsContainer.appendChild(newRow);
+      attachRowListener(newRow);
+    };
+
+    const attachRowListener = (row) => {
+      const question = row.querySelector('[data-dynamic-faq-question]');
+      const answer = row.querySelector('[data-dynamic-faq-answer]');
+      const onInput = () => {
+        ensureTrailingRow();
+      };
+      if (question) question.addEventListener('input', onInput);
+      if (answer) answer.addEventListener('input', onInput);
+    };
+
+    Array.from(itemsContainer.querySelectorAll('[data-dynamic-faq-row]')).forEach(attachRowListener);
+    ensureTrailingRow();
+  };
+
+  document.querySelectorAll('[data-dynamic-list]').forEach(initDynamicList);
+  document.querySelectorAll('[data-dynamic-faq]').forEach(initDynamicFaq);
+
   const downloadGroups = Array.from(document.querySelectorAll('[data-rahmenplan-downloads]'));
   downloadGroups.forEach((group) => {
     const locale = group.dataset.locale || 'de';

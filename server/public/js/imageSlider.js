@@ -9,7 +9,7 @@ function initImageSliders() {
         const nextButton = slider.querySelector('[data-image-next]');
         const cta = slider.querySelector('[data-image-cta]');
 
-        if (!list || !thumbnails || !prevButton || !nextButton) return;
+        if (!list || !nextButton) return;
 
         const timeRunning = 600;
         let runTimeout;
@@ -22,6 +22,7 @@ function initImageSliders() {
         };
 
         const updateThumbnails = () => {
+            if (!thumbnails) return;
             const itemThumbs = thumbnails.querySelectorAll('.image-slider__thumb');
             itemThumbs.forEach((thumb, index) => {
                 thumb.classList.toggle('is-hidden', index === 0);
@@ -30,17 +31,21 @@ function initImageSliders() {
 
         const showSlider = (direction) => {
             const itemSlider = list.querySelectorAll('.image-slider__item');
-            const itemThumbs = thumbnails.querySelectorAll('.image-slider__thumb');
-            if (!itemSlider.length || !itemThumbs.length) return;
+            const itemThumbs = thumbnails ? thumbnails.querySelectorAll('.image-slider__thumb') : [];
+            if (!itemSlider.length) return;
 
             if (direction === 'next') {
                 list.appendChild(itemSlider[0]);
-                thumbnails.appendChild(itemThumbs[0]);
+                if (thumbnails && itemThumbs[0]) {
+                    thumbnails.appendChild(itemThumbs[0]);
+                }
                 slider.classList.add('is-next');
             } else {
                 const lastIndex = itemSlider.length - 1;
                 list.prepend(itemSlider[lastIndex]);
-                thumbnails.prepend(itemThumbs[lastIndex]);
+                if (thumbnails && itemThumbs[lastIndex]) {
+                    thumbnails.prepend(itemThumbs[lastIndex]);
+                }
                 slider.classList.add('is-prev');
             }
 
@@ -54,7 +59,9 @@ function initImageSliders() {
             updateThumbnails();
         };
 
-        prevButton.addEventListener('click', () => showSlider('prev'));
+        if (prevButton) {
+            prevButton.addEventListener('click', () => showSlider('prev'));
+        }
         nextButton.addEventListener('click', () => showSlider('next'));
 
         updateCta();

@@ -1,11 +1,31 @@
-<section class="faq">
-  <% if (block.title) { %><h2><%- renderTextWithLinks(block.title) %></h2><% } %>
-  <div class="faq__list">
-    <% (block.items || []).forEach(it => { %>
-    <details class="faq__item">
-      <summary><%- renderTextWithLinks(it.q) %></summary>
-      <div class="prose"><%- it.a %></div>
-    </details>
-    <% }) %>
+<%
+  const description = block?.description || '';
+  const button = block?.button || {};
+  const descriptionParts = String(description || '')
+    .split(/\r?\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+%>
+<section class="faq section">
+  <div class="section__inner faq__inner">
+    <div class="faq__header">
+      <div class="faq__intro">
+        <% if (block.title) { %><h2><%- renderTextWithLinks(block.title) %></h2><% } %>
+        <% descriptionParts.forEach((paragraph) => { %>
+        <p><%- renderTextWithLinks(paragraph) %></p>
+        <% }) %>
+      </div>
+      <% if (button?.label) { %>
+      <a class="faq__button" href="<%= button.href || '#' %>"><%= button.label %></a>
+      <% } %>
+    </div>
+    <div class="faq__list">
+      <% (block.items || []).forEach(it => { %>
+      <details class="faq__item">
+        <summary><%- renderTextWithLinks(it.q) %></summary>
+        <div class="prose"><%- it.a %></div>
+      </details>
+      <% }) %>
+    </div>
   </div>
 </section>

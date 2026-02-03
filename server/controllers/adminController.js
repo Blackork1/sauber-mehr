@@ -33,7 +33,11 @@ const normalizeString = (value) => {
 };
 
 const normalizeBoolean = (value) => value === 'on' || value === 'true' || value === true;
-
+const normalizeArray = (value) => {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  return [value];
+};
 const normalizeCanonicalPath = (value) => {
   const raw = normalizeString(value);
   if (!raw) return '/';
@@ -224,6 +228,126 @@ const buildHomeContent = (body) => {
   return blocks;
 };
 
+const buildLeistungenContent = (body) => {
+  const blocks = [];
+
+  const heroEnabled = normalizeBoolean(body.leistungen_hero_enabled);
+  const hero = {
+    type: 'hero',
+    headline: normalizeString(body.leistungen_hero_headline),
+    subline: normalizeString(body.leistungen_hero_subline),
+    ctaLabel: normalizeString(body.leistungen_hero_cta_label),
+    ctaHref: normalizeString(body.leistungen_hero_cta_href),
+    image: normalizeString(body.leistungen_hero_image)
+  };
+  if (heroEnabled && Object.values(hero).some((value) => value)) {
+    blocks.push(hero);
+  }
+
+  const kostenEnabled = normalizeBoolean(body.leistungen_kosten_enabled);
+  const kostenSteps = [1, 2, 3]
+    .map((index) => ({
+      title: normalizeString(body[`leistungen_kosten_step${index}_title`]),
+      imageUrl: normalizeString(body[`leistungen_kosten_step${index}_image`]),
+      imageAlt: normalizeString(body[`leistungen_kosten_step${index}_alt`])
+    }))
+    .filter((step) => step.title || step.imageUrl || step.imageAlt);
+  const kosten = {
+    type: 'kosten',
+    headline: normalizeString(body.leistungen_kosten_headline),
+    description: normalizeString(body.leistungen_kosten_description),
+    subheading: normalizeString(body.leistungen_kosten_subheading),
+    subline: normalizeString(body.leistungen_kosten_subline),
+    leadText: normalizeString(body.leistungen_kosten_lead),
+    detailText: normalizeString(body.leistungen_kosten_detail),
+    primaryButton: {
+      label: normalizeString(body.leistungen_kosten_primary_label),
+      href: normalizeString(body.leistungen_kosten_primary_href)
+    },
+    secondaryButton: {
+      label: normalizeString(body.leistungen_kosten_secondary_label),
+      href: normalizeString(body.leistungen_kosten_secondary_href)
+    },
+    steps: kostenSteps
+  };
+  if (kostenEnabled && Object.values(kosten).some((value) => value)) {
+    blocks.push(kosten);
+  }
+
+  const kontaktEnabled = normalizeBoolean(body.leistungen_kontakt_enabled);
+  const serviceList = normalizeArray(body.leistungen_services)
+    .map((value) => normalizeString(value))
+    .filter((value) => value)
+    .slice(0, 8);
+  const kontakt = {
+    type: 'kontaktformular',
+    layout: 'services',
+    action: normalizeString(body.leistungen_kontakt_action) || '/contact',
+    sideTitle: normalizeString(body.leistungen_kontakt_side_title),
+    sideDescription: normalizeString(body.leistungen_kontakt_side_description),
+    sideSubheading: normalizeString(body.leistungen_kontakt_side_subheading),
+    services: serviceList
+  };
+  if (kontaktEnabled && Object.values(kontakt).some((value) => value)) {
+    blocks.push(kontakt);
+  }
+
+  const bereicheEnabled = normalizeBoolean(body.leistungen_bereiche_enabled);
+  const bereicheSlides = [1, 2, 3, 4]
+    .map((index) => {
+      const title = normalizeString(body[`leistungen_bereiche_slide${index}_title`]);
+      const imageSrc = normalizeString(body[`leistungen_bereiche_slide${index}_image`]);
+      const link = normalizeString(body[`leistungen_bereiche_slide${index}_link`]);
+      if (!title && !imageSrc && !link) return null;
+      return {
+        title,
+        link,
+        image: {
+          src: imageSrc,
+          alt: title
+        }
+      };
+    })
+    .filter(Boolean);
+  const bereiche = {
+    type: 'bereiche',
+    title: normalizeString(body.leistungen_bereiche_title),
+    description: normalizeString(body.leistungen_bereiche_description),
+    slider: {
+      slides: bereicheSlides
+    }
+  };
+  if (bereicheEnabled && Object.values(bereiche).some((value) => value)) {
+    blocks.push(bereiche);
+  }
+
+  const faqEnabled = normalizeBoolean(body.leistungen_faq_enabled);
+  const faqQuestions = normalizeArray(body.leistungen_faq_q).map((value) => normalizeString(value));
+  const faqAnswers = normalizeArray(body.leistungen_faq_a).map((value) => normalizeString(value));
+  const faqItems = faqQuestions
+    .map((question, index) => ({
+      q: question,
+      a: faqAnswers[index] || ''
+    }))
+    .filter((item) => item.q || item.a)
+    .slice(0, 8);
+  const faq = {
+    type: 'faq',
+    title: normalizeString(body.leistungen_faq_title),
+    description: normalizeString(body.leistungen_faq_description),
+    button: {
+      label: normalizeString(body.leistungen_faq_button_label),
+      href: normalizeString(body.leistungen_faq_button_href)
+    },
+    items: faqItems
+  };
+  if (faqEnabled && Object.values(faq).some((value) => value)) {
+    blocks.push(faq);
+  }
+
+  return blocks;
+};
+
 const getNewsletterSubscriptions = async (pool) => {
   try {
     const { rows } = await pool.query(
@@ -285,6 +409,7 @@ export async function updatePage(req, res, next) {
     }
 
     const isHome = req.body.page_mode === 'home';
+    const isLeistungen = req.body.page_mode === 'leistungen';
     const locale = normalizeString(req.body.locale);
 
     const resolveImageField = async ({
@@ -371,7 +496,9 @@ export async function updatePage(req, res, next) {
     }
     const content = isHome
       ? buildHomeContent(req.body)
-      : safeJsonParse(req.body.content_json, []);
+      : (isLeistungen
+        ? buildLeistungenContent(req.body)
+        : safeJsonParse(req.body.content_json, []));
 
     const slug = normalizeString(req.body.slug);
     const canonicalPath = normalizeCanonicalPath(req.body.canonical_path);

@@ -354,7 +354,7 @@ export async function deleteGalleryVideoAdmin(req, res, next) {
   try {
     const pool = req.app.get('db');
     const id = Number(req.params.id);
-    const video = await getGalleryVideoById(pool, id);
+    const video = await getGalleryVideoById(pool, id);/Users/blocksdorf/Documents/KurdischesFestival/server/controllers/adminController.js
     if (video?.local_path) {
       const localPath = video.local_path.startsWith('/')
         ? path.join(__dirname, '..', 'public', video.local_path.replace(/^\//, ''))

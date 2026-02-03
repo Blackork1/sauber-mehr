@@ -39,29 +39,27 @@
         <% }) %>
       </div>
     </div>
-  </div>
-
-  <div class="sauber-kontakt__card-wrap">
-    <form class="sauber-kontakt__card" method="post" action="<%= action %>">
-      <label class="sauber-kontakt__field">
-        <span>Dein Name</span>
-        <input type="text" name="name" placeholder="Name" required>
-      </label>
-      <label class="sauber-kontakt__field">
-        <span>Deine Mail</span>
-        <input type="email" name="email" placeholder="Mail" required>
-      </label>
-      <label class="sauber-kontakt__field">
-        <span>Leistung auswählen</span>
-        <select name="service" required>
-          <option value="" disabled selected>Leistungen</option>
-          <% services.forEach(service => { %>
-          <option value="<%= service %>"><%= service %></option>
-          <% }) %>
-        </select>
-      </label>
-      <button class="sauber-kontakt__button" type="submit">Absenden</button>
-    </form>
-  </div>
+    <div class="sauber-kontakt__card-wrap">
+      <form class="sauber-kontakt__card" method="post" action="<%= action %>">
+        <label class="sauber-kontakt__field">
+          <span>Dein Name</span>
+          <input type="text" name="name" placeholder="Name" required>
+        </label>
+        <label class="sauber-kontakt__field">
+          <span>Deine Mail</span>
+          <input type="email" name="email" placeholder="Mail" required>
+        </label>
+        <label class="sauber-kontakt__field">
+          <span>Leistung auswählen</span>
+          <select name="service" required>
+            <option value="" disabled selected>Leistungen</option>
+            <% services.forEach(service => { %>
+            <option value="<%= service %>"><%= service %></option>
+            <% }) %>
+          </select>
+        </label>
+        <button class="sauber-kontakt__button" type="submit">Absenden</button>
+      </form>
+    </div>
   </div>
 </section>

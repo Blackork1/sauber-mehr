@@ -1,8 +1,7 @@
 <%
   const headline = block?.headline || 'Was erwartet dich hier?';
     const locale = String(page?.locale || block?.locale || '').toLowerCase();
-  const localeKey = locale.startsWith('en') ? 'en' : (locale.startsWith('ku') ? 'ku' : 'de');
-  const labels = {
+  const localeKey = locale.startsWith('en') ? 'en' : 'de';  const labels = {
     de: {
       aria: 'Schnellzugriffe',
       programme: 'Programm',
@@ -18,14 +17,6 @@
       onlineTickets: 'Online tickets',
       cinemaTickets: 'Cinema tickets',
       videoUnsupported: 'Your browser does not support the video tag.'
-    },
-    ku: {
-      aria: 'Lînkên zû',
-      programme: 'Bername',
-      news: 'Nûçe',
-      onlineTickets: 'Bilêtên online',
-      cinemaTickets: 'Bilêtên sînemayê',
-      videoUnsupported: 'Lêgeroka te video tagê napejirîne.'
     }
   };
   const localeLabels = labels[localeKey] || labels.de;

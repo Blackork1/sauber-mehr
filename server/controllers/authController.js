@@ -60,7 +60,7 @@ function buildGoogleAuthUrl(state, codeChallenge) {
 
 function resolveLocale(req) {
   const explicit = String(req.query?.lang || '').toLowerCase();
-  if (['de', 'en', 'ku'].includes(explicit)) {
+  if (['de', 'en'].includes(explicit)) {
     req.session.locale = explicit;
     return explicit;
   }
@@ -69,10 +69,6 @@ function resolveLocale(req) {
   if (referer.includes('/en')) {
     req.session.locale = 'en';
     return 'en';
-  }
-  if (referer.includes('/ku')) {
-    req.session.locale = 'ku';
-    return 'ku';
   }
 
   return req.session.locale || 'de';
@@ -141,35 +137,6 @@ function getAuthCopy(locale) {
       registerAdmin: 'Register as admin',
       registerAdminKeyLabel: 'Admin code',
       registerAdminKeyHelp: 'Only for admins with a valid code.'
-    },
-    ku: {
-      localeTag: 'ku',
-      loginTitle: 'Têketin',
-      loginHeadline: 'Têketina Admin & Bikarhêner',
-      loginIntro: 'Bi navnîşana e-name û şîfreyê têkeve.',
-      loginError: 'E-name an şîfre şaş e.',
-      loginButton: 'Têketin',
-      loginGoogle: 'Bi Google têkeve',
-      loginNote: 'Hesabek te tune ye?',
-      loginNoteLink: 'Niha tomar bike',
-      registerTitle: 'Tomarkirin',
-      registerHeadline: 'Tomarkirin',
-      registerIntro: 'Hesabek biafirîne da ku bilêt û nûçe-manage bikî.',
-      registerErrorMissing: 'Ji kerema xwe hemû qutîyên pêwîst tijî bike.',
-      registerErrorExists: 'Ev e-name berê hatiye tomarkirin.',
-      registerErrorAdminKey: 'Koda adminê ne rast e.',
-      registerButton: 'Tomar bike',
-      registerGoogle: 'Bi Google tomar bike',
-      registerNote: 'Berê hatî tomarkirin?',
-      registerNoteLink: 'Biçe têketinê',
-      firstName: 'Nav',
-      lastName: 'Paşnav',
-      email: 'E-name',
-      password: 'Şîfre',
-      newsletter: 'Newsletter',
-      newsletterArticles: 'Nûçeyên gotaran bibin endam',
-      newsletterVideos: 'Nûçeyên vîdyoyan bibin endam',
-      registerAdmin: 'Wek admin tomar bike'
     }
   };
 

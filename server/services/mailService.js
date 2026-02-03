@@ -191,7 +191,7 @@ export async function sendNewsletterMail({
 }) {
   const fromAddress = process.env.NEWSLETTER_FROM
     || process.env.SMTP_FROM
-    || '"Kurdisches Filmfestival" <info@mitosfilm.com>';
+    || '"TM Sauber & Mehr UG" <info@sauber-mehr.de>';
   const html = buildNewsletterHtml({ title, content, footerHtml, footerLogoUrl, footerLogoAlt });
   const mail = {
     from: fromAddress,
@@ -268,7 +268,7 @@ export async function sendNewsletterConfirmationMail({
 }) {
   const fromAddress = process.env.NEWSLETTER_FROM
     || process.env.SMTP_FROM
-    || '"Kurdisches Filmfestival" <info@mitosfilm.com>';
+    || '"TM Sauber & Mehr UG" <info@sauber-mehr.de>';
   const subject = 'Newsletter-Anmeldung bestätigt';
   const html = buildNewsletterConfirmationHtml({
     wantsNews,
@@ -292,7 +292,7 @@ export async function sendTicketPurchaseMail({
   cinemaTickets = []
 }) {
   const fromAddress = process.env.SMTP_FROM
-    || '"Kurdisches Filmfestival" <info@mitosfilm.com>';
+    || '"TM Sauber & Mehr UG" <info@sauber-mehr.de>';
   const intro = buyerName ? `Hallo ${buyerName},` : 'Hallo,';
   const onlineSection = onlineCode
     ? `<p><strong>Online-Zugangscode:</strong> ${onlineCode}</p>
@@ -307,7 +307,7 @@ export async function sendTicketPurchaseMail({
     <p>vielen Dank für deinen Kauf des ${ticketType === 'combo' ? 'Kombi-Tickets' : ticketType === 'kino' ? 'Kino-Tickets' : 'Online-Tickets'}.</p>
     ${onlineSection}
     ${cinemaSection}
-    <p>Bei Fragen erreichst du uns jederzeit unter info@mitosfilm.com.</p>
+    <p>Bei Fragen erreichst du uns jederzeit unter info@sauber-mehr.de.</p>
   `;
 
   const attachments = cinemaTickets.map((ticket) => ({
@@ -319,7 +319,7 @@ export async function sendTicketPurchaseMail({
   return transporter.sendMail({
     from: fromAddress,
     to,
-    subject: 'Deine Tickets – Kurdisches Festival 2026',
+    subject: 'Deine Anfrage – TM Sauber & Mehr UG',
     html,
     attachments
   });
@@ -332,26 +332,20 @@ export async function sendDonationMail({
   receiptPdf
 }) {
   const fromAddress = process.env.SMTP_FROM
-    || '"Kurdisches Filmfestival" <info@mitosfilm.com>';
+    || '"TM Sauber & Mehr UG" <info@sauber-mehr.de>';
 
   const copyByLocale = {
     de: {
       subject: 'Vielen Dank für deine Spende',
       greeting: `Hallo ${firstName || 'liebe*r Unterstützer*in'},`,
-      body: 'vielen Dank für deine Spende und dafür, dass du unser Kurdisches Festival unterstützt hast. Damit können wir auch zukünftige Festivals realisieren, neue Dinge schaffen und unser Programm weiterentwickeln.',
+      body: 'vielen Dank für deine Spende und dein Vertrauen in TM Sauber & Mehr UG. Damit können wir unseren Service weiterentwickeln und neue Projekte realisieren.',
       closing: 'Im Anhang findest du deine Spendenquittung als PDF.'
     },
     en: {
       subject: 'Thank you for your donation',
       greeting: `Hello ${firstName || 'dear supporter'},`,
-      body: 'thank you for your donation and for supporting our Kurdish Festival. With your help we can realize future festivals, create new projects and continue to grow our program.',
+      body: 'thank you for your donation and for supporting TM Sauber & Mehr UG. With your help we can improve our services and realize new projects.',
       closing: 'Attached you will find your donation receipt as a PDF.'
-    },
-    ku: {
-      subject: 'Spas ji bo bexşê te',
-      greeting: `Silav ${firstName || 'hevalê me'},`,
-      body: 'spas ji bo bexşê te û ji bo piştgiriya Festîvala Kurdî. Bi alîkariya te em dikarin festîvalên paşerojê bi pêk bînin, tiştên nû çêkin û bernameya xwe pêş bikin.',
-      closing: 'Di pêvekirinê de tu wê bexşên xwe ya PDF bistînî.'
     }
   };
 

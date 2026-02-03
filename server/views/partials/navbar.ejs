@@ -2,8 +2,7 @@
   const sessionData = typeof session !== 'undefined' ? session : {};
   const isLoggedIn = Boolean(sessionData?.user);
   const localeKey = String(meta?.locale || '').toLowerCase();
-  const homeHref = localeKey.startsWith('en') ? '/en' : (localeKey.startsWith('ku') ? '/ku' : '/');
-%>
+  const homeHref = localeKey.startsWith('en') ? '/en' : '/';%>
 
 <header class="sauber-nav">
   <div class="sauber-nav__inner">
@@ -25,7 +24,29 @@
         </div>
       </details>
       <a class="sauber-nav__link" href="#ueber">Über</a>
-      <a class="sauber-nav__cta" href="#kontakt">Jetzt anrufen</a>
     </nav>
+
+    <div class="sauber-nav__actions">
+      <a class="sauber-nav__cta" href="#kontakt">Jetzt anrufen</a>
+
+      <details class="sauber-nav__mobile" role="navigation">
+        <summary class="sauber-nav__hamburger" aria-label="Menü öffnen">
+          <span></span>
+          <span></span>
+          <span></span>
+        </summary>
+        <div class="sauber-nav__mobile-menu">
+          <a class="sauber-nav__mobile-link" href="#kontakt">Kontakt</a>
+          <div class="sauber-nav__mobile-group">
+            <span class="sauber-nav__mobile-title">Leistungen</span>
+            <a class="sauber-nav__mobile-link" href="/leistungen/haushalt">Haushaltsreinigung</a>
+            <a class="sauber-nav__mobile-link" href="/leistungen/buero">Büroreinigung</a>
+            <a class="sauber-nav__mobile-link" href="/leistungen/treppenhaus">Treppenhausreinigung</a>
+            <a class="sauber-nav__mobile-link" href="/leistungen/fenster">Fensterreinigung</a>
+          </div>
+          <a class="sauber-nav__mobile-link" href="#ueber">Über</a>
+        </div>
+      </details>
+    </div>
   </div>
 </header>

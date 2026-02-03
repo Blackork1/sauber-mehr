@@ -7,8 +7,7 @@ export function navbarMiddleware(pool) {
     try {
       const path = req.path || '';
       const isEnglish = path.startsWith('/en') || path.endsWith('-en');
-      const isKurdish = path.startsWith('/ku') || path.endsWith('-ku');
-      const locale = isEnglish ? 'en-US' : isKurdish ? 'ku' : 'de-DE';
+      const locale = isEnglish ? 'en-US' : 'de-DE';
       const [{ rows: pages }, { rows: industries }] = await Promise.all([
         pool.query(`
           SELECT title, slug, canonical_path, locale, show_in_nav, nav_order

@@ -34,7 +34,6 @@ function stripTags(html = '') {
 function pagePathFromSlug(slug) {
   if (slug === 'de') return '/de';
   if (slug === 'en') return '/en';
-  if (slug === 'ku') return '/ku';
   return `/${slug}`;
 }
 
@@ -170,7 +169,6 @@ export async function loadTranslations(pool, page) {
 
   return {
     de: byLocale['de-DE'] || byLocale['de'] || null,
-    en: byLocale['en-US'] || byLocale['en'] || null,
-    ku: byLocale['ku'] || null
+    en: byLocale['en-US'] || byLocale['en'] || null
   };
 }

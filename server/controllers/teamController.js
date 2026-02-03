@@ -45,7 +45,6 @@ export async function renderTeamPage(req, res, next) {
     const alternates = [];
     if (translations?.de) alternates.push({ hreflang: 'de-DE', href: absUrl(translations.de) });
     if (translations?.en) alternates.push({ hreflang: 'en', href: absUrl(translations.en) });
-    if (translations?.ku) alternates.push({ hreflang: 'ku', href: absUrl(translations.ku) });
 
     const meta = buildMeta({ page, alternates });
     const schemaGraph = buildSchemaGraph({ page, blocks: [], meta });

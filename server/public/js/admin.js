@@ -1017,7 +1017,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const altDatasetKey = (locale) => {
     if (locale === 'en') return 'galleryItemAltEn';
-    if (locale === 'ku') return 'galleryItemAltKu';
     return 'galleryItemAltDe';
   };
 

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 
-# ROOT="/home/webadmin/apps/kurdischesfestival"
+# ROOT="/home/webadmin/apps/sauber-mehr"
 ROOT="/apps/sauber-mehr"
 REPO_DIR="$ROOT"
 COMPOSE_FILE="$ROOT/docker-compose.yml"

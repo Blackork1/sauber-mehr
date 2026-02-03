@@ -1,4 +1,4 @@
-# Stripe Ticketing Setup (Kurdisches Festival)
+# Stripe Ticketing Setup (TM Sauber & Mehr UG)
 
 Diese Anleitung beschreibt das komplette Stripe-Setup, die benötigten `.env`-Variablen und den Ticketfluss für Online-, Kino- und Kombitickets.
 
@@ -22,14 +22,14 @@ STRIPE_SECRET_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 
 # Basis-URL deiner Website (wichtig für Redirects)
-BASE_URL=https://kurdisches-filmfestival.de
+BASE_URL=https://sauber-mehr.de
 
 # E-Mail Versand (PDFs + Zugangscodes)
 SMTP_HOST=...
 SMTP_PORT=587
 SMTP_USER=...
 SMTP_PASS=...
-SMTP_FROM="Kurdisches Filmfestival" <info@mitosfilm.com>
+SMTP_FROM="TM Sauber & Mehr UG" <info@sauber-mehr.de>
 
 # Optional: Session Secret
 SESSION_SECRET=...
@@ -59,9 +59,9 @@ SESSION_SECRET=...
 Jedes Kino-Ticket PDF enthält:
 - Name des Ticketinhabers
 - QR-Code mit Ticketnummer
-- „Kurdisches Festival 2026“
+- „TM Sauber & Mehr UG“
 - Hinweistext: *Das Ticket ist an die oben genannte Person gebunden...*
-- „Viel Spaß im Kino Babylon Berlin“
+- „Vielen Dank für Ihre Buchung“
 - Hintergrundbild (oben)
 
 ## 6) Wichtige Routen

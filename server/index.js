@@ -43,6 +43,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 /** Static */
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 0 }));
+app.use('/uploads', express.static(path.join(__dirname, '..', 'data', 'uploads'), { maxAge: 0 }));
 
 /** Body + Cookies */
 app.use(express.urlencoded({ extended: true }));

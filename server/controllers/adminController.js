@@ -22,8 +22,10 @@ import {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const imageUploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
-const videoUploadDir = path.join(__dirname, '..', 'public', 'video', 'uploads');
+const imageUploadDir = path.join(__dirname, '..', '..', 'data', 'uploads', 'images');
+const videoUploadDir = path.join(__dirname, '..', '..', 'data', 'uploads', 'videos');
+const imagePublicPrefix = '/uploads/images';
+const videoPublicPrefix = '/uploads/videos';
 
 const normalizeString = (value) => {
   const trimmed = String(value ?? '').trim();
@@ -37,6 +39,68 @@ const normalizeCanonicalPath = (value) => {
   if (!raw) return '/';
   if (raw === '/') return '/';
   return raw.startsWith('/') ? raw : `/${raw}`;
+};
+
+const normalizeAltValue = (value) => {
+  const trimmed = String(value ?? '').trim();
+  return trimmed;
+};
+
+const stripFileExtension = (value) => {
+  if (!value) return '';
+  return String(value).replace(/\.[^/.]+$/, '');
+};
+
+const downloadToFile = async (url, targetPath) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Cloudflare download failed: ${response.status}`);
+  }
+  const arrayBuffer = await response.arrayBuffer();
+  await fs.promises.writeFile(targetPath, Buffer.from(arrayBuffer));
+};
+
+const compressImageWithCloudflare = async (sourcePath, targetPath) => {
+  const accountId = process.env.CLOUDFLARE_IMAGES_ACCOUNT_ID;
+  const apiToken = process.env.CLOUDFLARE_IMAGES_API_TOKEN;
+  if (!accountId || !apiToken) return null;
+  const uploadEndpoint = `https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v1`;
+  const fileBuffer = await fs.promises.readFile(sourcePath);
+  const form = new FormData();
+  form.append('file', new Blob([fileBuffer]), path.basename(sourcePath));
+  const response = await fetch(uploadEndpoint, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiToken}`
+    },
+    body: form
+  });
+  const payload = await response.json();
+  if (!response.ok || !payload?.success) {
+    return null;
+  }
+  const variantUrl =
+    payload?.result?.variants?.[0]
+    || (process.env.CLOUDFLARE_IMAGES_DELIVERY_URL
+      ? `${process.env.CLOUDFLARE_IMAGES_DELIVERY_URL}/${payload.result?.id}/public`
+      : null);
+  if (!variantUrl) return null;
+  await downloadToFile(variantUrl, targetPath);
+  return variantUrl;
+};
+
+const storeCompressedImageUpload = async (upload) => {
+  if (!upload) return null;
+  const targetPath = path.join(imageUploadDir, upload.filename);
+  if (upload.path !== targetPath) {
+    await fs.promises.rename(upload.path, targetPath);
+  }
+  await compressImageWithCloudflare(targetPath, targetPath);
+  const stats = await fs.promises.stat(targetPath);
+  return {
+    localPath: `${imagePublicPrefix}/${upload.filename}`,
+    sizeBytes: stats.size
+  };
 };
 
 const safeJsonParse = (value, fallback) => {
@@ -65,12 +129,20 @@ const buildHomeContent = (body) => {
 
   const kostenEnabled = normalizeBoolean(body.home_kosten_enabled);
   const steps = [1, 2, 3]
-    .map((index) => ({
-      title: normalizeString(body[`home_kosten_step${index}_title`]),
-      imageUrl: normalizeString(body[`home_kosten_step${index}_image`]),
-      imageAlt: normalizeString(body[`home_kosten_step${index}_alt`])
-    }))
-    .filter((step) => step.title || step.imageUrl || step.imageAlt);
+    .map((index) => {
+      const altDe = normalizeAltValue(body[`home_kosten_step${index}_alt_de`])
+        || normalizeAltValue(body[`home_kosten_step${index}_alt`]);
+      const altEn = normalizeAltValue(body[`home_kosten_step${index}_alt_en`]);
+      return {
+        title: normalizeString(body[`home_kosten_step${index}_title`]),
+        imageUrl: normalizeString(body[`home_kosten_step${index}_image`]),
+        imageAlt: {
+          de: altDe,
+          en: altEn
+        }
+      };
+    })
+    .filter((step) => step.title || step.imageUrl || step.imageAlt?.de || step.imageAlt?.en);
   const kosten = {
     type: 'kosten',
     headline: normalizeString(body.home_kosten_headline),
@@ -98,7 +170,11 @@ const buildHomeContent = (body) => {
     text: normalizeString(body.home_imagetext_text),
     img: {
       src: normalizeString(body.home_imagetext_image),
-      alt: normalizeString(body.home_imagetext_alt)
+      alt: {
+        de: normalizeAltValue(body.home_imagetext_alt_de)
+          || normalizeAltValue(body.home_imagetext_alt),
+        en: normalizeAltValue(body.home_imagetext_alt_en)
+      }
     }
   };
   if (imageTextEnabled && Object.values(imageText).some((value) => value)) {
@@ -209,6 +285,90 @@ export async function updatePage(req, res, next) {
     }
 
     const isHome = req.body.page_mode === 'home';
+    const locale = normalizeString(req.body.locale);
+
+    const resolveImageField = async ({
+      upload,
+      galleryId,
+      currentUrl,
+      altDe,
+      altEn,
+      currentAltDe,
+      currentAltEn
+    }) => {
+      const normalizedCurrentUrl = normalizeString(currentUrl);
+      const normalizedAltDe = normalizeAltValue(altDe) || normalizeAltValue(currentAltDe);
+      const normalizedAltEn = normalizeAltValue(altEn) || normalizeAltValue(currentAltEn);
+      const uploadEntry = Array.isArray(upload) ? upload[0] : upload;
+      if (uploadEntry) {
+        const stored = await storeCompressedImageUpload(uploadEntry);
+        const fallbackAlt = stripFileExtension(uploadEntry.originalname || uploadEntry.filename);
+        return {
+          src: stored?.localPath || normalizedCurrentUrl,
+          altDe: normalizedAltDe || fallbackAlt,
+          altEn: normalizedAltEn || fallbackAlt
+        };
+      }
+      const parsedGalleryId = Number(galleryId);
+      if (Number.isFinite(parsedGalleryId) && parsedGalleryId > 0) {
+        const image = await getGalleryImageById(pool, parsedGalleryId);
+        if (image) {
+          return {
+            src: image.cloudinary_url || image.local_path || normalizedCurrentUrl,
+            altDe: normalizeAltValue(image.alt_de) || normalizedAltDe,
+            altEn: normalizeAltValue(image.alt_en) || normalizedAltEn
+          };
+        }
+      }
+      return {
+        src: normalizedCurrentUrl,
+        altDe: normalizedAltDe,
+        altEn: normalizedAltEn
+      };
+    };
+
+    if (isHome) {
+      const heroImage = await resolveImageField({
+        upload: req.files?.home_hero_image_upload,
+        galleryId: req.body.home_hero_image_gallery_id,
+        currentUrl: req.body.home_hero_image_current
+      });
+      if (heroImage?.src) {
+        req.body.home_hero_image = heroImage.src;
+      }
+
+      for (const index of [1, 2, 3]) {
+        const stepImage = await resolveImageField({
+          upload: req.files?.[`home_kosten_step${index}_upload`],
+          galleryId: req.body[`home_kosten_step${index}_gallery_id`],
+          currentUrl: req.body[`home_kosten_step${index}_image_current`],
+          altDe: req.body[`home_kosten_step${index}_alt_de`],
+          altEn: req.body[`home_kosten_step${index}_alt_en`],
+          currentAltDe: req.body[`home_kosten_step${index}_alt_current_de`],
+          currentAltEn: req.body[`home_kosten_step${index}_alt_current_en`]
+        });
+        if (stepImage?.src) {
+          req.body[`home_kosten_step${index}_image`] = stepImage.src;
+        }
+        req.body[`home_kosten_step${index}_alt_de`] = stepImage.altDe;
+        req.body[`home_kosten_step${index}_alt_en`] = stepImage.altEn;
+      }
+
+      const imageText = await resolveImageField({
+        upload: req.files?.home_imagetext_upload,
+        galleryId: req.body.home_imagetext_gallery_id,
+        currentUrl: req.body.home_imagetext_image_current,
+        altDe: req.body.home_imagetext_alt_de,
+        altEn: req.body.home_imagetext_alt_en,
+        currentAltDe: req.body.home_imagetext_alt_current_de,
+        currentAltEn: req.body.home_imagetext_alt_current_en
+      });
+      if (imageText?.src) {
+        req.body.home_imagetext_image = imageText.src;
+      }
+      req.body.home_imagetext_alt_de = imageText.altDe;
+      req.body.home_imagetext_alt_en = imageText.altEn;
+    }
     const content = isHome
       ? buildHomeContent(req.body)
       : safeJsonParse(req.body.content_json, []);
@@ -220,7 +380,6 @@ export async function updatePage(req, res, next) {
     const metaDescription = normalizeString(req.body.meta_description);
     const navLabel = normalizeString(req.body.nav_label);
     const navOrder = Number(req.body.nav_order);
-    const locale = normalizeString(req.body.locale);
     const i18nGroup = normalizeString(req.body.i18n_group);
 
     await pool.query(
@@ -283,15 +442,15 @@ export async function createGalleryImageAdmin(req, res, next) {
     if (duplicate) {
       return res.redirect('/adminbackend?nav=gallery&error=gallery-duplicate-image');
     }
-    const localPath = resolveLocalAssetPath(file.path, imageUploadDir, '/images/uploads');
+    const stored = await storeCompressedImageUpload(file);
+    const fallbackAlt = stripFileExtension(file.originalname || file.filename);
     await createGalleryImage(pool, {
       filename: file.filename,
       originalName: file.originalname,
-      localPath,
-      sizeBytes: file.size,
-      altDe: normalizeString(req.body.gallery_image_alt_de),
-      altEn: normalizeString(req.body.gallery_image_alt_en),
-      altKu: normalizeString(req.body.gallery_image_alt_ku),
+      localPath: stored?.localPath || `${imagePublicPrefix}/${file.filename}`,
+      sizeBytes: stored?.sizeBytes || file.size,
+      altDe: normalizeAltValue(req.body.gallery_image_alt_de) || fallbackAlt,
+      altEn: normalizeAltValue(req.body.gallery_image_alt_en) || fallbackAlt,
       showInGallery: true,
       galleryCategory: normalizeString(req.body.gallery_image_category) || null
     });
@@ -312,7 +471,7 @@ export async function createGalleryVideoAdmin(req, res, next) {
     if (duplicate) {
       return res.redirect('/adminbackend?nav=gallery&error=gallery-duplicate-video');
     }
-    const localPath = resolveLocalAssetPath(file.path, videoUploadDir, '/video/uploads');
+    const localPath = resolveLocalAssetPath(file.path, videoUploadDir, videoPublicPrefix);
     await createGalleryVideo(pool, {
       filename: file.filename,
       originalName: file.originalname,
@@ -320,7 +479,6 @@ export async function createGalleryVideoAdmin(req, res, next) {
       sizeBytes: file.size,
       altDe: normalizeString(req.body.gallery_video_alt_de),
       altEn: normalizeString(req.body.gallery_video_alt_en),
-      altKu: normalizeString(req.body.gallery_video_alt_ku),
       showInGallery: true,
       galleryCategory: normalizeString(req.body.gallery_video_category) || null
     });
@@ -336,9 +494,11 @@ export async function deleteGalleryImageAdmin(req, res, next) {
     const id = Number(req.params.id);
     const image = await getGalleryImageById(pool, id);
     if (image?.local_path) {
-      const localPath = image.local_path.startsWith('/')
-        ? path.join(__dirname, '..', 'public', image.local_path.replace(/^\//, ''))
-        : image.local_path;
+      const localPath = image.local_path.startsWith(`${imagePublicPrefix}/`)
+        ? path.join(imageUploadDir, image.local_path.replace(`${imagePublicPrefix}/`, ''))
+        : (image.local_path.startsWith('/')
+          ? path.join(__dirname, '..', 'public', image.local_path.replace(/^\//, ''))
+          : image.local_path);
       if (fs.existsSync(localPath)) {
         fs.unlinkSync(localPath);
       }
@@ -356,9 +516,11 @@ export async function deleteGalleryVideoAdmin(req, res, next) {
     const id = Number(req.params.id);
     const video = await getGalleryVideoById(pool, id);
     if (video?.local_path) {
-      const localPath = video.local_path.startsWith('/')
-        ? path.join(__dirname, '..', 'public', video.local_path.replace(/^\//, ''))
-        : video.local_path;
+      const localPath = video.local_path.startsWith(`${videoPublicPrefix}/`)
+        ? path.join(videoUploadDir, video.local_path.replace(`${videoPublicPrefix}/`, ''))
+        : (video.local_path.startsWith('/')
+          ? path.join(__dirname, '..', 'public', video.local_path.replace(/^\//, ''))
+          : video.local_path);
       if (fs.existsSync(localPath)) {
         fs.unlinkSync(localPath);
       }

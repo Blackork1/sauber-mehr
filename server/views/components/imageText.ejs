@@ -1,3 +1,15 @@
+<%
+  const resolveAlt = (value) => {
+    if (value && typeof value === 'object') {
+      const locale = page?.locale || '';
+      if (locale.toLowerCase().startsWith('en')) {
+        return value.en || value.de || '';
+      }
+      return value.de || value.en || '';
+    }
+    return value || '';
+  };
+%>
 <section class="imageText">
   <div class="imageText__grid">
     <div>
@@ -11,7 +23,7 @@
     </div>
     <div>
       <% if (block.img && block.img.src) { %>
-      <img src="<%= block.img.src %>" alt="<%= block.img.alt || '' %>" />
+      <img src="<%= block.img.src %>" alt="<%= resolveAlt(block.img.alt) %>" />
       <% } %>
     </div>
   </div>

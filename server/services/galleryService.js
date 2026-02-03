@@ -1,7 +1,7 @@
 export async function getGalleryImages(pool) {
   const { rows } = await pool.query(
     `SELECT id, filename, original_name, local_path, cloudinary_url, cloudinary_public_id,
-            width, height, size_bytes, alt_de, alt_en, alt_ku, show_in_gallery, gallery_category, sort_order, created_at
+            width, height, size_bytes, alt_de, alt_en, show_in_gallery, gallery_category, sort_order, created_at
             FROM gallery_images
      ORDER BY show_in_gallery DESC, sort_order ASC NULLS LAST, created_at DESC, id DESC`
   );
@@ -11,7 +11,7 @@ export async function getGalleryImages(pool) {
 export async function getGalleryVideos(pool) {
   const { rows } = await pool.query(
     `SELECT id, filename, original_name, local_path, cloudinary_url, cloudinary_public_id,
-            width, height, size_bytes, alt_de, alt_en, alt_ku, show_in_gallery, gallery_category, sort_order, created_at
+            width, height, size_bytes, alt_de, alt_en, show_in_gallery, gallery_category, sort_order, created_at
      FROM gallery_videos
      ORDER BY show_in_gallery DESC, sort_order ASC NULLS LAST, created_at DESC, id DESC`
   );
@@ -21,7 +21,7 @@ export async function getGalleryVideos(pool) {
 export async function getPublicGalleryImages(pool) {
   const { rows } = await pool.query(
     `SELECT id, filename, original_name, local_path, cloudinary_url,
-            width, height, size_bytes, alt_de, alt_en, alt_ku, gallery_category
+            width, height, size_bytes, alt_de, alt_en, gallery_category
      FROM gallery_images
      WHERE show_in_gallery = true
      ORDER BY sort_order ASC NULLS LAST, created_at DESC, id DESC`
@@ -32,7 +32,7 @@ export async function getPublicGalleryImages(pool) {
 export async function getPublicGalleryVideos(pool) {
   const { rows } = await pool.query(
     `SELECT id, filename, original_name, local_path, cloudinary_url,
-            width, height, size_bytes, alt_de, alt_en, alt_ku, gallery_category
+            width, height, size_bytes, alt_de, alt_en, gallery_category
      FROM gallery_videos
      WHERE show_in_gallery = true
      ORDER BY created_at DESC, id DESC`
@@ -69,8 +69,8 @@ export async function updateGalleryVideoSortOrder(pool, orderedIds = []) {
 export async function createGalleryImage(pool, data) {
   const { rows } = await pool.query(
     `INSERT INTO gallery_images
-      (filename, original_name, local_path, cloudinary_url, cloudinary_public_id, width, height, size_bytes, alt_de, alt_en, alt_ku, show_in_gallery, gallery_category, sort_order)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, COALESCE($13, 'moments'),
+      (filename, original_name, local_path, cloudinary_url, cloudinary_public_id, width, height, size_bytes, alt_de, alt_en, show_in_gallery, gallery_category, sort_order)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, COALESCE($12, 'moments'),
       COALESCE((SELECT MAX(sort_order) FROM gallery_images), 0) + 1)
      RETURNING *`,
     [
@@ -84,7 +84,6 @@ export async function createGalleryImage(pool, data) {
       data.sizeBytes,
       data.altDe,
       data.altEn,
-      data.altKu,
       data.showInGallery ?? true,
       data.galleryCategory ?? null
     ]
@@ -95,8 +94,8 @@ export async function createGalleryImage(pool, data) {
 export async function createGalleryVideo(pool, data) {
   const { rows } = await pool.query(
     `INSERT INTO gallery_videos
-      (filename, original_name, local_path, cloudinary_url, cloudinary_public_id, width, height, size_bytes, alt_de, alt_en, alt_ku, show_in_gallery, gallery_category, sort_order)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, COALESCE($13, 'moments'),
+      (filename, original_name, local_path, cloudinary_url, cloudinary_public_id, width, height, size_bytes, alt_de, alt_en, show_in_gallery, gallery_category, sort_order)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, COALESCE($12, 'moments'),
       COALESCE((SELECT MAX(sort_order) FROM gallery_videos), 0) + 1)
      RETURNING *`,
     [
@@ -110,7 +109,6 @@ export async function createGalleryVideo(pool, data) {
       data.sizeBytes,
       data.altDe,
       data.altEn,
-      data.altKu,
       data.showInGallery ?? true,
       data.galleryCategory ?? null
     ]

@@ -19,8 +19,8 @@ const router = Router();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const imageUploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
-const videoUploadDir = path.join(__dirname, '..', 'public', 'video', 'uploads');
+const imageUploadDir = path.join(__dirname, '..', '..', 'data', 'uploads', 'images');
+const videoUploadDir = path.join(__dirname, '..', '..', 'data', 'uploads', 'videos');
 fs.mkdirSync(imageUploadDir, { recursive: true });
 fs.mkdirSync(videoUploadDir, { recursive: true });
 
@@ -119,7 +119,12 @@ function parseMultipart({ targetDir, resolveTargetDir } = {}) {
 
 
 router.get('/adminbackend', requireAdmin, getAdminPanel);
-router.post('/adminbackend/pages/:id', requireAdmin, updatePage);
+router.post(
+  '/adminbackend/pages/:id',
+  requireAdmin,
+  parseMultipart({ targetDir: imageUploadDir }),
+  updatePage
+);
 router.post(
   '/adminbackend/gallery/images',
   requireAdmin,

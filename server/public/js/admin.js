@@ -1030,6 +1030,20 @@ document.addEventListener('DOMContentLoaded', () => {
       return [];
     }
   };
+  const setAltInputs = (picker, altDe, altEn, { force = false } = {}) => {
+    const altDeInput = picker.querySelector('[data-gallery-alt-input="de"]');
+    const altEnInput = picker.querySelector('[data-gallery-alt-input="en"]');
+    if (altDeInput && (force || !altDeInput.value)) {
+      altDeInput.value = altDe || altDeInput.value || '';
+    }
+    if (altEnInput && (force || !altEnInput.value)) {
+      altEnInput.value = altEn || altEnInput.value || '';
+    }
+  };
+  const stripExtension = (value) => {
+    if (!value) return '';
+    return value.replace(/\.[^/.]+$/, '');
+  };
   const truncateText = (value, maxLength = 30) => {
     if (!value) return '';
     const text = String(value);
@@ -1283,6 +1297,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const label = item.dataset.galleryItemLabel || id;
         preview.textContent = label ? `Ausgewählt: ${label}` : 'Keine Datei ausgewählt.';
       }
+      if (type === 'image') {
+        const altDe = item.dataset.galleryItemAltDe || '';
+        const altEn = item.dataset.galleryItemAltEn || '';
+        if (altDe || altEn) {
+          setAltInputs(activePicker, altDe, altEn, { force: true });
+        }
+      }
       closeSelector();
     });
   });
@@ -1301,6 +1322,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const preview = picker.querySelector('[data-gallery-preview]');
         if (preview) {
           preview.textContent = file ? `Ausgewählt: ${file.name}` : 'Keine Datei ausgewählt.';
+        }
+        if (file) {
+          const fallbackAlt = stripExtension(file.name);
+          setAltInputs(picker, fallbackAlt, fallbackAlt);
         }
       });
     }

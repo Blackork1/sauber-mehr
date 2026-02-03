@@ -14,6 +14,14 @@
   const getCtaButtonLabel = (block) => block?.button?.label || block?.cta?.label || '';
   const getCtaButtonHref = (block) => block?.button?.href || block?.cta?.href || '';
   const getImageTextImage = (block) => block?.img?.src || block?.imageUrl || '';
+    const getAltValue = (value, locale) => {
+    if (value && typeof value === 'object') {
+      return value[locale] || '';
+    }
+    return value || '';
+  };
+  const getAltDe = (value) => getAltValue(value, 'de');
+  const getAltEn = (value) => getAltValue(value, 'en');
   const getImageTextAlt = (block) => block?.img?.alt || block?.imageAlt || '';
   const getRichText = (block) => block?.html || block?.text || '';
   const formatDateTime = (value) => {
@@ -105,8 +113,7 @@
         const kostenSteps = Array.isArray(kostenBlock.steps) ? kostenBlock.steps : [];
       %>
 
-       <form class="admin-panel <%= activeTab === `page-${page.id}` ? '' : 'is-hidden' %>" method="post" action="/adminbackend/pages/<%= page.id %>" data-panel="page-<%= page.id %>" data-panel-group="pages">
-         <input type="hidden" name="page_mode" value="<%= isHomePage ? 'home' : 'page' %>">
+       <form class="admin-panel <%= activeTab === `page-${page.id}` ? '' : 'is-hidden' %>" method="post" action="/adminbackend/pages/<%= page.id %>" enctype="multipart/form-data" data-panel="page-<%= page.id %>" data-panel-group="pages"> <input type="hidden" name="page_mode" value="<%= isHomePage ? 'home' : 'page' %>">
          <div class="admin-panel__section">
            <h3 class="admin-panel__title">Seiteneinstellungen</h3>
            <div class="admin-grid">
@@ -195,8 +202,22 @@
                <input type="text" name="home_hero_cta_href" value="<%= safeValue(getHeroCtaHref(heroBlock)) %>">
              </div>
              <div class="admin-field">
-               <label>Bild-URL</label>
-               <input type="text" name="home_hero_image" value="<%= safeValue(getHeroImage(heroBlock)) %>">
+               <label>Hero-Bild</label>
+               <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                 <div class="admin-media-picker__controls">
+                   <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                   <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                 </div>
+                 <input type="file" name="home_hero_image_upload" accept="image/*" data-upload-input hidden>
+                 <input type="hidden" name="home_hero_image_gallery_id" data-gallery-input="image" value="">
+                 <input type="hidden" name="home_hero_image_current" value="<%= safeValue(getHeroImage(heroBlock)) %>">
+                 <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                 <% if (getHeroImage(heroBlock)) { %>
+                 <a class="admin-media-picker__preview-link" href="<%= getHeroImage(heroBlock) %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= getHeroImage(heroBlock) %>" data-media-preview-type="image">
+                   Aktuelles Bild anzeigen
+                 </a>
+                 <% } %>
+               </div>
              </div>
            </div>
          </div>
@@ -255,11 +276,33 @@
              </div>
              <div class="admin-field">
                <label>Schritt <%= index + 1 %> Bild</label>
-               <input type="text" name="home_kosten_step<%= index + 1 %>_image" value="<%= safeValue(kostenSteps[index]?.imageUrl) %>">
-             </div>
-             <div class="admin-field">
-               <label>Schritt <%= index + 1 %> Alt-Text</label>
-               <input type="text" name="home_kosten_step<%= index + 1 %>_alt" value="<%= safeValue(kostenSteps[index]?.imageAlt) %>">
+               <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                 <div class="admin-media-picker__controls">
+                   <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                   <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                 </div>
+                 <input type="file" name="home_kosten_step<%= index + 1 %>_upload" accept="image/*" data-upload-input hidden>
+                 <input type="hidden" name="home_kosten_step<%= index + 1 %>_gallery_id" data-gallery-input="image" value="">
+                 <input type="hidden" name="home_kosten_step<%= index + 1 %>_image_current" value="<%= safeValue(kostenSteps[index]?.imageUrl) %>">
+                 <input type="hidden" name="home_kosten_step<%= index + 1 %>_alt_current_de" value="<%= safeValue(getAltDe(kostenSteps[index]?.imageAlt)) %>">
+                 <input type="hidden" name="home_kosten_step<%= index + 1 %>_alt_current_en" value="<%= safeValue(getAltEn(kostenSteps[index]?.imageAlt)) %>">
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Alt-Text Deutsch</label>
+                     <input type="text" name="home_kosten_step<%= index + 1 %>_alt_de" data-gallery-alt-input="de" value="<%= safeValue(getAltDe(kostenSteps[index]?.imageAlt)) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Alt-Text Englisch</label>
+                     <input type="text" name="home_kosten_step<%= index + 1 %>_alt_en" data-gallery-alt-input="en" value="<%= safeValue(getAltEn(kostenSteps[index]?.imageAlt)) %>">
+                   </div>
+                 </div>
+                 <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                 <% if (kostenSteps[index]?.imageUrl) { %>
+                 <a class="admin-media-picker__preview-link" href="<%= kostenSteps[index].imageUrl %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= kostenSteps[index].imageUrl %>" data-media-preview-type="image">
+                   Aktuelles Bild anzeigen
+                 </a>
+                 <% } %>
+               </div>
              </div>
              <% }) %>
            </div>
@@ -285,12 +328,34 @@
            </div>
            <div class="admin-grid">
              <div class="admin-field">
-               <label>Bild-URL</label>
-               <input type="text" name="home_imagetext_image" value="<%= safeValue(getImageTextImage(imageTextBlock)) %>">
-             </div>
-             <div class="admin-field">
-               <label>Bild-Alt</label>
-               <input type="text" name="home_imagetext_alt" value="<%= safeValue(getImageTextAlt(imageTextBlock)) %>">
+               <label>Bild</label>
+               <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                 <div class="admin-media-picker__controls">
+                   <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                   <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                 </div>
+                 <input type="file" name="home_imagetext_upload" accept="image/*" data-upload-input hidden>
+                 <input type="hidden" name="home_imagetext_gallery_id" data-gallery-input="image" value="">
+                 <input type="hidden" name="home_imagetext_image_current" value="<%= safeValue(getImageTextImage(imageTextBlock)) %>">
+                 <input type="hidden" name="home_imagetext_alt_current_de" value="<%= safeValue(getAltDe(getImageTextAlt(imageTextBlock))) %>">
+                 <input type="hidden" name="home_imagetext_alt_current_en" value="<%= safeValue(getAltEn(getImageTextAlt(imageTextBlock))) %>">
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Alt-Text Deutsch</label>
+                     <input type="text" name="home_imagetext_alt_de" data-gallery-alt-input="de" value="<%= safeValue(getAltDe(getImageTextAlt(imageTextBlock))) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Alt-Text Englisch</label>
+                     <input type="text" name="home_imagetext_alt_en" data-gallery-alt-input="en" value="<%= safeValue(getAltEn(getImageTextAlt(imageTextBlock))) %>">
+                   </div>
+                 </div>
+                 <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                 <% if (getImageTextImage(imageTextBlock)) { %>
+                 <a class="admin-media-picker__preview-link" href="<%= getImageTextImage(imageTextBlock) %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= getImageTextImage(imageTextBlock) %>" data-media-preview-type="image">
+                   Aktuelles Bild anzeigen
+                 </a>
+                 <% } %>
+               </div>
              </div>
            </div>
          </div>
@@ -412,11 +477,11 @@
                  </div>
                  <div class="admin-field">
                    <label>Alt-Text Deutsch:</label>
-                   <input type="text" name="gallery_image_alt_de" placeholder="Alt-Text Deutsch">
+                   <input type="text" name="gallery_image_alt_de" placeholder="Alt-Text Deutsch" required>
                  </div>
                  <div class="admin-field">
                    <label>Alt-Text Englisch:</label>
-                   <input type="text" name="gallery_image_alt_en" placeholder="Alt-Text Englisch">
+                   <input type="text" name="gallery_image_alt_en" placeholder="Alt-Text Englisch" required>
                  </div>
                </div>
                <div class="admin-grid">
@@ -491,11 +556,11 @@
                  </div>
                  <div class="admin-field">
                    <label>Alt-Text Deutsch:</label>
-                   <input type="text" name="gallery_video_alt_de" placeholder="Alt-Text Deutsch">
+                   <input type="text" name="gallery_video_alt_de" placeholder="Alt-Text Deutsch" required>
                  </div>
                  <div class="admin-field">
                    <label>Alt-Text Englisch:</label>
-                   <input type="text" name="gallery_video_alt_en" placeholder="Alt-Text Englisch">
+                   <input type="text" name="gallery_video_alt_en" placeholder="Alt-Text Englisch" required>
                  </div>
                </div>
                <div class="admin-grid">
@@ -598,6 +663,40 @@
            <% } %>
          </div>
        </section>
+     </div>
+
+     <div class="admin-gallery-selector is-hidden" data-gallery-selector>
+       <div class="admin-gallery-selector__backdrop" data-gallery-close></div>
+       <div class="admin-gallery-selector__modal">
+         <div class="admin-gallery-selector__header">
+           <h3>Medien auswählen</h3>
+           <button type="button" class="admin-gallery-selector__close" data-gallery-close>×</button>
+         </div>
+         <div class="admin-gallery-selector__tabs">
+           <button type="button" class="admin-tab is-active" data-gallery-selector-tab="images">Bilder</button>
+           <button type="button" class="admin-tab" data-gallery-selector-tab="videos">Videos</button>
+         </div>
+         <div class="admin-gallery-selector__panel" data-gallery-selector-panel="images">
+           <div class="admin-gallery-selector__grid">
+             <% (galleryImages || []).forEach((image) => { %>
+             <button type="button" class="admin-gallery-selector__item" data-gallery-item data-gallery-item-type="image" data-gallery-item-id="<%= image.id %>" data-gallery-item-url="<%= image.cloudinary_url || image.local_path %>" data-gallery-item-label="<%= image.original_name || image.filename %>" data-gallery-item-alt-de="<%= image.alt_de || '' %>" data-gallery-item-alt-en="<%= image.alt_en || '' %>">
+               <img src="<%= image.cloudinary_url || image.local_path %>" alt="<%= image.alt_de || '' %>">
+               <span><%= image.original_name || image.filename %></span>
+             </button>
+             <% }) %>
+           </div>
+         </div>
+         <div class="admin-gallery-selector__panel is-hidden" data-gallery-selector-panel="videos">
+           <div class="admin-gallery-selector__grid">
+             <% (galleryVideos || []).forEach((video) => { %>
+             <button type="button" class="admin-gallery-selector__item" data-gallery-item data-gallery-item-type="video" data-gallery-item-id="<%= video.id %>" data-gallery-item-url="<%= video.cloudinary_url || video.local_path %>" data-gallery-item-label="<%= video.original_name || video.filename %>">
+               <video src="<%= video.cloudinary_url || video.local_path %>" muted></video>
+               <span><%= video.original_name || video.filename %></span>
+             </button>
+             <% }) %>
+           </div>
+         </div>
+       </div>
      </div>
    </section>
  </section>

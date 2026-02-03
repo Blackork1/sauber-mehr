@@ -1,4 +1,14 @@
 <%
+  const resolveAlt = (value) => {
+    if (value && typeof value === 'object') {
+      const locale = page?.locale || '';
+      if (locale.toLowerCase().startsWith('en')) {
+        return value.en || value.de || '';
+      }
+      return value.de || value.en || '';
+    }
+    return value || '';
+  };
   const heading = block?.headline || 'Was wird die Reinigung kosten?';
   const subtitle = block?.subline || 'In 3 einfachen Schritten zu deinem unverbindlichen Angebot';
   const steps = Array.isArray(block?.steps) && block.steps.length
@@ -28,7 +38,7 @@
         <span class="sauber-kosten__index animate-on-scroll sauber-kosten__animate" style="--delay: <%= baseDelay.toFixed(1) %>s;"><%= index + 1 %></span>
         <div class="sauber-kosten__card animate-on-scroll sauber-kosten__animate" style="--delay: <%= baseDelay.toFixed(1) %>s;">
           <div class="sauber-kosten__card-inner">
-            <img class="sauber-kosten__image" src="<%= step.imageUrl %>" alt="<%= step.imageAlt || step.title %>">
+            <img class="sauber-kosten__image" src="<%= step.imageUrl %>" alt="<%= resolveAlt(step.imageAlt) || step.title %>">
             <div class="sauber-kosten__label"><%= step.title %></div>
           </div>
         </div>

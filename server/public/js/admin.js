@@ -1040,6 +1040,19 @@ document.addEventListener('DOMContentLoaded', () => {
       altEnInput.value = altEn || altEnInput.value || '';
     }
   };
+
+  const updateAltVisibility = (picker) => {
+    const altFields = picker.querySelector('[data-alt-fields]');
+    if (!altFields) return;
+    const uploadInput = picker.querySelector('[data-upload-input]');
+    const uploadSelected = Boolean(uploadInput?.files?.length);
+    const gallerySelected = Array.from(picker.querySelectorAll('[data-gallery-input]'))
+      .some((input) => Boolean(input.value));
+    const currentSelected = Boolean(picker.querySelector('[data-gallery-current]')?.value);
+    const shouldShow = uploadSelected || gallerySelected || currentSelected;
+    altFields.toggleAttribute('hidden', !shouldShow);
+  };
+
   const stripExtension = (value) => {
     if (!value) return '';
     return value.replace(/\.[^/.]+$/, '');
@@ -1304,6 +1317,7 @@ document.addEventListener('DOMContentLoaded', () => {
           setAltInputs(activePicker, altDe, altEn, { force: true });
         }
       }
+      updateAltVisibility(activePicker);
       closeSelector();
     });
   });
@@ -1327,6 +1341,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const fallbackAlt = stripExtension(file.name);
           setAltInputs(picker, fallbackAlt, fallbackAlt);
         }
+        updateAltVisibility(picker);
       });
     }
 
@@ -1347,6 +1362,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setPickerSelections(picker, nextSelections);
       });
     }
+  });
+
+  mediaPickers.forEach((picker) => {
+    updateAltVisibility(picker);
   });
 
   const initDynamicList = (container) => {

@@ -4,8 +4,28 @@
   const heroCtaLabel = block?.ctaLabel || 'Beratungstermin buchen';
   const heroCtaHref = block?.ctaHref || '#kontakt';
   const heroImage = block?.image || '/images/team.webp';
+  const isLeistungenHero =
+    page?.canonical_path?.startsWith('/leistungen')
+    || ['leistungen', 'leistungen-de', 'leistungen-en'].includes(page?.slug);
 %>
-<section class="sauber-hero" aria-labelledby="sauber-hero-title">
+<section class="sauber-hero <%= isLeistungenHero ? 'sauber-hero--leistungen' : '' %>" aria-labelledby="sauber-hero-title">
+  <% if (isLeistungenHero) { %>
+  <div class="section__inner sauber-hero__inner">
+    <h1 class="sauber-hero__title" id="sauber-hero-title"><%- renderTextWithLinks(heroHeadline) %></h1>
+    <div class="sauber-hero__body">
+      <div class="sauber-hero__text">
+        <p class="sauber-hero__subtitle"><%- renderTextWithLinks(heroSubline) %></p>
+        <div class="sauber-hero__actions">
+          <a class="sauber-hero__button" href="tel:+491795163864">Jetzt anrufen</a>
+          <a class="sauber-hero__button sauber-hero__button--secondary" href="https://wa.me/491795163864" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        </div>
+      </div>
+      <div class="sauber-hero__visual">
+        <img src="<%= heroImage %>" alt="<%= heroHeadline %>" loading="lazy" />
+      </div>
+    </div>
+  </div>
+  <% } else { %>
   <div class="sauber-hero__media" style="--hero-image: url('<%= heroImage %>')"></div>
   <div class="sauber-hero__content">
     <div class="sauber-hero__upper">
@@ -14,4 +34,5 @@
     </div>
     <a class="sauber-hero__button" href="<%= heroCtaHref %>"><%= heroCtaLabel %></a>
   </div>
+  <% } %>
 </section>

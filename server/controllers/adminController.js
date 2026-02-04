@@ -125,7 +125,12 @@ const buildHomeContent = (body) => {
     subline: normalizeString(body.home_hero_subline),
     ctaLabel: normalizeString(body.home_hero_cta_label),
     ctaHref: normalizeString(body.home_hero_cta_href),
-    image: normalizeString(body.home_hero_image)
+    image: normalizeString(body.home_hero_image),
+    imageAlt: {
+      de: normalizeAltValue(body.home_hero_alt_de)
+        || normalizeAltValue(body.home_hero_alt),
+      en: normalizeAltValue(body.home_hero_alt_en)
+    }
   };
   if (heroEnabled && Object.values(hero).some((value) => value)) {
     blocks.push(hero);
@@ -238,7 +243,12 @@ const buildLeistungenContent = (body) => {
     subline: normalizeString(body.leistungen_hero_subline),
     ctaLabel: normalizeString(body.leistungen_hero_cta_label),
     ctaHref: normalizeString(body.leistungen_hero_cta_href),
-    image: normalizeString(body.leistungen_hero_image)
+    image: normalizeString(body.leistungen_hero_image),
+    imageAlt: {
+      de: normalizeAltValue(body.leistungen_hero_alt_de)
+        || normalizeAltValue(body.leistungen_hero_alt),
+      en: normalizeAltValue(body.leistungen_hero_alt_en)
+    }
   };
   if (heroEnabled && Object.values(hero).some((value) => value)) {
     blocks.push(hero);
@@ -246,12 +256,20 @@ const buildLeistungenContent = (body) => {
 
   const kostenEnabled = normalizeBoolean(body.leistungen_kosten_enabled);
   const kostenSteps = [1, 2, 3]
-    .map((index) => ({
-      title: normalizeString(body[`leistungen_kosten_step${index}_title`]),
-      imageUrl: normalizeString(body[`leistungen_kosten_step${index}_image`]),
-      imageAlt: normalizeString(body[`leistungen_kosten_step${index}_alt`])
-    }))
-    .filter((step) => step.title || step.imageUrl || step.imageAlt);
+    .map((index) => {
+      const altDe = normalizeAltValue(body[`leistungen_kosten_step${index}_alt_de`])
+        || normalizeAltValue(body[`leistungen_kosten_step${index}_alt`]);
+      const altEn = normalizeAltValue(body[`leistungen_kosten_step${index}_alt_en`]);
+      return {
+        title: normalizeString(body[`leistungen_kosten_step${index}_title`]),
+        imageUrl: normalizeString(body[`leistungen_kosten_step${index}_image`]),
+        imageAlt: {
+          de: altDe,
+          en: altEn
+        }
+      };
+    })
+    .filter((step) => step.title || step.imageUrl || step.imageAlt?.de || step.imageAlt?.en);
   const kosten = {
     type: 'kosten',
     headline: normalizeString(body.leistungen_kosten_headline),
@@ -456,11 +474,17 @@ export async function updatePage(req, res, next) {
       const heroImage = await resolveImageField({
         upload: req.files?.home_hero_image_upload,
         galleryId: req.body.home_hero_image_gallery_id,
-        currentUrl: req.body.home_hero_image_current
+        currentUrl: req.body.home_hero_image_current,
+        altDe: req.body.home_hero_alt_de,
+        altEn: req.body.home_hero_alt_en,
+        currentAltDe: req.body.home_hero_alt_current_de,
+        currentAltEn: req.body.home_hero_alt_current_en
       });
       if (heroImage?.src) {
         req.body.home_hero_image = heroImage.src;
       }
+      req.body.home_hero_alt_de = heroImage.altDe;
+      req.body.home_hero_alt_en = heroImage.altEn;
 
       for (const index of [1, 2, 3]) {
         const stepImage = await resolveImageField({
@@ -493,6 +517,39 @@ export async function updatePage(req, res, next) {
       }
       req.body.home_imagetext_alt_de = imageText.altDe;
       req.body.home_imagetext_alt_en = imageText.altEn;
+    }
+    if (isLeistungen) {
+      const heroImage = await resolveImageField({
+        upload: req.files?.leistungen_hero_image_upload,
+        galleryId: req.body.leistungen_hero_image_gallery_id,
+        currentUrl: req.body.leistungen_hero_image_current,
+        altDe: req.body.leistungen_hero_alt_de,
+        altEn: req.body.leistungen_hero_alt_en,
+        currentAltDe: req.body.leistungen_hero_alt_current_de,
+        currentAltEn: req.body.leistungen_hero_alt_current_en
+      });
+      if (heroImage?.src) {
+        req.body.leistungen_hero_image = heroImage.src;
+      }
+      req.body.leistungen_hero_alt_de = heroImage.altDe;
+      req.body.leistungen_hero_alt_en = heroImage.altEn;
+
+      for (const index of [1, 2, 3]) {
+        const stepImage = await resolveImageField({
+          upload: req.files?.[`leistungen_kosten_step${index}_upload`],
+          galleryId: req.body[`leistungen_kosten_step${index}_gallery_id`],
+          currentUrl: req.body[`leistungen_kosten_step${index}_image_current`],
+          altDe: req.body[`leistungen_kosten_step${index}_alt_de`],
+          altEn: req.body[`leistungen_kosten_step${index}_alt_en`],
+          currentAltDe: req.body[`leistungen_kosten_step${index}_alt_current_de`],
+          currentAltEn: req.body[`leistungen_kosten_step${index}_alt_current_en`]
+        });
+        if (stepImage?.src) {
+          req.body[`leistungen_kosten_step${index}_image`] = stepImage.src;
+        }
+        req.body[`leistungen_kosten_step${index}_alt_de`] = stepImage.altDe;
+        req.body[`leistungen_kosten_step${index}_alt_en`] = stepImage.altEn;
+      }
     }
     const content = isHome
       ? buildHomeContent(req.body)

@@ -1644,6 +1644,13 @@ function initImageSliders() {
       const itemThumbs = thumbnails ? thumbnails.querySelectorAll('.image-slider__thumb') : [];
       if (!itemSlider.length) return;
 
+      const currentSlide = list.querySelector('.image-slider__item');
+      const currentContent = currentSlide?.querySelector('.image-slider__content');
+      if (currentContent) {
+        currentContent.classList.remove('is-entering');
+        currentContent.classList.add('is-leaving');
+      }
+
       if (direction === 'next') {
         list.appendChild(itemSlider[0]);
         if (thumbnails && itemThumbs[0]) {
@@ -1659,10 +1666,19 @@ function initImageSliders() {
         slider.classList.add('is-prev');
       }
 
+      const nextSlide = list.querySelector('.image-slider__item');
+      const nextContent = nextSlide?.querySelector('.image-slider__content');
+      if (nextContent) {
+        nextContent.classList.remove('is-leaving');
+        nextContent.classList.add('is-entering');
+      }
+
       clearTimeout(runTimeout);
       runTimeout = setTimeout(() => {
         slider.classList.remove('is-next');
         slider.classList.remove('is-prev');
+        if (currentContent) currentContent.classList.remove('is-leaving');
+        if (nextContent) nextContent.classList.remove('is-entering');
       }, timeRunning);
 
       updateCta();

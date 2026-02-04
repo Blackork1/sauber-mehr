@@ -637,10 +637,60 @@ VALUES
 
 INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display)
 VALUES
-  ('impressum', '/impressum', 'Impressum', 'Impressum – Sauber Mehr', 'Impressum von Sauber Mehr.', '[]'::jsonb, false, false, true)
-  ON CONFLICT (slug) DO NOTHING;
+  (
+    'impressum',
+    '/impressum',
+    'Impressum',
+    'Impressum – Sauber Mehr',
+    'Impressum der TM Sauber & Mehr UG (haftungsbeschränkt).',
+    '[
+  {
+    "type": "richText",
+    "title": "Impressum",
+    "html": "<p><strong>Name des Unternehmens:</strong><br>TM Sauber &amp; Mehr UG (haftungsbeschränkt)</p><p><strong>Firmensitz:</strong><br>Senftenberger Ring 38B<br>13435 Berlin</p><p><strong>Vertreten durch:</strong><br>Tatjahna Genzke</p><p><strong>Kontaktinformationen:</strong><br>T: +49 30 28641-263<br>E: <a href='mailto:info@sauber-mehr.de'>info@sauber-mehr.de</a></p><p><strong>Registereintrag:</strong><br>Amtsgericht Charlottenburg<br>Handelsregister – Nummer: HRB 245844B</p><p><strong>Kammer und Aufsichtsbehörde:</strong><br>Handwerkskammer Berlin<br>Blücherstraße 86 · 10961 Berlin</p><p><strong>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:</strong><br>Tatjahna Genzke<br>Senftenberger Ring 38B<br>13435 Berlin</p>"
+  }
+]'::jsonb,
+    false,
+    false,
+    true
+  )
+  ON CONFLICT (slug) DO UPDATE SET
+    canonical_path = EXCLUDED.canonical_path,
+    title = EXCLUDED.title,
+    meta_title = EXCLUDED.meta_title,
+    meta_description = EXCLUDED.meta_description,
+    content = EXCLUDED.content,
+    nav = EXCLUDED.nav,
+    show_in_nav = EXCLUDED.show_in_nav,
+    display = EXCLUDED.display,
+    updated_at = now();
 
 INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display)
 VALUES
-  ('datenschutz', '/datenschutz/', 'Datenschutz', 'Datenschutz – Sauber Mehr', 'Datenschutz von Sauber Mehr.', '[]'::jsonb, false, false, true)
-ON CONFLICT (slug) DO NOTHING;
+  (
+    'datenschutz',
+    '/datenschutz/',
+    'Datenschutz',
+    'Datenschutz – Sauber Mehr',
+    'Datenschutzerklärung der TM Sauber & Mehr UG (haftungsbeschränkt).',
+    '[
+  {
+    "type": "richText",
+    "title": "Datenschutzerklärung",
+    "html": "<p>Wir nehmen den Schutz Ihrer personenbezogenen Daten ernst. Nachfolgend informieren wir Sie über Art, Umfang und Zweck der Verarbeitung personenbezogener Daten bei Nutzung unserer Website.</p><h3>1. Verantwortlicher</h3><p>TM Sauber &amp; Mehr UG (haftungsbeschränkt)<br>Senftenberger Ring 38B<br>13435 Berlin<br>T: +49 30 28641-263<br>E: <a href='mailto:info@sauber-mehr.de'>info@sauber-mehr.de</a></p><h3>2. Hosting</h3><p>Unsere Website wird bei der IONOS SE, Elgendorfer Str. 57, 56410 Montabaur (Deutschland) gehostet. Die Verarbeitung erfolgt auf Servern in Deutschland. Mit dem Hosting-Anbieter besteht ein Vertrag zur Auftragsverarbeitung gemäß Art. 28 DSGVO.</p><h3>3. Zugriffsdaten und Server-Logfiles</h3><p>Beim Besuch der Website verarbeitet der Hosting-Anbieter folgende Daten: IP-Adresse, Datum und Uhrzeit der Anfrage, Zeitzonendifferenz, Inhalt der Anfrage (konkrete Seite), HTTP-Statuscode, übertragene Datenmenge, Referrer-URL, Browsertyp, Betriebssystem und dessen Oberfläche sowie Sprache und Version der Browsersoftware. Die Verarbeitung erfolgt zur Gewährleistung der Sicherheit und Stabilität der Website auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO.</p><h3>4. Kontaktaufnahme</h3><p>Wenn Sie uns per E-Mail, Telefon oder Kontaktformular kontaktieren, verarbeiten wir Ihre Angaben zur Bearbeitung der Anfrage und für den Fall von Anschlussfragen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahmen) sowie Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an effizienter Kommunikation).</p><h3>5. Newsletter (Mailchimp)</h3><p>Für den Versand unseres Newsletters nutzen wir den Dienst „Mailchimp“ der Intuit Inc., 2700 Coast Ave, Mountain View, CA 94043, USA. Die Anmeldung erfolgt im Double-Opt-In-Verfahren. Dabei werden E-Mail-Adresse, Zeitpunkt der Anmeldung und Bestätigung sowie IP-Adresse verarbeitet. Rechtsgrundlage ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO. Die Datenübermittlung in die USA erfolgt auf Grundlage von Standardvertragsklauseln (SCC). Sie können den Newsletter jederzeit über den Abmeldelink oder per E-Mail abbestellen.</p><h3>6. Medienverwaltung (Cloudinary)</h3><p>Zur Bereitstellung und Optimierung von Bildern und Videos verwenden wir den Dienst Cloudinary Ltd., 111 W Evelyn Ave, Sunnyvale, CA 94086, USA. Bei Abruf von Medien werden IP-Adresse, Gerätedaten und technische Informationen verarbeitet. Die Verarbeitung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO (schnelle und sichere Medienauslieferung). Datenübermittlungen in die USA erfolgen auf Basis von Standardvertragsklauseln.</p><h3>7. Google Fonts</h3><p>Unsere Website nutzt Google Fonts. Die Schriftarten werden von Servern der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland geladen. Dabei wird Ihre IP-Adresse an Google übertragen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (einheitliche Darstellung und performante Auslieferung). Es kann eine Datenübermittlung in die USA stattfinden; diese erfolgt auf Grundlage von Standardvertragsklauseln.</p><h3>8. Google Search Console</h3><p>Wir verwenden die Google Search Console der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland, um die technische Performance unserer Website in der Google-Suche zu überwachen. Google verarbeitet dabei insbesondere aggregierte Suchanfragen, Klickdaten und technische Informationen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (Analyse und Optimierung der Auffindbarkeit). Eine Datenübermittlung in die USA ist möglich und erfolgt auf Basis von Standardvertragsklauseln.</p><h3>9. Ihre Rechte</h3><p>Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16 DSGVO), Löschung (Art. 17 DSGVO), Einschränkung der Verarbeitung (Art. 18 DSGVO), Datenübertragbarkeit (Art. 20 DSGVO) sowie Widerspruch gegen die Verarbeitung (Art. 21 DSGVO). Sofern die Verarbeitung auf Ihrer Einwilligung beruht, können Sie diese jederzeit mit Wirkung für die Zukunft widerrufen (Art. 7 Abs. 3 DSGVO).</p><h3>10. Beschwerderecht bei der Aufsichtsbehörde</h3><p>Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren. Zuständig ist insbesondere die Berliner Beauftragte für Datenschutz und Informationsfreiheit.</p><h3>11. Aktualität und Änderung dieser Datenschutzerklärung</h3><p>Wir behalten uns vor, diese Datenschutzerklärung anzupassen, damit sie stets den aktuellen rechtlichen Anforderungen entspricht.</p>"
+  }
+]'::jsonb,
+    false,
+    false,
+    true
+  )
+ON CONFLICT (slug) DO UPDATE SET
+  canonical_path = EXCLUDED.canonical_path,
+  title = EXCLUDED.title,
+  meta_title = EXCLUDED.meta_title,
+  meta_description = EXCLUDED.meta_description,
+  content = EXCLUDED.content,
+  nav = EXCLUDED.nav,
+  show_in_nav = EXCLUDED.show_in_nav,
+  display = EXCLUDED.display,
+  updated_at = now();

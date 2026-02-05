@@ -122,7 +122,7 @@
           .filter((entry) => entry.canonical_path?.startsWith('/leistungen/') && entry.canonical_path !== '/leistungen');
       %>
 
-       <form class="admin-panel <%= activeTab === `page-${page.id}` ? '' : 'is-hidden' %>" method="post" action="/adminbackend/pages/<%= page.id %>" enctype="multipart/form-data" data-panel="page-<%= page.id %>" data-panel-group="pages"> <input type="hidden" name="page_mode" value="<%= isHomePage ? 'home' : 'page' %>">
+       <form class="admin-panel <%= activeTab === `page-${page.id}` ? '' : 'is-hidden' %>" method="post" action="/adminbackend/pages/<%= page.id %>" enctype="multipart/form-data" data-panel="page-<%= page.id %>" data-panel-group="pages">
          <input type="hidden" name="page_mode" value="<%= isHomePage ? 'home' : (isLeistungenPage ? 'leistungen' : 'page') %>">
          <div class="admin-panel__section">
            <h3 class="admin-panel__title">Seiteneinstellungen</h3>

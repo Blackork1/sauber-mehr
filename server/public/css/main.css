@@ -83,6 +83,10 @@ html {
   box-sizing: border-box;
 }
 
+.blueText {
+  color: var(--sauber-primary-aqua);
+}
+
 .section--align-left .section__inner {
   text-align: left;
 }

@@ -654,6 +654,33 @@ export async function updatePage(req, res, next) {
           block.slider = block.slider || {};
           block.slider.slides = slides;
         }
+
+
+        if (block.type === 'kontaktseite') {
+          const resolveOptionImages = async (cardKey) => {
+            const options = Array.isArray(block?.[cardKey]?.options) ? block[cardKey].options : [];
+            for (let index = 0; index < options.length; index += 1) {
+              const fieldBase = `content_block_${blockId}__${cardKey}.options.${index}.imageUrl`;
+              const resolved = await resolveImageFieldSimple({
+                upload: req.files?.[`${fieldBase}_upload`],
+                galleryId: req.body[`${fieldBase}_gallery_id`],
+                currentUrl: options[index]?.imageUrl,
+                alt: options[index]?.imageAlt,
+                pool
+              });
+              if (resolved.src) options[index].imageUrl = resolved.src;
+              if (resolved.alt) options[index].imageAlt = resolved.alt;
+            }
+            block[cardKey] = block[cardKey] || {};
+            block[cardKey].options = options;
+          };
+
+          await resolveOptionImages('startCard');
+          await resolveOptionImages('areaACard');
+          await resolveOptionImages('areaBCard');
+          await resolveOptionImages('sectorCard');
+          await resolveOptionImages('contactMethodCard');
+        }
       }
 
       pageContent = blocks.map((block) => stripEmptyArrayItems(block));

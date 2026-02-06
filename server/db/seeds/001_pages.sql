@@ -638,6 +638,172 @@ VALUES
 INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display)
 VALUES
   (
+    'kontakt',
+    '/kontakt',
+    'Kontakt',
+    'Kontakt – Sauber & Mehr',
+    'Kontaktiere Sauber & Mehr für dein individuelles Reinigungsangebot.',
+    '[
+  {
+    "type": "kontaktseite",
+    "action": "/contact",
+    "breadcrumb": "Startseite > Kontakt",
+    "headline": "Kontaktiere uns und",
+    "headlineAccent": "erhalte dein Angebot",
+    "description": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.",
+    "primaryCta": {
+      "label": "Jetzt anrufen",
+      "href": "tel:+493028641263"
+    },
+    "secondaryCta": {
+      "label": "WhatsApp Nachricht",
+      "href": "https://wa.me/493028641263"
+    },
+    "startCard": {
+      "title": "Was benötigst du?",
+      "options": [
+        {
+          "label": "Unterhaltsreinigung",
+          "imageUrl": "/images/unterhaltsreinigung.webp",
+          "imageAlt": "Unterhaltsreinigung",
+          "branch": "area-a"
+        },
+        {
+          "label": "Fensterreinigung",
+          "imageUrl": "/images/fensterreinigung.webp",
+          "imageAlt": "Fensterreinigung",
+          "branch": "area-b"
+        },
+        {
+          "label": "Andere Reinigung",
+          "imageUrl": "/images/angebot.webp",
+          "imageAlt": "Andere Reinigung",
+          "branch": "area-a"
+        }
+      ]
+    },
+    "areaACard": {
+      "title": "Wie viel Quadratmeter müssen gereinigt werden?",
+      "options": [
+        {
+          "label": "<200 m2",
+          "imageUrl": "/images/büroreinigung.webp",
+          "imageAlt": "<200 m2"
+        },
+        {
+          "label": "> 200 m2",
+          "imageUrl": "/images/aufgangsreinigung.webp",
+          "imageAlt": "> 200 m2"
+        },
+        {
+          "label": "> 1000m2",
+          "imageUrl": "/images/unterhaltsreinigung.webp",
+          "imageAlt": "> 1000m2"
+        }
+      ]
+    },
+    "areaBCard": {
+      "title": "Wie groß ist die Fensterfläche ungefähr?",
+      "options": [
+        {
+          "label": "<50 m2",
+          "imageUrl": "/images/fensterreinigung.webp",
+          "imageAlt": "<50 m2"
+        },
+        {
+          "label": "> 50 m2",
+          "imageUrl": "/images/fensterreinigung.webp",
+          "imageAlt": "> 50 m2"
+        },
+        {
+          "label": "> 200 m2",
+          "imageUrl": "/images/fensterreinigung.webp",
+          "imageAlt": "> 200 m2"
+        }
+      ]
+    },
+    "sectorCard": {
+      "title": "Was soll gereinigt werden?",
+      "options": [
+        {
+          "label": "Praxen",
+          "imageUrl": "/images/angebot.webp",
+          "imageAlt": "Praxen"
+        },
+        {
+          "label": "Büro",
+          "imageUrl": "/images/büroreinigung.webp",
+          "imageAlt": "Büro"
+        },
+        {
+          "label": "Gastronomie",
+          "imageUrl": "/images/aufgangsreinigung.webp",
+          "imageAlt": "Gastronomie"
+        },
+        {
+          "label": "Andere",
+          "imageUrl": "/images/unterhaltsreinigung.webp",
+          "imageAlt": "Andere",
+          "isOther": true
+        }
+      ]
+    },
+    "otherCard": {
+      "title": "Was soll gereinigt werden?",
+      "label": "Beschreibe deine Reinigung",
+      "placeholder": "Reinigungsart",
+      "buttonLabel": "Weiter"
+    },
+    "contactMethodCard": {
+      "title": "Wie möchtest du kontaktiert werden?",
+      "options": [
+        {
+          "label": "Telefonisch",
+          "imageUrl": "/images/anruf.webp",
+          "imageAlt": "Telefonisch"
+        },
+        {
+          "label": "WhatsApp",
+          "imageUrl": "/images/angebot.webp",
+          "imageAlt": "WhatsApp"
+        },
+        {
+          "label": "Mail",
+          "imageUrl": "/images/individuell.webp",
+          "imageAlt": "Mail"
+        }
+      ]
+    },
+    "contactDetailsCard": {
+      "title": "Gebe deine Kontaktdaten ein",
+      "nameLabel": "Dein Name (optional)",
+      "namePlaceholder": "Name",
+      "emailLabel": "Deine Mail",
+      "emailPlaceholder": "name@beispiel.de",
+      "phoneLabel": "Deine Rufnummer",
+      "phonePlaceholder": "+49 123 456789",
+      "submitLabel": "Anfrage absenden"
+    }
+  }
+]'::jsonb,
+    true,
+    true,
+    true
+  )
+  ON CONFLICT (slug) DO UPDATE SET
+    canonical_path = EXCLUDED.canonical_path,
+    title = EXCLUDED.title,
+    meta_title = EXCLUDED.meta_title,
+    meta_description = EXCLUDED.meta_description,
+    content = EXCLUDED.content,
+    nav = EXCLUDED.nav,
+    show_in_nav = EXCLUDED.show_in_nav,
+    display = EXCLUDED.display,
+    updated_at = now();
+
+INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display)
+VALUES
+  (
     'impressum',
     '/impressum',
     'Impressum',

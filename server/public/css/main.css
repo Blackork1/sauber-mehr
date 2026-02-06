@@ -1453,6 +1453,172 @@ input[type="reset"]:hover,
   height: 20px;
 }
 
+.kontakt-flow {
+  background: #f7f8ff;
+}
+
+.kontakt-flow__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 64px;
+  align-items: start;
+}
+
+.kontakt-flow__content {
+  display: grid;
+  gap: 18px;
+}
+
+.kontakt-flow__breadcrumb {
+  font-size: 14px;
+  color: var(--sauber-muted);
+  font-weight: 600;
+}
+
+.kontakt-flow__headline {
+  margin: 0;
+  font-size: clamp(32px, 5vw, 48px);
+  line-height: 1.2;
+  color: var(--sauber-text);
+  display: flex;
+  flex-direction: column;
+}
+
+.kontakt-flow__headline-accent {
+  color: var(--sauber-primary-indigo);
+  font-weight: 700;
+}
+
+.kontakt-flow__description {
+  margin: 0;
+  color: var(--sauber-muted);
+  max-width: 520px;
+}
+
+.kontakt-flow__cta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.kontakt-flow__form-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.kontakt-flow__form {
+  width: min(540px, 100%);
+}
+
+.kontakt-flow__card {
+  background: var(--sauber-light-indigo);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 18px 36px rgba(83, 111, 212, 0.15);
+  display: grid;
+  gap: 20px;
+}
+
+.kontakt-flow__card-title {
+  margin: 0;
+  font-size: 20px;
+  color: var(--sauber-primary-indigo);
+}
+
+.kontakt-flow__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.kontakt-flow__options--grid {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.kontakt-flow__option {
+  border: none;
+  background: #fdfdff;
+  border-radius: 16px;
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(83, 111, 212, 0.2);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  font-family: inherit;
+}
+
+.kontakt-flow__option:hover,
+.kontakt-flow__option:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(83, 111, 212, 0.18);
+  outline: none;
+}
+
+.kontakt-flow__option-media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(83, 111, 212, 0.08);
+  display: grid;
+  place-items: center;
+}
+
+.kontakt-flow__option-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kontakt-flow__option-placeholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(83, 111, 212, 0.2);
+}
+
+.kontakt-flow__option-label {
+  font-weight: 600;
+  color: var(--sauber-text);
+  font-size: 14px;
+}
+
+.kontakt-flow__field {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--sauber-text);
+}
+
+.kontakt-flow__field input {
+  border-radius: 12px;
+  border: 1px solid rgba(83, 111, 212, 0.3);
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 15px;
+}
+
+.kontakt-flow__button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  background: var(--sauber-primary-indigo);
+  color: var(--sauber-off-white);
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+}
+
+@media (max-width: 1000px) {
+}
+
+@media (max-width: 720px) {
+}
+
 .image-slider {
   position: relative;
   width: 100%;
@@ -1906,6 +2072,13 @@ input[type="reset"]:hover,
 }
 
 @media (max-width: 700px) {
+  .kontakt-flow__card {
+    padding: 20px;
+  }
+
+  .kontakt-flow__options {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
   .image-slider__thumbnails {
     display: none;
   }
@@ -2129,6 +2302,13 @@ input[type="reset"]:hover,
 @media (max-width: 1024px) {
   .sauber-offers__header {
     text-align: left;
+  }
+  .kontakt-flow__inner {
+    grid-template-columns: 1fr;
+  }
+
+  .kontakt-flow__form-wrapper {
+    justify-content: flex-start;
   }
 }
 
@@ -2415,16 +2595,28 @@ input[type="reset"]:hover,
   align-items: start;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
-‚
-.admin-grid[hidden] {
+‚ .admin-grid[hidden] {
   display: none;
 }
 
 .admin-grid--steps [data-dynamic-rows-items] {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   width: 100%;
+}
+
+.admin-grid--steps [data-dynamic-rows-items] > .admin-step-card {
+  flex: 1 1 260px;
+  max-width: 300px;
+}
+
+[data-kontakt-layout-group][hidden] {
+  display: none;
+}
+
+.admin-grid.admin-media-picker__alt {
+  display: flex;
 }
 
 .admin-step-card {
@@ -2453,6 +2645,7 @@ input[type="reset"]:hover,
 .admin-field input {
   border: none;
   border-radius: 8px;
+  width: 90%;
   padding: 8px 10px;
   color: var(--text-muted);
   background: #fff;

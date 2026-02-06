@@ -1694,9 +1694,96 @@ function initImageSliders() {
     updateThumbnails();
   });
 }
+function initKontaktFlow() {
+  const flow = document.querySelector('[data-contact-flow]');
+  if (!flow) return;
+
+  const cards = Array.from(flow.querySelectorAll('[data-contact-card]'));
+  const hiddenFields = {
+    service: flow.querySelector('[data-contact-field="service"]'),
+    area: flow.querySelector('[data-contact-field="area"]'),
+    industry: flow.querySelector('[data-contact-field="industry"]'),
+    other_details: flow.querySelector('[data-contact-field="other_details"]'),
+    contact_method: flow.querySelector('[data-contact-field="contact_method"]')
+  };
+
+  const updateHidden = (key, value) => {
+    const field = hiddenFields[key];
+    if (field) field.value = value || '';
+  };
+
+  const showStep = (step) => {
+    cards.forEach((card) => {
+      card.hidden = card.dataset.step !== step;
+    });
+  };
+
+  const contactDetailsCard = flow.querySelector('[data-step="contact-details"]');
+  const contactLabel = contactDetailsCard?.querySelector('[data-contact-label]');
+  const contactInput = contactDetailsCard?.querySelector('[data-contact-input]');
+  const emailLabel = contactDetailsCard?.dataset.emailLabel || 'Deine Mail';
+  const emailPlaceholder = contactDetailsCard?.dataset.emailPlaceholder || 'name@beispiel.de';
+  const phoneLabel = contactDetailsCard?.dataset.phoneLabel || 'Deine Rufnummer';
+  const phonePlaceholder = contactDetailsCard?.dataset.phonePlaceholder || '+49 123 456789';
+
+  const setContactInputForMethod = (method) => {
+    if (!contactInput || !contactLabel) return;
+    const lower = String(method || '').toLowerCase();
+    const isMail = lower.includes('mail');
+    contactLabel.textContent = isMail ? emailLabel : phoneLabel;
+    contactInput.placeholder = isMail ? emailPlaceholder : phonePlaceholder;
+    contactInput.type = isMail ? 'email' : 'tel';
+    contactInput.name = 'contact_value';
+  };
+
+  flow.querySelectorAll('[data-contact-option]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const value = button.dataset.value || '';
+      const next = button.dataset.next;
+      const parent = button.closest('[data-contact-card]');
+      const step = parent?.dataset.step;
+
+      if (step === 'start') {
+        updateHidden('service', value);
+        updateHidden('area', '');
+        updateHidden('industry', '');
+        updateHidden('other_details', '');
+      }
+
+      if (step === 'area-a' || step === 'area-b') {
+        updateHidden('area', value);
+      }
+
+      if (step === 'sector') {
+        updateHidden('industry', value);
+      }
+
+      if (step === 'contact-method') {
+        updateHidden('contact_method', value);
+        setContactInputForMethod(value);
+      }
+
+      if (next) {
+        showStep(next);
+      }
+    });
+  });
+
+  const otherNext = flow.querySelector('[data-other-next]');
+  const otherInput = flow.querySelector('[data-other-input]');
+  if (otherNext) {
+    otherNext.addEventListener('click', () => {
+      const value = otherInput?.value?.trim() || '';
+      updateHidden('other_details', value);
+      showStep('contact-method');
+    });
+  }
+
+  showStep('start');
+}
+
 
 initImageSliders();
-
 initMediaShowcases();
 initNewsSections();
 initNewsHero();
@@ -1711,3 +1798,4 @@ initVideoScenesGallery();
 initTicketsHero();
 initTeamSliders();
 initDonationForms();
+initKontaktFlow();

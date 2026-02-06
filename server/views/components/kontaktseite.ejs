@@ -1,0 +1,207 @@
+<%
+  const action = block?.action || '/contact';
+  const breadcrumb = block?.breadcrumb || 'Startseite > Kontakt';
+  const headline = block?.headline || 'Kontaktiere uns und';
+  const headlineAccent = block?.headlineAccent || 'erhalte dein Angebot';
+  const description = block?.description || 'Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.';
+  const primaryCta = block?.primaryCta || { label: 'Jetzt anrufen', href: 'tel:+493028641263' };
+  const secondaryCta = block?.secondaryCta || { label: 'WhatsApp Nachricht', href: 'https://wa.me/493028641263' };
+
+  const startCard = block?.startCard || {};
+  const startOptions = Array.isArray(startCard?.options) && startCard.options.length
+    ? startCard.options
+    : [
+      { label: 'Unterhaltsreinigung', imageUrl: '/images/unterhaltsreinigung.webp', imageAlt: 'Unterhaltsreinigung', branch: 'area-a' },
+      { label: 'Fensterreinigung', imageUrl: '/images/fensterreinigung.webp', imageAlt: 'Fensterreinigung', branch: 'area-b' },
+      { label: 'Andere Reinigung', imageUrl: '/images/angebot.webp', imageAlt: 'Andere Reinigung', branch: 'area-a' }
+    ];
+
+  const areaACard = block?.areaACard || {};
+  const areaAOptions = Array.isArray(areaACard?.options) && areaACard.options.length
+    ? areaACard.options
+    : [
+      { label: '<200 m2', imageUrl: '/images/büroreinigung.webp', imageAlt: '<200 m2' },
+      { label: '> 200 m2', imageUrl: '/images/aufgangsreinigung.webp', imageAlt: '> 200 m2' },
+      { label: '> 1000m2', imageUrl: '/images/unterhaltsreinigung.webp', imageAlt: '> 1000m2' }
+    ];
+
+  const areaBCard = block?.areaBCard || {};
+  const areaBOptions = Array.isArray(areaBCard?.options) && areaBCard.options.length
+    ? areaBCard.options
+    : [
+      { label: '<50 m2', imageUrl: '/images/fensterreinigung.webp', imageAlt: '<50 m2' },
+      { label: '> 50 m2', imageUrl: '/images/fensterreinigung.webp', imageAlt: '> 50 m2' },
+      { label: '> 200 m2', imageUrl: '/images/fensterreinigung.webp', imageAlt: '> 200 m2' }
+    ];
+
+  const sectorCard = block?.sectorCard || {};
+  const sectorOptions = Array.isArray(sectorCard?.options) && sectorCard.options.length
+    ? sectorCard.options
+    : [
+      { label: 'Praxen', imageUrl: '/images/angebot.webp', imageAlt: 'Praxen' },
+      { label: 'Büro', imageUrl: '/images/büroreinigung.webp', imageAlt: 'Büro' },
+      { label: 'Gastronomie', imageUrl: '/images/aufgangsreinigung.webp', imageAlt: 'Gastronomie' },
+      { label: 'Andere', imageUrl: '/images/unterhaltsreinigung.webp', imageAlt: 'Andere', isOther: true }
+    ];
+
+  const otherCard = block?.otherCard || {};
+  const contactMethodCard = block?.contactMethodCard || {};
+  const contactMethodOptions = Array.isArray(contactMethodCard?.options) && contactMethodCard.options.length
+    ? contactMethodCard.options
+    : [
+      { label: 'Telefonisch', imageUrl: '/images/anruf.webp', imageAlt: 'Telefonisch' },
+      { label: 'WhatsApp', imageUrl: '/images/angebot.webp', imageAlt: 'WhatsApp' },
+      { label: 'Mail', imageUrl: '/images/individuell.webp', imageAlt: 'Mail' }
+    ];
+
+  const contactDetailsCard = block?.contactDetailsCard || {};
+%>
+
+<section class="kontakt-flow section" id="kontakt">
+  <div class="section__inner kontakt-flow__inner">
+    <div class="kontakt-flow__content">
+      <% if (breadcrumb) { %>
+      <div class="kontakt-flow__breadcrumb"><%= breadcrumb %></div>
+      <% } %>
+      <h1 class="kontakt-flow__headline">
+        <span><%= headline %></span>
+        <span class="kontakt-flow__headline-accent"><%= headlineAccent %></span>
+      </h1>
+      <p class="kontakt-flow__description"><%= description %></p>
+      <div class="kontakt-flow__cta">
+        <% if (primaryCta?.label) { %>
+        <a class="btn btn-primary" href="<%= primaryCta.href || '#' %>"><%= primaryCta.label %></a>
+        <% } %>
+        <% if (secondaryCta?.label) { %>
+        <a class="btn btn-secondary" href="<%= secondaryCta.href || '#' %>"><%= secondaryCta.label %></a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="kontakt-flow__form-wrapper" data-contact-flow>
+      <form class="kontakt-flow__form" method="post" action="<%= action %>">
+        <input type="hidden" name="service" value="" data-contact-field="service">
+        <input type="hidden" name="area" value="" data-contact-field="area">
+        <input type="hidden" name="industry" value="" data-contact-field="industry">
+        <input type="hidden" name="other_details" value="" data-contact-field="other_details">
+        <input type="hidden" name="contact_method" value="" data-contact-field="contact_method">
+
+        <div class="kontakt-flow__card" data-contact-card data-step="start">
+          <h3 class="kontakt-flow__card-title"><%= startCard?.title || 'Was benötigst du?' %></h3>
+          <div class="kontakt-flow__options">
+            <% startOptions.forEach((option) => { %>
+            <button type="button" class="kontakt-flow__option" data-contact-option data-value="<%= option?.label %>" data-next="<%= option?.branch || option?.next || 'area-a' %>">
+              <span class="kontakt-flow__option-media">
+                <% if (option?.imageUrl) { %>
+                <img src="<%= option.imageUrl %>" alt="<%= option?.imageAlt || option?.label %>">
+                <% } else { %>
+                <span class="kontakt-flow__option-placeholder" aria-hidden="true"></span>
+                <% } %>
+              </span>
+              <span class="kontakt-flow__option-label"><%= option?.label %></span>
+            </button>
+            <% }) %>
+          </div>
+        </div>
+
+        <div class="kontakt-flow__card" data-contact-card data-step="area-a" hidden>
+          <h3 class="kontakt-flow__card-title"><%= areaACard?.title || 'Wie viel Quadratmeter müssen gereinigt werden?' %></h3>
+          <div class="kontakt-flow__options">
+            <% areaAOptions.forEach((option) => { %>
+            <button type="button" class="kontakt-flow__option" data-contact-option data-value="<%= option?.label %>" data-next="sector">
+              <span class="kontakt-flow__option-media">
+                <% if (option?.imageUrl) { %>
+                <img src="<%= option.imageUrl %>" alt="<%= option?.imageAlt || option?.label %>">
+                <% } else { %>
+                <span class="kontakt-flow__option-placeholder" aria-hidden="true"></span>
+                <% } %>
+              </span>
+              <span class="kontakt-flow__option-label"><%= option?.label %></span>
+            </button>
+            <% }) %>
+          </div>
+        </div>
+
+        <div class="kontakt-flow__card" data-contact-card data-step="area-b" hidden>
+          <h3 class="kontakt-flow__card-title"><%= areaBCard?.title || 'Wie groß ist die Fensterfläche ungefähr?' %></h3>
+          <div class="kontakt-flow__options">
+            <% areaBOptions.forEach((option) => { %>
+            <button type="button" class="kontakt-flow__option" data-contact-option data-value="<%= option?.label %>" data-next="contact-method">
+              <span class="kontakt-flow__option-media">
+                <% if (option?.imageUrl) { %>
+                <img src="<%= option.imageUrl %>" alt="<%= option?.imageAlt || option?.label %>">
+                <% } else { %>
+                <span class="kontakt-flow__option-placeholder" aria-hidden="true"></span>
+                <% } %>
+              </span>
+              <span class="kontakt-flow__option-label"><%= option?.label %></span>
+            </button>
+            <% }) %>
+          </div>
+        </div>
+
+        <div class="kontakt-flow__card" data-contact-card data-step="sector" hidden>
+          <h3 class="kontakt-flow__card-title"><%= sectorCard?.title || 'Was soll gereinigt werden?' %></h3>
+          <div class="kontakt-flow__options kontakt-flow__options--grid">
+            <% sectorOptions.forEach((option) => { %>
+            <button type="button" class="kontakt-flow__option" data-contact-option data-value="<%= option?.label %>" data-next="<%= option?.isOther ? 'other' : 'contact-method' %>" data-is-other="<%= option?.isOther ? 'true' : 'false' %>">
+              <span class="kontakt-flow__option-media">
+                <% if (option?.imageUrl) { %>
+                <img src="<%= option.imageUrl %>" alt="<%= option?.imageAlt || option?.label %>">
+                <% } else { %>
+                <span class="kontakt-flow__option-placeholder" aria-hidden="true"></span>
+                <% } %>
+              </span>
+              <span class="kontakt-flow__option-label"><%= option?.label %></span>
+            </button>
+            <% }) %>
+          </div>
+        </div>
+
+        <div class="kontakt-flow__card" data-contact-card data-step="other" hidden>
+          <h3 class="kontakt-flow__card-title"><%= otherCard?.title || 'Was soll gereinigt werden?' %></h3>
+          <label class="kontakt-flow__field">
+            <span><%= otherCard?.label || 'Beschreibe deine Reinigung' %></span>
+            <input type="text" name="other_details_input" placeholder="<%= otherCard?.placeholder || 'Reinigungsart' %>" data-other-input>
+          </label>
+          <button type="button" class="kontakt-flow__button" data-other-next><%= otherCard?.buttonLabel || 'Weiter' %></button>
+        </div>
+
+        <div class="kontakt-flow__card" data-contact-card data-step="contact-method" hidden>
+          <h3 class="kontakt-flow__card-title"><%= contactMethodCard?.title || 'Wie möchtest du kontaktiert werden?' %></h3>
+          <div class="kontakt-flow__options">
+            <% contactMethodOptions.forEach((option) => { %>
+            <button type="button" class="kontakt-flow__option" data-contact-option data-value="<%= option?.label %>" data-next="contact-details">
+              <span class="kontakt-flow__option-media">
+                <% if (option?.imageUrl) { %>
+                <img src="<%= option.imageUrl %>" alt="<%= option?.imageAlt || option?.label %>">
+                <% } else { %>
+                <span class="kontakt-flow__option-placeholder" aria-hidden="true"></span>
+                <% } %>
+              </span>
+              <span class="kontakt-flow__option-label"><%= option?.label %></span>
+            </button>
+            <% }) %>
+          </div>
+        </div>
+
+        <div class="kontakt-flow__card" data-contact-card data-step="contact-details" hidden
+          data-email-label="<%= contactDetailsCard?.emailLabel || 'Deine Mail' %>"
+          data-email-placeholder="<%= contactDetailsCard?.emailPlaceholder || 'name@beispiel.de' %>"
+          data-phone-label="<%= contactDetailsCard?.phoneLabel || 'Deine Rufnummer' %>"
+          data-phone-placeholder="<%= contactDetailsCard?.phonePlaceholder || '+49 123 456789' %>">
+          <h3 class="kontakt-flow__card-title"><%= contactDetailsCard?.title || 'Gebe deine Kontaktdaten ein' %></h3>
+          <label class="kontakt-flow__field">
+            <span><%= contactDetailsCard?.nameLabel || 'Dein Name (optional)' %></span>
+            <input type="text" name="name" placeholder="<%= contactDetailsCard?.namePlaceholder || 'Name' %>">
+          </label>
+          <label class="kontakt-flow__field">
+            <span data-contact-label><%= contactDetailsCard?.phoneLabel || 'Deine Rufnummer' %></span>
+            <input type="tel" name="contact_value" placeholder="<%= contactDetailsCard?.phonePlaceholder || '+49 123 456789' %>" required data-contact-input>
+          </label>
+          <button class="kontakt-flow__button" type="submit"><%= contactDetailsCard?.submitLabel || 'Anfrage absenden' %></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

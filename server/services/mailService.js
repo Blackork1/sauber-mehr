@@ -80,11 +80,41 @@ export async function sendRequestMail({ to, name }) {
 export async function sendContactConfirmationMail({ to, name, service }) {
   const subject = 'Vielen Dank für Ihre Kontaktaufnahme';
   const html = `
-    <p>Hallo ${name}</p>
-    <p>Vielen Dank für Ihre Kontaktaufnahme.</p>
-    <p>Ihre Anfrage ist eingegangen und wir melden uns in Kürze bei Ihnen per Mail.</p>
-    <p>Haben Sie noch weitere Fragen, dann rufen Sie uns gerne unter +49 30 28641-263 an oder schreiben Sie ein Mail an info@sauber-mehr.de.</p>
-    <p><strong>Gewünschte Reinigungsleistung:</strong> ${service}</p>
+    <p>Hallo ${escapeHtml(name || 'liebe Kundin, lieber Kunde')}</p>
+    <p>Vielen Dank für Ihre Kontaktaufnahme bei Sauber &amp; Mehr.</p>
+    <p>Ihre Anfrage ist eingegangen und wir melden uns in Kürze bei Ihnen.</p>
+    <p>Haben Sie noch weitere Fragen, dann rufen Sie uns gerne unter +49 30 28641-263 an oder schreiben Sie eine Mail an info@sauber-mehr.de.</p>
+    <p><strong>Gewünschte Reinigungsleistung:</strong> ${escapeHtml(service)}</p>
+  `;
+  const mail = {
+    from: process.env.SMTP_FROM || '"Sauber Mehr" <info@sauber-mehr.de>',
+    to,
+    subject,
+    html
+  };
+  return transporter.sendMail(mail);
+}
+
+export async function sendContactAdminMail({
+  to,
+  name,
+  service,
+  area,
+  industry,
+  otherDetails,
+  contactMethod,
+  contactValue
+}) {
+  const subject = 'Neue Kontaktanfrage – Sauber & Mehr';
+  const html = `
+    <p>Es liegt eine neue Kontaktanfrage vor.</p>
+    <p><strong>Name:</strong> ${escapeHtml(name || '—')}</p>
+    <p><strong>Leistung:</strong> ${escapeHtml(service || '—')}</p>
+    <p><strong>Fläche:</strong> ${escapeHtml(area || '—')}</p>
+    <p><strong>Branche:</strong> ${escapeHtml(industry || '—')}</p>
+    <p><strong>Weitere Details:</strong> ${escapeHtml(otherDetails || '—')}</p>
+    <p><strong>Kontaktweg:</strong> ${escapeHtml(contactMethod || '—')}</p>
+    <p><strong>Kontaktdaten:</strong> ${escapeHtml(contactValue || '—')}</p>
   `;
   const mail = {
     from: process.env.SMTP_FROM || '"Sauber Mehr" <info@sauber-mehr.de>',

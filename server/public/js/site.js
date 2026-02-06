@@ -1707,15 +1707,31 @@ function initKontaktFlow() {
     contact_method: flow.querySelector('[data-contact-field="contact_method"]')
   };
 
+  const backButtons = Array.from(flow.querySelectorAll('[data-contact-back]'));
+  const stepHistory = [];
+  let currentStep = null;
+
   const updateHidden = (key, value) => {
     const field = hiddenFields[key];
     if (field) field.value = value || '';
   };
 
-  const showStep = (step) => {
+  const updateBackButtons = () => {
+    const isDisabled = stepHistory.length === 0;
+    backButtons.forEach((button) => {
+      button.disabled = isDisabled;
+    });
+  };
+
+  const showStep = (step, { pushHistory = true } = {}) => {
+    if (currentStep && pushHistory && step !== currentStep) {
+      stepHistory.push(currentStep);
+    }
+    currentStep = step;
     cards.forEach((card) => {
       card.hidden = card.dataset.step !== step;
     });
+    updateBackButtons();
   };
 
   const contactDetailsCard = flow.querySelector('[data-step="contact-details"]');
@@ -1769,6 +1785,17 @@ function initKontaktFlow() {
     });
   });
 
+  backButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const previousStep = stepHistory.pop();
+      if (previousStep) {
+        showStep(previousStep, { pushHistory: false });
+      } else {
+        updateBackButtons();
+      }
+    });
+  });
+
   const otherNext = flow.querySelector('[data-other-next]');
   const otherInput = flow.querySelector('[data-other-input]');
   if (otherNext) {
@@ -1779,7 +1806,7 @@ function initKontaktFlow() {
     });
   }
 
-  showStep('start');
+  showStep('start', { pushHistory: false });
 }
 
 

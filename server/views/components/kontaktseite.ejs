@@ -70,10 +70,10 @@
       <p class="kontakt-flow__description"><%= description %></p>
       <div class="kontakt-flow__cta">
         <% if (primaryCta?.label) { %>
-        <a class="btn btn-primary" href="<%= primaryCta.href || '#' %>"><%= primaryCta.label %></a>
+        <a class="sauber-hero__button" href="<%= primaryCta.href || '#' %>"><%= primaryCta.label %></a>
         <% } %>
         <% if (secondaryCta?.label) { %>
-        <a class="btn btn-secondary" href="<%= secondaryCta.href || '#' %>"><%= secondaryCta.label %></a>
+        <a class="sauber-hero__button sauber-hero__button--secondary" href="<%= secondaryCta.href || '#' %>"><%= secondaryCta.label %></a>
         <% } %>
       </div>
     </div>
@@ -105,6 +105,7 @@
         </div>
 
         <div class="kontakt-flow__card" data-contact-card data-step="area-a" hidden>
+          <button type="button" class="kontakt-flow__back" data-contact-back aria-label="Zurück">←</button>
           <h3 class="kontakt-flow__card-title"><%= areaACard?.title || 'Wie viel Quadratmeter müssen gereinigt werden?' %></h3>
           <div class="kontakt-flow__options">
             <% areaAOptions.forEach((option) => { %>
@@ -123,6 +124,7 @@
         </div>
 
         <div class="kontakt-flow__card" data-contact-card data-step="area-b" hidden>
+          <button type="button" class="kontakt-flow__back" data-contact-back aria-label="Zurück">←</button>
           <h3 class="kontakt-flow__card-title"><%= areaBCard?.title || 'Wie groß ist die Fensterfläche ungefähr?' %></h3>
           <div class="kontakt-flow__options">
             <% areaBOptions.forEach((option) => { %>
@@ -141,6 +143,7 @@
         </div>
 
         <div class="kontakt-flow__card" data-contact-card data-step="sector" hidden>
+          <button type="button" class="kontakt-flow__back" data-contact-back aria-label="Zurück">←</button>
           <h3 class="kontakt-flow__card-title"><%= sectorCard?.title || 'In welcher Branche?' %></h3>
           <div class="kontakt-flow__options kontakt-flow__options--grid">
             <% sectorOptions.forEach((option) => { %>
@@ -159,6 +162,7 @@
         </div>
 
         <div class="kontakt-flow__card" data-contact-card data-step="other" hidden>
+          <button type="button" class="kontakt-flow__back" data-contact-back aria-label="Zurück">←</button>
           <h3 class="kontakt-flow__card-title"><%= otherCard?.title || 'Was soll gereinigt werden?' %></h3>
           <label class="kontakt-flow__field">
             <span><%= otherCard?.label || 'Beschreibe deine Reinigung' %></span>
@@ -168,6 +172,7 @@
         </div>
 
         <div class="kontakt-flow__card" data-contact-card data-step="contact-method" hidden>
+          <button type="button" class="kontakt-flow__back" data-contact-back aria-label="Zurück">←</button>
           <h3 class="kontakt-flow__card-title"><%= contactMethodCard?.title || 'Wie möchtest du kontaktiert werden?' %></h3>
           <div class="kontakt-flow__options">
             <% contactMethodOptions.forEach((option) => { %>
@@ -186,6 +191,7 @@
         </div>
 
         <div class="kontakt-flow__card" data-contact-card data-step="contact-details" hidden data-email-label="<%= contactDetailsCard?.emailLabel || 'Deine Mail' %>" data-email-placeholder="<%= contactDetailsCard?.emailPlaceholder || 'name@beispiel.de' %>" data-phone-label="<%= contactDetailsCard?.phoneLabel || 'Deine Rufnummer' %>" data-phone-placeholder="<%= contactDetailsCard?.phonePlaceholder || '+49 123 456789' %>">
+          <button type="button" class="kontakt-flow__back" data-contact-back aria-label="Zurück">←</button>
           <h3 class="kontakt-flow__card-title"><%= contactDetailsCard?.title || 'Gebe deine Kontaktdaten ein' %></h3>
           <label class="kontakt-flow__field">
             <span><%= contactDetailsCard?.nameLabel || 'Dein Name (optional)' %></span>

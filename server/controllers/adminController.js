@@ -504,6 +504,13 @@ export async function getAdminPanel(req, res, next) {
        FROM pages
        ORDER BY nav_order NULLS LAST, title`
     );
+    const isHomePage = (page) => page?.canonical_path === '/' || page?.slug === 'de' || page?.slug === 'home';
+    const pagesOrdered = Array.isArray(pages) ? [...pages] : [];
+    const homeIndex = pagesOrdered.findIndex(isHomePage);
+    if (homeIndex > -1) {
+      const [homePage] = pagesOrdered.splice(homeIndex, 1);
+      pagesOrdered.unshift(homePage);
+    }
     const [galleryImages, galleryVideos, newsletterSubscriptions] = await Promise.all([
       getGalleryImages(pool),
       getGalleryVideos(pool),
@@ -517,7 +524,7 @@ export async function getAdminPanel(req, res, next) {
         locale: 'de-DE'
       },
       schemaGraphJson: '',
-      pages,
+      pages: pagesOrdered,
       galleryImages,
       galleryVideos,
       newsletterSubscriptions,
@@ -542,53 +549,11 @@ export async function updatePage(req, res, next) {
       return res.redirect('/adminbackend?nav=pages&error=missing');
     }
 
-    const isHome = req.body.page_mode === 'home';
-    const isLeistungen = req.body.page_mode === 'leistungen';
+    const usesBlocks = req.body.page_mode === 'blocks';
     const locale = normalizeString(req.body.locale);
 
-    const resolveImageField = async ({
-      upload,
-      galleryId,
-      currentUrl,
-      altDe,
-      altEn,
-      currentAltDe,
-      currentAltEn
-    }) => {
-      const normalizedCurrentUrl = normalizeString(currentUrl);
-      const normalizedAltDe = normalizeAltValue(altDe) || normalizeAltValue(currentAltDe);
-      const normalizedAltEn = normalizeAltValue(altEn) || normalizeAltValue(currentAltEn);
-      const uploadEntry = Array.isArray(upload) ? upload[0] : upload;
-      if (uploadEntry) {
-        const stored = await storeCompressedImageUpload(uploadEntry);
-        const fallbackAlt = stripFileExtension(uploadEntry.originalname || uploadEntry.filename);
-        return {
-          src: stored?.localPath || normalizedCurrentUrl,
-          altDe: normalizedAltDe || fallbackAlt,
-          altEn: normalizedAltEn || fallbackAlt
-        };
-      }
-      const parsedGalleryId = Number(galleryId);
-      if (Number.isFinite(parsedGalleryId) && parsedGalleryId > 0) {
-        const image = await getGalleryImageById(pool, parsedGalleryId);
-        if (image) {
-          return {
-            src: image.cloudinary_url || image.local_path || normalizedCurrentUrl,
-            altDe: normalizeAltValue(image.alt_de) || normalizedAltDe,
-            altEn: normalizeAltValue(image.alt_en) || normalizedAltEn
-          };
-        }
-      }
-      return {
-        src: normalizedCurrentUrl,
-        altDe: normalizedAltDe,
-        altEn: normalizedAltEn
-      };
-    };
-
-    let homeContent = null;
-
-    if (isHome) {
+    let pageContent = [];
+    if (usesBlocks) {
       const { blocks, blockOrder, blockMap } = parseContentBlocks(req.body);
 
       for (const blockId of blockOrder) {
@@ -691,46 +656,9 @@ export async function updatePage(req, res, next) {
         }
       }
 
-      homeContent = blocks.map((block) => stripEmptyArrayItems(block));
+      pageContent = blocks.map((block) => stripEmptyArrayItems(block));
     }
-    if (isLeistungen) {
-      const heroImage = await resolveImageField({
-        upload: req.files?.leistungen_hero_image_upload,
-        galleryId: req.body.leistungen_hero_image_gallery_id,
-        currentUrl: req.body.leistungen_hero_image_current,
-        altDe: req.body.leistungen_hero_alt_de,
-        altEn: req.body.leistungen_hero_alt_en,
-        currentAltDe: req.body.leistungen_hero_alt_current_de,
-        currentAltEn: req.body.leistungen_hero_alt_current_en
-      });
-      if (heroImage?.src) {
-        req.body.leistungen_hero_image = heroImage.src;
-      }
-      req.body.leistungen_hero_alt_de = heroImage.altDe;
-      req.body.leistungen_hero_alt_en = heroImage.altEn;
-
-      for (const index of [1, 2, 3]) {
-        const stepImage = await resolveImageField({
-          upload: req.files?.[`leistungen_kosten_step${index}_upload`],
-          galleryId: req.body[`leistungen_kosten_step${index}_gallery_id`],
-          currentUrl: req.body[`leistungen_kosten_step${index}_image_current`],
-          altDe: req.body[`leistungen_kosten_step${index}_alt_de`],
-          altEn: req.body[`leistungen_kosten_step${index}_alt_en`],
-          currentAltDe: req.body[`leistungen_kosten_step${index}_alt_current_de`],
-          currentAltEn: req.body[`leistungen_kosten_step${index}_alt_current_en`]
-        });
-        if (stepImage?.src) {
-          req.body[`leistungen_kosten_step${index}_image`] = stepImage.src;
-        }
-        req.body[`leistungen_kosten_step${index}_alt_de`] = stepImage.altDe;
-        req.body[`leistungen_kosten_step${index}_alt_en`] = stepImage.altEn;
-      }
-    }
-    const content = isHome
-      ? homeContent
-      : (isLeistungen
-        ? buildLeistungenContent(req.body)
-        : safeJsonParse(req.body.content_json, []));
+    const content = usesBlocks ? pageContent : safeJsonParse(req.body.content_json, []);
 
     const slug = normalizeString(req.body.slug);
     const canonicalPath = normalizeCanonicalPath(req.body.canonical_path);

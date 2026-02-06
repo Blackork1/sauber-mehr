@@ -184,279 +184,1062 @@
            </div>
          </div>
          <% if (isHomePage) { %>
+         <%
+           const contentTypeLabels = {
+             hero: 'Hero',
+             kosten: 'Kosten & Ablauf',
+             imageSlider: 'Image Slider',
+             angebote: 'Angebote',
+             kontaktformular: 'Kontaktformular',
+             cta: 'CTA',
+             richText: 'Rich Text',
+             imageText: 'Image Text',
+             faq: 'FAQ',
+             bereiche: 'Bereiche'
+           };
+           const contentBlocks = blocks.map((block, index) => ({
+             ...block,
+             _adminId: `block-${index}`
+           }));
+           const contentBlockOrder = contentBlocks.map((block) => block._adminId);
+         %>
          <div class="admin-panel__section">
-           <h3 class="admin-panel__title">Startseite: Hero</h3>
-           <div class="admin-field admin-field--checkbox">
-             <label>
-               <input type="checkbox" name="home_hero_enabled" <%= isChecked(heroBlock?.type) %>>
-               Hero-Bereich aktiv
-             </label>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>Headline</label>
-               <input type="text" name="home_hero_headline" value="<%= safeValue(heroBlock.headline) %>">
-             </div>
-             <div class="admin-field">
-               <label>Subline</label>
-               <input type="text" name="home_hero_subline" value="<%= safeValue(heroBlock.subline) %>">
-             </div>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>CTA Label</label>
-               <input type="text" name="home_hero_cta_label" value="<%= safeValue(getHeroCtaLabel(heroBlock)) %>">
-             </div>
-             <div class="admin-field">
-               <label>CTA Link</label>
-               <input type="text" name="home_hero_cta_href" value="<%= safeValue(getHeroCtaHref(heroBlock)) %>">
-             </div>
-             <div class="admin-field">
-               <label>Hero-Bild</label>
-               <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
-                 <div class="admin-media-picker__controls">
-                   <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
-                   <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+           <h3 class="admin-panel__title">Startseite: Inhaltselemente</h3>
+           <p class="admin-panel__hint">Komponenten hinzufügen, entfernen und sortieren. Bilder/Videos nur per Upload oder Galerie auswählen.</p>
+           <div class="admin-content-editor" data-content-editor>
+             <input type="hidden" name="content_block_order" value="<%= safeValue(JSON.stringify(contentBlockOrder)) %>" data-content-order>
+             <div class="admin-content-blocks" data-content-blocks>
+               <% contentBlocks.forEach((block) => { %>
+               <div class="admin-content-block" data-content-block data-block-id="<%= block._adminId %>">
+                 <input type="hidden" name="content_block_<%= block._adminId %>_type" value="<%= block.type %>" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title"><%= contentTypeLabels[block.type] || block.type || 'Komponente' %></h4>
+                     <p class="admin-content-block__meta">Typ: <%= block.type || 'unbekannt' %></p>
+                   </div>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
                  </div>
-                 <input type="file" name="home_hero_image_upload" accept="image/*" data-upload-input hidden>
-                 <input type="hidden" name="home_hero_image_gallery_id" data-gallery-input="image" value="">
-                 <input type="hidden" name="home_hero_image_current" value="<%= safeValue(getHeroImage(heroBlock)) %>" data-gallery-current>
-                 <input type="hidden" name="home_hero_alt_current_de" value="<%= safeValue(getAltDe(getHeroAlt(heroBlock))) %>">
-                 <input type="hidden" name="home_hero_alt_current_en" value="<%= safeValue(getAltEn(getHeroAlt(heroBlock))) %>">
-                 <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+
+                 <% if (block.type === 'hero') { %>
+                 <div class="admin-grid">
                    <div class="admin-field">
-                     <label>Alt-Text Deutsch</label>
-                     <input type="text" name="home_hero_alt_de" data-gallery-alt-input="de" value="<%= safeValue(getAltDe(getHeroAlt(heroBlock))) %>">
+                     <label>Headline</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__headline" value="<%= safeValue(block.headline) %>">
                    </div>
                    <div class="admin-field">
-                     <label>Alt-Text Englisch</label>
-                     <input type="text" name="home_hero_alt_en" data-gallery-alt-input="en" value="<%= safeValue(getAltEn(getHeroAlt(heroBlock))) %>">
+                     <label>Subline</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__subline" value="<%= safeValue(block.subline) %>">
                    </div>
                  </div>
-                 <small data-gallery-preview>Keine Datei ausgewählt.</small>
-                 <% if (getHeroImage(heroBlock)) { %>
-                 <a class="admin-media-picker__preview-link" href="<%= getHeroImage(heroBlock) %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= getHeroImage(heroBlock) %>" data-media-preview-type="image">
-                   Aktuelles Bild anzeigen
-                 </a>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>CTA Label</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__cta.label" value="<%= safeValue(getHeroCtaLabel(block)) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>CTA Link</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__cta.href" value="<%= safeValue(getHeroCtaHref(block)) %>">
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Hero-Bild</label>
+                     <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                       <div class="admin-media-picker__controls">
+                         <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                         <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                       </div>
+                       <input type="file" name="content_block_<%= block._adminId %>__image_upload" accept="image/*" data-upload-input hidden>
+                       <input type="hidden" name="content_block_<%= block._adminId %>__image_gallery_id" data-gallery-input="image" value="">
+                       <input type="hidden" name="content_block_<%= block._adminId %>__image" value="<%= safeValue(getHeroImage(block)) %>" data-gallery-current>
+                       <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                         <div class="admin-field">
+                           <label>Alt-Text</label>
+                           <input type="text" name="content_block_<%= block._adminId %>__imageAlt" data-gallery-alt-input="de" value="<%= safeValue(getHeroAlt(block)) %>">
+                         </div>
+                       </div>
+                       <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                       <% if (getHeroImage(block)) { %>
+                       <a class="admin-media-picker__preview-link" href="<%= getHeroImage(block) %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= getHeroImage(block) %>" data-media-preview-type="image">
+                         Aktuelles Bild anzeigen
+                       </a>
+                       <% } %>
+                     </div>
+                   </div>
+                 </div>
+                 <% } else if (block.type === 'kosten') { %>
+                 <%
+                   const steps = Array.isArray(block.steps) && block.steps.length ? block.steps : [{}, {}, {}];
+                 %>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Headline</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__headline" value="<%= safeValue(block.headline) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Subline</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__subline" value="<%= safeValue(block.subline) %>">
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Lead Text</label>
+                     <textarea name="content_block_<%= block._adminId %>__leadText" rows="3"><%= safeValue(block.leadText) %></textarea>
+                   </div>
+                   <div class="admin-field">
+                     <label>Detail Text</label>
+                     <textarea name="content_block_<%= block._adminId %>__detailText" rows="3"><%= safeValue(block.detailText) %></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Primary Button Label</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__primaryButton.label" value="<%= safeValue(block.primaryButton?.label) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Primary Button Link</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__primaryButton.href" value="<%= safeValue(block.primaryButton?.href) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Secondary Button Label</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__secondaryButton.label" value="<%= safeValue(block.secondaryButton?.label) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Secondary Button Link</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__secondaryButton.href" value="<%= safeValue(block.secondaryButton?.href) %>">
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <% steps.forEach((step, index) => { %>
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Schritt <%= index + 1 %> Titel</label>
+                       <input type="text" name="content_block_<%= block._adminId %>__steps.<%= index %>.title" value="<%= safeValue(step?.title) %>">
+                     </div>
+                     <div class="admin-field">
+                       <label>Schritt <%= index + 1 %> Bild</label>
+                       <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                         <div class="admin-media-picker__controls">
+                           <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                           <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                         </div>
+                         <input type="file" name="content_block_<%= block._adminId %>__steps.<%= index %>.imageUrl_upload" accept="image/*" data-upload-input hidden>
+                         <input type="hidden" name="content_block_<%= block._adminId %>__steps.<%= index %>.imageUrl_gallery_id" data-gallery-input="image" value="">
+                         <input type="hidden" name="content_block_<%= block._adminId %>__steps.<%= index %>.imageUrl" value="<%= safeValue(step?.imageUrl) %>" data-gallery-current>
+                         <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                           <div class="admin-field">
+                             <label>Alt-Text</label>
+                             <input type="text" name="content_block_<%= block._adminId %>__steps.<%= index %>.imageAlt" data-gallery-alt-input="de" value="<%= safeValue(step?.imageAlt) %>">
+                           </div>
+                         </div>
+                         <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                         <% if (step?.imageUrl) { %>
+                         <a class="admin-media-picker__preview-link" href="<%= step.imageUrl %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= step.imageUrl %>" data-media-preview-type="image">
+                           Aktuelles Bild anzeigen
+                         </a>
+                         <% } %>
+                       </div>
+                     </div>
+                   </div>
+                   <% }) %>
+                 </div>
+                 <% } else if (block.type === 'imageSlider') { %>
+                 <%
+                   const slides = Array.isArray(block.slides) && block.slides.length ? block.slides : [{}];
+                 %>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Button Label</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__button.label" value="<%= safeValue(block?.button?.label) %>">
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <% slides.forEach((slide, index) => { %>
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Slide <%= index + 1 %> Titel</label>
+                       <input type="text" name="content_block_<%= block._adminId %>__slides.<%= index %>.title" value="<%= safeValue(slide?.title) %>">
+                     </div>
+                     <div class="admin-field">
+                       <label>Beschreibung</label>
+                       <textarea name="content_block_<%= block._adminId %>__slides.<%= index %>.description" rows="2"><%= safeValue(slide?.description) %></textarea>
+                     </div>
+                     <div class="admin-field">
+                       <label>Link</label>
+                       <input type="text" name="content_block_<%= block._adminId %>__slides.<%= index %>.link" value="<%= safeValue(slide?.link || slide?.href) %>">
+                     </div>
+                     <div class="admin-field">
+                       <label>Bild</label>
+                       <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                         <div class="admin-media-picker__controls">
+                           <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                           <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                         </div>
+                         <input type="file" name="content_block_<%= block._adminId %>__slides.<%= index %>.image.src_upload" accept="image/*" data-upload-input hidden>
+                         <input type="hidden" name="content_block_<%= block._adminId %>__slides.<%= index %>.image.src_gallery_id" data-gallery-input="image" value="">
+                         <input type="hidden" name="content_block_<%= block._adminId %>__slides.<%= index %>.image.src" value="<%= safeValue(slide?.image?.src) %>" data-gallery-current>
+                         <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                           <div class="admin-field">
+                             <label>Alt-Text</label>
+                             <input type="text" name="content_block_<%= block._adminId %>__slides.<%= index %>.image.alt" data-gallery-alt-input="de" value="<%= safeValue(slide?.image?.alt) %>">
+                           </div>
+                         </div>
+                         <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                         <% if (slide?.image?.src) { %>
+                         <a class="admin-media-picker__preview-link" href="<%= slide.image.src %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= slide.image.src %>" data-media-preview-type="image">
+                           Aktuelles Bild anzeigen
+                         </a>
+                         <% } %>
+                       </div>
+                     </div>
+                   </div>
+                   <% }) %>
+                 </div>
+                 <% } else if (block.type === 'angebote') { %>
+                 <%
+                   const cards = Array.isArray(block.cards) && block.cards.length ? block.cards : [{}];
+                 %>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__title" value="<%= safeValue(block.title) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Beschreibung</label>
+                     <textarea name="content_block_<%= block._adminId %>__description" rows="3"><%= safeValue(block.description) %></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <% cards.forEach((card, index) => { %>
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Karte <%= index + 1 %> Titel</label>
+                       <input type="text" name="content_block_<%= block._adminId %>__cards.<%= index %>.title" value="<%= safeValue(card?.title) %>">
+                     </div>
+                     <div class="admin-field">
+                       <label>Beschreibung</label>
+                       <textarea name="content_block_<%= block._adminId %>__cards.<%= index %>.description" rows="2"><%= safeValue(card?.description) %></textarea>
+                     </div>
+                     <div class="admin-field">
+                       <label>Bild</label>
+                       <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                         <div class="admin-media-picker__controls">
+                           <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                           <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                         </div>
+                         <input type="file" name="content_block_<%= block._adminId %>__cards.<%= index %>.imageUrl_upload" accept="image/*" data-upload-input hidden>
+                         <input type="hidden" name="content_block_<%= block._adminId %>__cards.<%= index %>.imageUrl_gallery_id" data-gallery-input="image" value="">
+                         <input type="hidden" name="content_block_<%= block._adminId %>__cards.<%= index %>.imageUrl" value="<%= safeValue(card?.imageUrl) %>" data-gallery-current>
+                         <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                           <div class="admin-field">
+                             <label>Alt-Text</label>
+                             <input type="text" name="content_block_<%= block._adminId %>__cards.<%= index %>.imageAlt" data-gallery-alt-input="de" value="<%= safeValue(card?.imageAlt) %>">
+                           </div>
+                         </div>
+                         <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                         <% if (card?.imageUrl) { %>
+                         <a class="admin-media-picker__preview-link" href="<%= card.imageUrl %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= card.imageUrl %>" data-media-preview-type="image">
+                           Aktuelles Bild anzeigen
+                         </a>
+                         <% } %>
+                       </div>
+                     </div>
+                   </div>
+                   <% }) %>
+                 </div>
+                 <% } else if (block.type === 'kontaktformular') { %>
+                 <%
+                   const services = Array.isArray(block.services) && block.services.length
+                     ? block.services.map((service) => (typeof service === 'string' ? { label: service } : service))
+                     : [{}];
+                   const contactItems = Array.isArray(block.contactItems) && block.contactItems.length ? block.contactItems : [{}];
+                 %>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Badge</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__badge" value="<%= safeValue(block.badge) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Action</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__action" value="<%= safeValue(block.action) %>">
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Headline</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__headline" value="<%= safeValue(block.headline) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Headline Accent</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__headlineAccent" value="<%= safeValue(block.headlineAccent) %>">
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Intro</label>
+                     <textarea name="content_block_<%= block._adminId %>__intro" rows="3"><%= safeValue(block.intro) %></textarea>
+                   </div>
+                   <div class="admin-field">
+                     <label>Details</label>
+                     <textarea name="content_block_<%= block._adminId %>__details" rows="3"><%= safeValue(block.details) %></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <% services.forEach((service, index) => { %>
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Service <%= index + 1 %> Label</label>
+                       <input type="text" name="content_block_<%= block._adminId %>__services.<%= index %>.label" value="<%= safeValue(service?.label) %>">
+                     </div>
+                     <div class="admin-field">
+                       <label>Service Link (optional)</label>
+                       <input type="text" name="content_block_<%= block._adminId %>__services.<%= index %>.href" value="<%= safeValue(service?.href) %>">
+                     </div>
+                   </div>
+                   <% }) %>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <% contactItems.forEach((item, index) => { %>
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Kontakt Item <%= index + 1 %> Icon (SVG)</label>
+                       <textarea name="content_block_<%= block._adminId %>__contactItems.<%= index %>.icon" rows="3"><%= safeValue(item?.icon) %></textarea>
+                     </div>
+                     <div class="admin-field">
+                       <label>Text</label>
+                       <input type="text" name="content_block_<%= block._adminId %>__contactItems.<%= index %>.text" value="<%= safeValue(item?.text) %>">
+                     </div>
+                   </div>
+                   <% }) %>
+                 </div>
+                 <% } else if (block.type === 'cta') { %>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__title" value="<%= safeValue(block.title) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Text</label>
+                     <textarea name="content_block_<%= block._adminId %>__text" rows="3"><%= safeValue(block.text) %></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Button Label</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__button.label" value="<%= safeValue(block.button?.label) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Button Link</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__button.href" value="<%= safeValue(block.button?.href) %>">
+                   </div>
+                 </div>
+                 <% } else if (block.type === 'richText') { %>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__title" value="<%= safeValue(block.title) %>">
+                   </div>
+                 </div>
+                 <div class="admin-field">
+                   <label>HTML Inhalt</label>
+                   <textarea name="content_block_<%= block._adminId %>__html" rows="6"><%= safeValue(block.html || block.text) %></textarea>
+                 </div>
+                 <% } else if (block.type === 'imageText') { %>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__title" value="<%= safeValue(block.title) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Text</label>
+                     <textarea name="content_block_<%= block._adminId %>__text" rows="4"><%= safeValue(block.text) %></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Bild</label>
+                     <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                       <div class="admin-media-picker__controls">
+                         <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                         <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                       </div>
+                       <input type="file" name="content_block_<%= block._adminId %>__img.src_upload" accept="image/*" data-upload-input hidden>
+                       <input type="hidden" name="content_block_<%= block._adminId %>__img.src_gallery_id" data-gallery-input="image" value="">
+                       <input type="hidden" name="content_block_<%= block._adminId %>__img.src" value="<%= safeValue(block?.img?.src) %>" data-gallery-current>
+                       <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                         <div class="admin-field">
+                           <label>Alt-Text</label>
+                           <input type="text" name="content_block_<%= block._adminId %>__img.alt" data-gallery-alt-input="de" value="<%= safeValue(block?.img?.alt) %>">
+                         </div>
+                       </div>
+                       <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                       <% if (block?.img?.src) { %>
+                       <a class="admin-media-picker__preview-link" href="<%= block.img.src %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= block.img.src %>" data-media-preview-type="image">
+                         Aktuelles Bild anzeigen
+                       </a>
+                       <% } %>
+                     </div>
+                   </div>
+                 </div>
+                 <% } else if (block.type === 'faq') { %>
+                 <%
+                   const faqItems = Array.isArray(block.items) && block.items.length ? block.items : [{}];
+                 %>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__title" value="<%= safeValue(block.title) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Beschreibung</label>
+                     <textarea name="content_block_<%= block._adminId %>__description" rows="3"><%= safeValue(block.description) %></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Button Label</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__button.label" value="<%= safeValue(block.button?.label) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Button Link</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__button.href" value="<%= safeValue(block.button?.href) %>">
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <% faqItems.forEach((item, index) => { %>
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Frage <%= index + 1 %></label>
+                       <input type="text" name="content_block_<%= block._adminId %>__items.<%= index %>.q" value="<%= safeValue(item?.q) %>">
+                     </div>
+                     <div class="admin-field">
+                       <label>Antwort</label>
+                       <textarea name="content_block_<%= block._adminId %>__items.<%= index %>.a" rows="3"><%= safeValue(item?.a) %></textarea>
+                     </div>
+                   </div>
+                   <% }) %>
+                 </div>
+                 <% } else if (block.type === 'bereiche') { %>
+                 <%
+                   const sliderSlides = Array.isArray(block?.slider?.slides) && block.slider.slides.length
+                     ? block.slider.slides
+                     : [{}];
+                 %>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__title" value="<%= safeValue(block.title) %>">
+                   </div>
+                   <div class="admin-field">
+                     <label>Beschreibung</label>
+                     <textarea name="content_block_<%= block._adminId %>__description" rows="3"><%= safeValue(block.description) %></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Slider Button Label</label>
+                     <input type="text" name="content_block_<%= block._adminId %>__slider.button.label" value="<%= safeValue(block?.slider?.button?.label) %>">
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <% sliderSlides.forEach((slide, index) => { %>
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Slide <%= index + 1 %> Titel</label>
+                       <input type="text" name="content_block_<%= block._adminId %>__slider.slides.<%= index %>.title" value="<%= safeValue(slide?.title) %>">
+                     </div>
+                     <div class="admin-field">
+                       <label>Beschreibung</label>
+                       <textarea name="content_block_<%= block._adminId %>__slider.slides.<%= index %>.description" rows="2"><%= safeValue(slide?.description) %></textarea>
+                     </div>
+                     <div class="admin-field">
+                       <label>Link</label>
+                       <input type="text" name="content_block_<%= block._adminId %>__slider.slides.<%= index %>.link" value="<%= safeValue(slide?.link || slide?.href) %>">
+                     </div>
+                     <div class="admin-field">
+                       <label>Bild</label>
+                       <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                         <div class="admin-media-picker__controls">
+                           <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                           <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                         </div>
+                         <input type="file" name="content_block_<%= block._adminId %>__slider.slides.<%= index %>.image.src_upload" accept="image/*" data-upload-input hidden>
+                         <input type="hidden" name="content_block_<%= block._adminId %>__slider.slides.<%= index %>.image.src_gallery_id" data-gallery-input="image" value="">
+                         <input type="hidden" name="content_block_<%= block._adminId %>__slider.slides.<%= index %>.image.src" value="<%= safeValue(slide?.image?.src) %>" data-gallery-current>
+                         <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                           <div class="admin-field">
+                             <label>Alt-Text</label>
+                             <input type="text" name="content_block_<%= block._adminId %>__slider.slides.<%= index %>.image.alt" data-gallery-alt-input="de" value="<%= safeValue(slide?.image?.alt) %>">
+                           </div>
+                         </div>
+                         <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                         <% if (slide?.image?.src) { %>
+                         <a class="admin-media-picker__preview-link" href="<%= slide.image.src %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= slide.image.src %>" data-media-preview-type="image">
+                           Aktuelles Bild anzeigen
+                         </a>
+                         <% } %>
+                       </div>
+                     </div>
+                   </div>
+                   <% }) %>
+                 </div>
+                 <% } else { %>
+                 <div class="admin-field">
+                   <label>Komponenten-JSON</label>
+                   <textarea rows="4" name="content_block_<%= block._adminId %>__raw_json"><%= safeValue(JSON.stringify(block, null, 2)) %></textarea>
+                   <small>Unbekannter Block-Typ: Inhalt wird als JSON gespeichert.</small>
+                 </div>
                  <% } %>
                </div>
+               <% }) %>
              </div>
-           </div>
-         </div>
 
-         <div class="admin-panel__section">
-           <h3 class="admin-panel__title">Startseite: Kosten & Ablauf</h3>
-           <div class="admin-field admin-field--checkbox">
-             <label>
-               <input type="checkbox" name="home_kosten_enabled" <%= isChecked(kostenBlock?.type) %>>
-               Kosten-Bereich aktiv
-             </label>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>Headline</label>
-               <input type="text" name="home_kosten_headline" value="<%= safeValue(kostenBlock.headline) %>">
-             </div>
-             <div class="admin-field">
-               <label>Subline</label>
-               <input type="text" name="home_kosten_subline" value="<%= safeValue(kostenBlock.subline) %>">
-             </div>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>Lead Text</label>
-               <textarea name="home_kosten_lead" rows="3"><%= safeValue(kostenBlock.leadText) %></textarea>
-             </div>
-             <div class="admin-field">
-               <label>Detail Text</label>
-               <textarea name="home_kosten_detail" rows="3"><%= safeValue(kostenBlock.detailText) %></textarea>
-             </div>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>Primary Button Label</label>
-               <input type="text" name="home_kosten_primary_label" value="<%= safeValue(kostenBlock.primaryButton?.label) %>">
-             </div>
-             <div class="admin-field">
-               <label>Primary Button Link</label>
-               <input type="text" name="home_kosten_primary_href" value="<%= safeValue(kostenBlock.primaryButton?.href) %>">
-             </div>
-             <div class="admin-field">
-               <label>Secondary Button Label</label>
-               <input type="text" name="home_kosten_secondary_label" value="<%= safeValue(kostenBlock.secondaryButton?.label) %>">
-             </div>
-             <div class="admin-field">
-               <label>Secondary Button Link</label>
-               <input type="text" name="home_kosten_secondary_href" value="<%= safeValue(kostenBlock.secondaryButton?.href) %>">
-             </div>
-           </div>
-           <div class="admin-grid admin-grid--steps">
-             <% [0, 1, 2].forEach((index) => { %>
-             <div class="admin-step-card">
+             <div class="admin-content-add">
                <div class="admin-field">
-                 <label>Schritt <%= index + 1 %> Titel</label>
-                 <input type="text" name="home_kosten_step<%= index + 1 %>_title" value="<%= safeValue(kostenSteps[index]?.title) %>">
+                 <label>Komponente hinzufügen</label>
+                 <select data-content-add-select>
+                   <% Object.keys(contentTypeLabels).forEach((type) => { %>
+                   <option value="<%= type %>"><%= contentTypeLabels[type] %></option>
+                   <% }) %>
+                 </select>
                </div>
-               <div class="admin-field">
-                 <label>Schritt <%= index + 1 %> Bild</label>
-                 <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
-                   <div class="admin-media-picker__controls">
-                     <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
-                     <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+               <button type="button" class="admin-button" data-content-add>Hinzufügen</button>
+             </div>
+
+             <div class="admin-content-sort" data-content-sort>
+               <h4>Sortierung</h4>
+               <p class="admin-panel__hint">Ziehe die Elemente, um die Reihenfolge zu ändern.</p>
+               <ul class="admin-content-sort__list" data-content-sort-list>
+                 <% contentBlocks.forEach((block) => { %>
+                 <li class="admin-content-sort__item" draggable="true" data-block-id="<%= block._adminId %>">
+                   <span class="admin-content-sort__handle" aria-hidden="true">↕</span>
+                   <span><%= contentTypeLabels[block.type] || block.type || 'Komponente' %></span>
+                 </li>
+                 <% }) %>
+               </ul>
+               <button type="button" class="admin-button admin-button--secondary" data-content-save-order>Sortierung speichern</button>
+             </div>
+             <template data-content-template="hero">
+               <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+                 <input type="hidden" name="content_block___BLOCK_ID___type" value="hero" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title">Hero</h4>
+                     <p class="admin-content-block__meta">Typ: hero</p>
                    </div>
-                   <input type="file" name="home_kosten_step<%= index + 1 %>_upload" accept="image/*" data-upload-input hidden>
-                   <input type="hidden" name="home_kosten_step<%= index + 1 %>_gallery_id" data-gallery-input="image" value="">
-                   <input type="hidden" name="home_kosten_step<%= index + 1 %>_image_current" value="<%= safeValue(kostenSteps[index]?.imageUrl) %>" data-gallery-current>
-                   <input type="hidden" name="home_kosten_step<%= index + 1 %>_alt_current_de" value="<%= safeValue(getAltDe(kostenSteps[index]?.imageAlt)) %>">
-                   <input type="hidden" name="home_kosten_step<%= index + 1 %>_alt_current_en" value="<%= safeValue(getAltEn(kostenSteps[index]?.imageAlt)) %>">
-                   <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Headline</label>
+                     <input type="text" name="content_block___BLOCK_ID___headline" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Subline</label>
+                     <input type="text" name="content_block___BLOCK_ID___subline" value="">
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>CTA Label</label>
+                     <input type="text" name="content_block___BLOCK_ID___cta.label" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>CTA Link</label>
+                     <input type="text" name="content_block___BLOCK_ID___cta.href" value="">
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Hero-Bild</label>
+                     <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                       <div class="admin-media-picker__controls">
+                         <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                         <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                       </div>
+                       <input type="file" name="content_block___BLOCK_ID___image_upload" accept="image/*" data-upload-input hidden>
+                       <input type="hidden" name="content_block___BLOCK_ID___image_gallery_id" data-gallery-input="image" value="">
+                       <input type="hidden" name="content_block___BLOCK_ID___image" value="" data-gallery-current>
+                       <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                         <div class="admin-field">
+                           <label>Alt-Text</label>
+                           <input type="text" name="content_block___BLOCK_ID___imageAlt" data-gallery-alt-input="de" value="">
+                         </div>
+                       </div>
+                       <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </template>
+
+             <template data-content-template="kosten">
+               <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+                 <input type="hidden" name="content_block___BLOCK_ID___type" value="kosten" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title">Kosten & Ablauf</h4>
+                     <p class="admin-content-block__meta">Typ: kosten</p>
+                   </div>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Headline</label>
+                     <input type="text" name="content_block___BLOCK_ID___headline" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Subline</label>
+                     <input type="text" name="content_block___BLOCK_ID___subline" value="">
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Lead Text</label>
+                     <textarea name="content_block___BLOCK_ID___leadText" rows="3"></textarea>
+                   </div>
+                   <div class="admin-field">
+                     <label>Detail Text</label>
+                     <textarea name="content_block___BLOCK_ID___detailText" rows="3"></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Primary Button Label</label>
+                     <input type="text" name="content_block___BLOCK_ID___primaryButton.label" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Primary Button Link</label>
+                     <input type="text" name="content_block___BLOCK_ID___primaryButton.href" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Secondary Button Label</label>
+                     <input type="text" name="content_block___BLOCK_ID___secondaryButton.label" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Secondary Button Link</label>
+                     <input type="text" name="content_block___BLOCK_ID___secondaryButton.href" value="">
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <% [0, 1, 2].forEach((index) => { %>
+                   <div class="admin-step-card">
                      <div class="admin-field">
-                       <label>Alt-Text Deutsch</label>
-                       <input type="text" name="home_kosten_step<%= index + 1 %>_alt_de" data-gallery-alt-input="de" value="<%= safeValue(getAltDe(kostenSteps[index]?.imageAlt)) %>">
+                       <label>Schritt <%= index + 1 %> Titel</label>
+                       <input type="text" name="content_block___BLOCK_ID___steps.<%= index %>.title" value="">
                      </div>
                      <div class="admin-field">
                        <label>Alt-Text Englisch</label>
-                       <input type="text" name="home_kosten_step<%= index + 1 %>_alt_en" data-gallery-alt-input="en" value="<%= safeValue(getAltEn(kostenSteps[index]?.imageAlt)) %>">
+                       <label>Schritt <%= index + 1 %> Bild</label>
+                       <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                         <div class="admin-media-picker__controls">
+                           <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                           <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                         </div>
+                         <input type="file" name="content_block___BLOCK_ID___steps.<%= index %>.imageUrl_upload" accept="image/*" data-upload-input hidden>
+                         <input type="hidden" name="content_block___BLOCK_ID___steps.<%= index %>.imageUrl_gallery_id" data-gallery-input="image" value="">
+                         <input type="hidden" name="content_block___BLOCK_ID___steps.<%= index %>.imageUrl" value="" data-gallery-current>
+                         <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                           <div class="admin-field">
+                             <label>Alt-Text</label>
+                             <input type="text" name="content_block___BLOCK_ID___steps.<%= index %>.imageAlt" data-gallery-alt-input="de" value="">
+                           </div>
+                         </div>
+                         <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                       </div>
                      </div>
                    </div>
-                   <small data-gallery-preview>Keine Datei ausgewählt.</small>
-                   <% if (kostenSteps[index]?.imageUrl) { %>
-                   <a class="admin-media-picker__preview-link" href="<%= kostenSteps[index].imageUrl %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= kostenSteps[index].imageUrl %>" data-media-preview-type="image">
-                     Aktuelles Bild anzeigen
-                   </a>
-                   <% } %>
+                   <% }) %>
                  </div>
                </div>
-             </div>
-             <% }) %>
-           </div>
-         </div>
+             </template>
 
-         <div class="admin-panel__section">
-           <h3 class="admin-panel__title">Startseite: Image Text</h3>
-           <div class="admin-field admin-field--checkbox">
-             <label>
-               <input type="checkbox" name="home_imagetext_enabled" <%= isChecked(imageTextBlock?.type) %>>
-               Image-Text Bereich aktiv
-             </label>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>Titel</label>
-               <input type="text" name="home_imagetext_title" value="<%= safeValue(imageTextBlock.title) %>">
-             </div>
-             <div class="admin-field">
-               <label>Text</label>
-               <textarea name="home_imagetext_text" rows="4"><%= safeValue(imageTextBlock.text) %></textarea>
-             </div>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>Bild</label>
-               <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
-                 <div class="admin-media-picker__controls">
-                   <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
-                   <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
-                 </div>
-                 <input type="file" name="home_imagetext_upload" accept="image/*" data-upload-input hidden>
-                 <input type="hidden" name="home_imagetext_gallery_id" data-gallery-input="image" value="">
-                 <input type="hidden" name="home_imagetext_image_current" value="<%= safeValue(getImageTextImage(imageTextBlock)) %>" data-gallery-current>
-                 <input type="hidden" name="home_imagetext_alt_current_de" value="<%= safeValue(getAltDe(getImageTextAlt(imageTextBlock))) %>">
-                 <input type="hidden" name="home_imagetext_alt_current_en" value="<%= safeValue(getAltEn(getImageTextAlt(imageTextBlock))) %>">
-                 <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
-                   <div class="admin-field">
-                     <label>Alt-Text Deutsch</label>
-                     <input type="text" name="home_imagetext_alt_de" data-gallery-alt-input="de" value="<%= safeValue(getAltDe(getImageTextAlt(imageTextBlock))) %>">
+             <template data-content-template="imageSlider">
+               <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+                 <input type="hidden" name="content_block___BLOCK_ID___type" value="imageSlider" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title">Image Slider</h4>
+                     <p class="admin-content-block__meta">Typ: imageSlider</p>
                    </div>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+                 </div>
+                 <div class="admin-grid">
                    <div class="admin-field">
-                     <label>Alt-Text Englisch</label>
-                     <input type="text" name="home_imagetext_alt_en" data-gallery-alt-input="en" value="<%= safeValue(getAltEn(getImageTextAlt(imageTextBlock))) %>">
+                     <label>Button Label</label>
+                     <input type="text" name="content_block___BLOCK_ID___button.label" value="">
                    </div>
                  </div>
-                 <small data-gallery-preview>Keine Datei ausgewählt.</small>
-                 <% if (getImageTextImage(imageTextBlock)) { %>
-                 <a class="admin-media-picker__preview-link" href="<%= getImageTextImage(imageTextBlock) %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= getImageTextImage(imageTextBlock) %>" data-media-preview-type="image">
-                   Aktuelles Bild anzeigen
-                 </a>
-                 <% } %>
+                 <div class="admin-grid admin-grid--steps">
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Slide Titel</label>
+                       <input type="text" name="content_block___BLOCK_ID___slides.0.title" value="">
+                     </div>
+                     <div class="admin-field">
+                       <label>Beschreibung</label>
+                       <textarea name="content_block___BLOCK_ID___slides.0.description" rows="2"></textarea>
+                     </div>
+                     <div class="admin-field">
+                       <label>Link</label>
+                       <input type="text" name="content_block___BLOCK_ID___slides.0.link" value="">
+                     </div>
+                     <div class="admin-field">
+                       <label>Bild</label>
+                       <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                         <div class="admin-media-picker__controls">
+                           <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                           <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                         </div>
+                         <input type="file" name="content_block___BLOCK_ID___slides.0.image.src_upload" accept="image/*" data-upload-input hidden>
+                         <input type="hidden" name="content_block___BLOCK_ID___slides.0.image.src_gallery_id" data-gallery-input="image" value="">
+                         <input type="hidden" name="content_block___BLOCK_ID___slides.0.image.src" value="" data-gallery-current>
+                         <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                           <div class="admin-field">
+                             <label>Alt-Text</label>
+                             <input type="text" name="content_block___BLOCK_ID___slides.0.image.alt" data-gallery-alt-input="de" value="">
+                           </div>
+                         </div>
+                         <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
                </div>
-             </div>
+             </template>
+
+             <template data-content-template="angebote">
+               <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+                 <input type="hidden" name="content_block___BLOCK_ID___type" value="angebote" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title">Angebote</h4>
+                     <p class="admin-content-block__meta">Typ: angebote</p>
+                   </div>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block___BLOCK_ID___title" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Beschreibung</label>
+                     <textarea name="content_block___BLOCK_ID___description" rows="3"></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Karte Titel</label>
+                       <input type="text" name="content_block___BLOCK_ID___cards.0.title" value="">
+                     </div>
+                     <div class="admin-field">
+                       <label>Beschreibung</label>
+                       <textarea name="content_block___BLOCK_ID___cards.0.description" rows="2"></textarea>
+                     </div>
+                     <div class="admin-field">
+                       <label>Bild</label>
+                       <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                         <div class="admin-media-picker__controls">
+                           <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                           <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                         </div>
+                         <input type="file" name="content_block___BLOCK_ID___cards.0.imageUrl_upload" accept="image/*" data-upload-input hidden>
+                         <input type="hidden" name="content_block___BLOCK_ID___cards.0.imageUrl_gallery_id" data-gallery-input="image" value="">
+                         <input type="hidden" name="content_block___BLOCK_ID___cards.0.imageUrl" value="" data-gallery-current>
+                         <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                           <div class="admin-field">
+                             <label>Alt-Text</label>
+                             <input type="text" name="content_block___BLOCK_ID___cards.0.imageAlt" data-gallery-alt-input="de" value="">
+                           </div>
+                         </div>
+                         <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+
+               </div>
+
+             </template>
+
+             <template data-content-template="kontaktformular">
+               <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+                 <input type="hidden" name="content_block___BLOCK_ID___type" value="kontaktformular" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title">Kontaktformular</h4>
+                     <p class="admin-content-block__meta">Typ: kontaktformular</p>
+                   </div>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Badge</label>
+                     <input type="text" name="content_block___BLOCK_ID___badge" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Action</label>
+                     <input type="text" name="content_block___BLOCK_ID___action" value="">
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Headline</label>
+                     <input type="text" name="content_block___BLOCK_ID___headline" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Headline Accent</label>
+                     <input type="text" name="content_block___BLOCK_ID___headlineAccent" value="">
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Intro</label>
+                     <textarea name="content_block___BLOCK_ID___intro" rows="3"></textarea>
+                   </div>
+                   <div class="admin-field">
+                     <label>Details</label>
+                     <textarea name="content_block___BLOCK_ID___details" rows="3"></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Service Label</label>
+                       <input type="text" name="content_block___BLOCK_ID___services.0.label" value="">
+                     </div>
+                     <div class="admin-field">
+                       <label>Service Link (optional)</label>
+                       <input type="text" name="content_block___BLOCK_ID___services.0.href" value="">
+                     </div>
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Kontakt Icon (SVG)</label>
+                       <textarea name="content_block___BLOCK_ID___contactItems.0.icon" rows="3"></textarea>
+                     </div>
+                     <div class="admin-field">
+                       <label>Text</label>
+                       <input type="text" name="content_block___BLOCK_ID___contactItems.0.text" value="">
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </template>
+
+             <template data-content-template="cta">
+               <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+                 <input type="hidden" name="content_block___BLOCK_ID___type" value="cta" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title">CTA</h4>
+                     <p class="admin-content-block__meta">Typ: cta</p>
+                   </div>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block___BLOCK_ID___title" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Text</label>
+                     <textarea name="content_block___BLOCK_ID___text" rows="3"></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Button Label</label>
+                     <input type="text" name="content_block___BLOCK_ID___button.label" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Button Link</label>
+                     <input type="text" name="content_block___BLOCK_ID___button.href" value="">
+                   </div>
+                 </div>
+               </div>
+             </template>
+
+             <template data-content-template="richText">
+               <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+                 <input type="hidden" name="content_block___BLOCK_ID___type" value="richText" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title">Rich Text</h4>
+                     <p class="admin-content-block__meta">Typ: richText</p>
+                   </div>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block___BLOCK_ID___title" value="">
+                   </div>
+                 </div>
+                 <div class="admin-field">
+                   <label>HTML Inhalt</label>
+                   <textarea name="content_block___BLOCK_ID___html" rows="6"></textarea>
+                 </div>
+               </div>
+             </template>
+
+             <template data-content-template="imageText">
+               <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+                 <input type="hidden" name="content_block___BLOCK_ID___type" value="imageText" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title">Image Text</h4>
+                     <p class="admin-content-block__meta">Typ: imageText</p>
+                   </div>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block___BLOCK_ID___title" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Text</label>
+                     <textarea name="content_block___BLOCK_ID___text" rows="4"></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Bild</label>
+                     <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                       <div class="admin-media-picker__controls">
+                         <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                         <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                       </div>
+                       <input type="file" name="content_block___BLOCK_ID___img.src_upload" accept="image/*" data-upload-input hidden>
+                       <input type="hidden" name="content_block___BLOCK_ID___img.src_gallery_id" data-gallery-input="image" value="">
+                       <input type="hidden" name="content_block___BLOCK_ID___img.src" value="" data-gallery-current>
+                       <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                         <div class="admin-field">
+                           <label>Alt-Text</label>
+                           <input type="text" name="content_block___BLOCK_ID___img.alt" data-gallery-alt-input="de" value="">
+                         </div>
+                       </div>
+                       <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </template>
+
+             <template data-content-template="faq">
+               <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+                 <input type="hidden" name="content_block___BLOCK_ID___type" value="faq" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title">FAQ</h4>
+                     <p class="admin-content-block__meta">Typ: faq</p>
+                   </div>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block___BLOCK_ID___title" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Beschreibung</label>
+                     <textarea name="content_block___BLOCK_ID___description" rows="3"></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Button Label</label>
+                     <input type="text" name="content_block___BLOCK_ID___button.label" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Button Link</label>
+                     <input type="text" name="content_block___BLOCK_ID___button.href" value="">
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Frage</label>
+                       <input type="text" name="content_block___BLOCK_ID___items.0.q" value="">
+                     </div>
+                     <div class="admin-field">
+                       <label>Antwort</label>
+                       <textarea name="content_block___BLOCK_ID___items.0.a" rows="3"></textarea>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </template>
+
+             <template data-content-template="bereiche">
+               <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+                 <input type="hidden" name="content_block___BLOCK_ID___type" value="bereiche" data-block-type>
+                 <div class="admin-content-block__header">
+                   <div>
+                     <h4 class="admin-content-block__title">Bereiche</h4>
+                     <p class="admin-content-block__meta">Typ: bereiche</p>
+                   </div>
+                   <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Titel</label>
+                     <input type="text" name="content_block___BLOCK_ID___title" value="">
+                   </div>
+                   <div class="admin-field">
+                     <label>Beschreibung</label>
+                     <textarea name="content_block___BLOCK_ID___description" rows="3"></textarea>
+                   </div>
+                 </div>
+                 <div class="admin-grid">
+                   <div class="admin-field">
+                     <label>Slider Button Label</label>
+                     <input type="text" name="content_block___BLOCK_ID___slider.button.label" value="">
+                   </div>
+                 </div>
+                 <div class="admin-grid admin-grid--steps">
+                   <div class="admin-step-card">
+                     <div class="admin-field">
+                       <label>Slide Titel</label>
+                       <input type="text" name="content_block___BLOCK_ID___slider.slides.0.title" value="">
+                     </div>
+                     <div class="admin-field">
+                       <label>Beschreibung</label>
+                       <textarea name="content_block___BLOCK_ID___slider.slides.0.description" rows="2"></textarea>
+                     </div>
+                     <div class="admin-field">
+                       <label>Link</label>
+                       <input type="text" name="content_block___BLOCK_ID___slider.slides.0.link" value="">
+                     </div>
+                     <div class="admin-field">
+                       <label>Bild</label>
+                       <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                         <div class="admin-media-picker__controls">
+                           <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                           <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                         </div>
+                         <input type="file" name="content_block___BLOCK_ID___slider.slides.0.image.src_upload" accept="image/*" data-upload-input hidden>
+                         <input type="hidden" name="content_block___BLOCK_ID___slider.slides.0.image.src_gallery_id" data-gallery-input="image" value="">
+                         <input type="hidden" name="content_block___BLOCK_ID___slider.slides.0.image.src" value="" data-gallery-current>
+                         <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                           <div class="admin-field">
+                             <label>Alt-Text</label>
+                             <input type="text" name="content_block___BLOCK_ID___slider.slides.0.image.alt" data-gallery-alt-input="de" value="">
+                           </div>
+                         </div>
+                         <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </template>
            </div>
-         </div>
-         <div class="admin-panel__section">
-           <h3 class="admin-panel__title">Startseite: Rich Text</h3>
-           <div class="admin-field admin-field--checkbox">
-             <label>
-               <input type="checkbox" name="home_richtext_enabled" <%= isChecked(richTextBlock?.type) %>>
-               Rich-Text Bereich aktiv
-             </label>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>Titel</label>
-               <input type="text" name="home_richtext_title" value="<%= safeValue(richTextBlock.title) %>">
-             </div>
-           </div>
-           <div class="admin-field">
-             <label>HTML Inhalt</label>
-             <textarea name="home_richtext_html" rows="6"><%= safeValue(getRichText(richTextBlock)) %></textarea>
-           </div>
-         </div>
-         <div class="admin-panel__section">
-           <h3 class="admin-panel__title">Startseite: CTA</h3>
-           <div class="admin-field admin-field--checkbox">
-             <label>
-               <input type="checkbox" name="home_cta_enabled" <%= isChecked(ctaBlock?.type) %>>
-               CTA-Bereich aktiv
-             </label>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>Headline</label>
-               <input type="text" name="home_cta_title" value="<%= safeValue(getCtaTitle(ctaBlock)) %>">
-             </div>
-             <div class="admin-field">
-               <label>Text</label>
-               <textarea name="home_cta_text" rows="3"><%= safeValue(getCtaText(ctaBlock)) %></textarea>
-             </div>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>Button Label</label>
-               <input type="text" name="home_cta_button_label" value="<%= safeValue(getCtaButtonLabel(ctaBlock)) %>">
-             </div>
-             <div class="admin-field">
-               <label>Button Link</label>
-               <input type="text" name="home_cta_button_href" value="<%= safeValue(getCtaButtonHref(ctaBlock)) %>">
-             </div>
-           </div>
-         </div>
-         <div class="admin-panel__section">
-           <h3 class="admin-panel__title">Startseite: FAQ</h3>
-           <div class="admin-field admin-field--checkbox">
-             <label>
-               <input type="checkbox" name="home_faq_enabled" <%= isChecked(faqBlock?.type) %>>
-               FAQ-Bereich aktiv
-             </label>
-           </div>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>FAQ Titel</label>
-               <input type="text" name="home_faq_title" value="<%= safeValue(faqBlock.title) %>">
-             </div>
-           </div>
-           <% [0, 1, 2, 3].forEach((index) => { %>
-           <div class="admin-grid">
-             <div class="admin-field">
-               <label>Frage <%= index + 1 %></label>
-               <input type="text" name="home_faq_q<%= index + 1 %>" value="<%= safeValue(faqItems[index]?.q) %>">
-             </div>
-             <div class="admin-field">
-               <label>Antwort <%= index + 1 %></label>
-               <textarea name="home_faq_a<%= index + 1 %>" rows="3"><%= safeValue(faqItems[index]?.a) %></textarea>
-             </div>
-           </div>
-           <% }) %>
          </div>
          <% } else if (isLeistungenPage) { %>
          <div class="admin-panel__section">

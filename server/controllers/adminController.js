@@ -116,6 +116,122 @@ const safeJsonParse = (value, fallback) => {
   }
 };
 
+const setNestedValue = (target, path, value) => {
+  if (!path) return;
+  const segments = String(path).split('.');
+  let cursor = target;
+  segments.forEach((segment, index) => {
+    const isLast = index === segments.length - 1;
+    const numeric = Number(segment);
+    const isIndex = Number.isInteger(numeric) && String(numeric) === segment;
+    if (isLast) {
+      if (isIndex) {
+        if (!Array.isArray(cursor)) return;
+        cursor[numeric] = value;
+      } else {
+        cursor[segment] = value;
+      }
+      return;
+    }
+    const nextSegment = segments[index + 1];
+    const nextNumeric = Number(nextSegment);
+    const shouldBeArray = Number.isInteger(nextNumeric) && String(nextNumeric) === nextSegment;
+    if (isIndex) {
+      if (!Array.isArray(cursor)) return;
+      cursor[numeric] = cursor[numeric] || (shouldBeArray ? [] : {});
+      cursor = cursor[numeric];
+      return;
+    }
+    if (!cursor[segment] || typeof cursor[segment] !== 'object') {
+      cursor[segment] = shouldBeArray ? [] : {};
+    }
+    cursor = cursor[segment];
+  });
+};
+
+const parseContentBlocks = (body) => {
+  const order = safeJsonParse(body.content_block_order, []);
+  const blockMap = {};
+  const blocks = [];
+  order.forEach((id) => {
+    const type = normalizeString(body[`content_block_${id}_type`]);
+    if (!type) return;
+    const block = { type };
+    blockMap[id] = block;
+    blocks.push(block);
+  });
+  Object.entries(body).forEach(([key, rawValue]) => {
+    const match = key.match(/^content_block_(.+?)__(.+)$/);
+    if (!match) return;
+    const [, id, path] = match;
+    const block = blockMap[id];
+    if (!block) return;
+    if (path.endsWith('_gallery_id') || path.endsWith('_upload')) return;
+    const value = Array.isArray(rawValue) ? rawValue[rawValue.length - 1] : rawValue;
+    if (path === 'raw_json') {
+      const parsed = safeJsonParse(value, null);
+      if (parsed && typeof parsed === 'object') {
+        blockMap[id] = { ...parsed, type: normalizeString(parsed.type) || block.type };
+        const index = blocks.findIndex((entry) => entry === block);
+        if (index >= 0) blocks[index] = blockMap[id];
+      }
+      return;
+    }
+    setNestedValue(block, path, normalizeString(value));
+  });
+  return { blocks, blockOrder: order, blockMap };
+};
+
+const isEmptyValue = (value) => {
+  if (value === null || value === undefined) return true;
+  if (typeof value === 'string') return !value.trim();
+  if (Array.isArray(value)) return value.every(isEmptyValue);
+  if (typeof value === 'object') return Object.values(value).every(isEmptyValue);
+  return false;
+};
+
+const stripEmptyArrayItems = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .map(stripEmptyArrayItems)
+      .filter((entry) => !isEmptyValue(entry));
+  }
+  if (value && typeof value === 'object') {
+    Object.entries(value).forEach(([key, entry]) => {
+      value[key] = stripEmptyArrayItems(entry);
+    });
+  }
+  return value;
+};
+
+const resolveImageFieldSimple = async ({ upload, galleryId, currentUrl, alt, pool }) => {
+  const normalizedCurrentUrl = normalizeString(currentUrl);
+  const normalizedAlt = normalizeAltValue(alt);
+  const uploadEntry = Array.isArray(upload) ? upload[0] : upload;
+  if (uploadEntry) {
+    const stored = await storeCompressedImageUpload(uploadEntry);
+    const fallbackAlt = stripFileExtension(uploadEntry.originalname || uploadEntry.filename);
+    return {
+      src: stored?.localPath || normalizedCurrentUrl,
+      alt: normalizedAlt || fallbackAlt
+    };
+  }
+  const parsedGalleryId = Number(galleryId);
+  if (Number.isFinite(parsedGalleryId) && parsedGalleryId > 0) {
+    const image = await getGalleryImageById(pool, parsedGalleryId);
+    if (image) {
+      return {
+        src: image.cloudinary_url || image.local_path || normalizedCurrentUrl,
+        alt: normalizedAlt || normalizeAltValue(image.alt_de) || normalizeAltValue(image.alt_en)
+      };
+    }
+  }
+  return {
+    src: normalizedCurrentUrl,
+    alt: normalizedAlt
+  };
+};
+
 const buildHomeContent = (body) => {
   const blocks = [];
   const heroEnabled = normalizeBoolean(body.home_hero_enabled);
@@ -470,53 +586,112 @@ export async function updatePage(req, res, next) {
       };
     };
 
+    let homeContent = null;
+
     if (isHome) {
-      const heroImage = await resolveImageField({
-        upload: req.files?.home_hero_image_upload,
-        galleryId: req.body.home_hero_image_gallery_id,
-        currentUrl: req.body.home_hero_image_current,
-        altDe: req.body.home_hero_alt_de,
-        altEn: req.body.home_hero_alt_en,
-        currentAltDe: req.body.home_hero_alt_current_de,
-        currentAltEn: req.body.home_hero_alt_current_en
-      });
-      if (heroImage?.src) {
-        req.body.home_hero_image = heroImage.src;
-      }
-      req.body.home_hero_alt_de = heroImage.altDe;
-      req.body.home_hero_alt_en = heroImage.altEn;
+      const { blocks, blockOrder, blockMap } = parseContentBlocks(req.body);
 
-      for (const index of [1, 2, 3]) {
-        const stepImage = await resolveImageField({
-          upload: req.files?.[`home_kosten_step${index}_upload`],
-          galleryId: req.body[`home_kosten_step${index}_gallery_id`],
-          currentUrl: req.body[`home_kosten_step${index}_image_current`],
-          altDe: req.body[`home_kosten_step${index}_alt_de`],
-          altEn: req.body[`home_kosten_step${index}_alt_en`],
-          currentAltDe: req.body[`home_kosten_step${index}_alt_current_de`],
-          currentAltEn: req.body[`home_kosten_step${index}_alt_current_en`]
-        });
-        if (stepImage?.src) {
-          req.body[`home_kosten_step${index}_image`] = stepImage.src;
+      for (const blockId of blockOrder) {
+        const block = blockMap[blockId];
+        if (!block) continue;
+        if (block.type === 'hero') {
+          const fieldBase = `content_block_${blockId}__image`;
+          const resolved = await resolveImageFieldSimple({
+            upload: req.files?.[`${fieldBase}_upload`],
+            galleryId: req.body[`${fieldBase}_gallery_id`],
+            currentUrl: block.image,
+            alt: block.imageAlt,
+            pool
+          });
+          if (resolved.src) block.image = resolved.src;
+          if (resolved.alt) block.imageAlt = resolved.alt;
         }
-        req.body[`home_kosten_step${index}_alt_de`] = stepImage.altDe;
-        req.body[`home_kosten_step${index}_alt_en`] = stepImage.altEn;
+        if (block.type === 'kosten') {
+          const steps = Array.isArray(block.steps) ? block.steps : [];
+          for (let index = 0; index < steps.length; index += 1) {
+            const fieldBase = `content_block_${blockId}__steps.${index}.imageUrl`;
+            const resolved = await resolveImageFieldSimple({
+              upload: req.files?.[`${fieldBase}_upload`],
+              galleryId: req.body[`${fieldBase}_gallery_id`],
+              currentUrl: steps[index]?.imageUrl,
+              alt: steps[index]?.imageAlt,
+              pool
+            });
+            if (resolved.src) steps[index].imageUrl = resolved.src;
+            if (resolved.alt) steps[index].imageAlt = resolved.alt;
+          }
+          block.steps = steps;
+        }
+        if (block.type === 'imageSlider') {
+          const slides = Array.isArray(block.slides) ? block.slides : [];
+          for (let index = 0; index < slides.length; index += 1) {
+            const fieldBase = `content_block_${blockId}__slides.${index}.image.src`;
+            const resolved = await resolveImageFieldSimple({
+              upload: req.files?.[`${fieldBase}_upload`],
+              galleryId: req.body[`${fieldBase}_gallery_id`],
+              currentUrl: slides[index]?.image?.src,
+              alt: slides[index]?.image?.alt,
+              pool
+            });
+            slides[index].image = slides[index].image || {};
+            if (resolved.src) slides[index].image.src = resolved.src;
+            if (resolved.alt) slides[index].image.alt = resolved.alt;
+          }
+          block.slides = slides;
+        }
+
+        if (block.type === 'imageText') {
+          const fieldBase = `content_block_${blockId}__img.src`;
+          const resolved = await resolveImageFieldSimple({
+            upload: req.files?.[`${fieldBase}_upload`],
+            galleryId: req.body[`${fieldBase}_gallery_id`],
+            currentUrl: block?.img?.src,
+            alt: block?.img?.alt,
+            pool
+          });
+          block.img = block.img || {};
+          if (resolved.src) block.img.src = resolved.src;
+          if (resolved.alt) block.img.alt = resolved.alt;
+        }
+
+        if (block.type === 'angebote') {
+          const cards = Array.isArray(block.cards) ? block.cards : [];
+          for (let index = 0; index < cards.length; index += 1) {
+            const fieldBase = `content_block_${blockId}__cards.${index}.imageUrl`;
+            const resolved = await resolveImageFieldSimple({
+              upload: req.files?.[`${fieldBase}_upload`],
+              galleryId: req.body[`${fieldBase}_gallery_id`],
+              currentUrl: cards[index]?.imageUrl,
+              alt: cards[index]?.imageAlt,
+              pool
+            });
+            if (resolved.src) cards[index].imageUrl = resolved.src;
+            if (resolved.alt) cards[index].imageAlt = resolved.alt;
+          }
+          block.cards = cards;
+        }
+
+        if (block.type === 'bereiche') {
+          const slides = Array.isArray(block?.slider?.slides) ? block.slider.slides : [];
+          for (let index = 0; index < slides.length; index += 1) {
+            const fieldBase = `content_block_${blockId}__slider.slides.${index}.image.src`;
+            const resolved = await resolveImageFieldSimple({
+              upload: req.files?.[`${fieldBase}_upload`],
+              galleryId: req.body[`${fieldBase}_gallery_id`],
+              currentUrl: slides[index]?.image?.src,
+              alt: slides[index]?.image?.alt,
+              pool
+            });
+            slides[index].image = slides[index].image || {};
+            if (resolved.src) slides[index].image.src = resolved.src;
+            if (resolved.alt) slides[index].image.alt = resolved.alt;
+          }
+          block.slider = block.slider || {};
+          block.slider.slides = slides;
+        }
       }
 
-      const imageText = await resolveImageField({
-        upload: req.files?.home_imagetext_upload,
-        galleryId: req.body.home_imagetext_gallery_id,
-        currentUrl: req.body.home_imagetext_image_current,
-        altDe: req.body.home_imagetext_alt_de,
-        altEn: req.body.home_imagetext_alt_en,
-        currentAltDe: req.body.home_imagetext_alt_current_de,
-        currentAltEn: req.body.home_imagetext_alt_current_en
-      });
-      if (imageText?.src) {
-        req.body.home_imagetext_image = imageText.src;
-      }
-      req.body.home_imagetext_alt_de = imageText.altDe;
-      req.body.home_imagetext_alt_en = imageText.altEn;
+      homeContent = blocks.map((block) => stripEmptyArrayItems(block));
     }
     if (isLeistungen) {
       const heroImage = await resolveImageField({
@@ -552,7 +727,7 @@ export async function updatePage(req, res, next) {
       }
     }
     const content = isHome
-      ? buildHomeContent(req.body)
+      ? homeContent
       : (isLeistungen
         ? buildLeistungenContent(req.body)
         : safeJsonParse(req.body.content_json, []));

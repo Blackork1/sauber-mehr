@@ -1,8 +1,8 @@
 <%
   const heroHeadline = block?.headline || 'Ihre Gebäudereinigung in Berlin';
   const heroSubline = block?.subline || 'zuverlässig, schnell und günstig Gebäude in Berlin reinigen lassen';
-  const heroCtaLabel = block?.ctaLabel || 'Beratungstermin buchen';
-  const heroCtaHref = block?.ctaHref || '#kontakt';
+  const heroCtaLabel = block?.cta?.label || block?.ctaLabel || 'Beratungstermin buchen';
+  const heroCtaHref = block?.cta?.href || block?.ctaHref || '#kontakt';
   const heroImage = block?.image || '/images/team.webp';
   const isLeistungenHero =
     page?.canonical_path?.startsWith('/leistungen')

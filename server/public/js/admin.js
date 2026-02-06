@@ -1101,8 +1101,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectorTabs = Array.from(gallerySelector.querySelectorAll('[data-gallery-selector-tab]'));
   const selectorPanels = Array.from(gallerySelector.querySelectorAll('[data-gallery-selector-panel]'));
   const selectorItems = Array.from(gallerySelector.querySelectorAll('[data-gallery-item]'));
-  const pickerButtons = Array.from(document.querySelectorAll('[data-gallery-open]'));
-  const pickerCloseButtons = Array.from(document.querySelectorAll('[data-gallery-close]'));
   const mediaPickers = Array.from(document.querySelectorAll('[data-gallery-picker]'));
   let activePicker = null;
 
@@ -1230,6 +1228,56 @@ document.addEventListener('DOMContentLoaded', () => {
     element.dataset.previewBound = 'true';
   };
 
+    const bindMediaPicker = (picker) => {
+    if (!picker || picker.dataset.pickerBound) return;
+    picker.dataset.pickerBound = 'true';
+    if (picker.dataset.galleryMode === 'multi') {
+      renderSelectionList(picker, getPickerSelections(picker));
+    }
+    const uploadButton = picker.querySelector('[data-upload-trigger]');
+    const uploadInput = picker.querySelector('[data-upload-input]');
+    if (uploadButton && uploadInput) {
+      uploadButton.addEventListener('click', () => uploadInput.click());
+      uploadInput.addEventListener('change', () => {
+        const file = uploadInput.files?.[0];
+        const inputs = Array.from(picker.querySelectorAll('[data-gallery-input]'));
+        inputs.forEach((input) => {
+          input.value = '';
+        });
+        const preview = picker.querySelector('[data-gallery-preview]');
+        if (preview) {
+          preview.textContent = file ? `Ausgewählt: ${file.name}` : 'Keine Datei ausgewählt.';
+        }
+        if (file) {
+          const fallbackAlt = stripExtension(file.name);
+          setAltInputs(picker, fallbackAlt, fallbackAlt);
+        }
+        updateAltVisibility(picker);
+      });
+    }
+
+    const uploadMultiButton = picker.querySelector('[data-upload-trigger-multi]');
+    const uploadMultiInput = picker.querySelector('[data-upload-input-multi]');
+    if (uploadMultiButton && uploadMultiInput) {
+      uploadMultiButton.addEventListener('click', () => uploadMultiInput.click());
+      uploadMultiInput.addEventListener('change', () => {
+        const files = Array.from(uploadMultiInput.files || []);
+        const selections = getPickerSelections(picker).filter((item) => item.source !== 'upload');
+        const uploadSelections = files.map((file, index) => ({
+          source: 'upload',
+          type: file.type.startsWith('video/') ? 'video' : 'image',
+          uploadIndex: index,
+          label: file.name
+        }));
+        const nextSelections = [...selections, ...uploadSelections];
+        setPickerSelections(picker, nextSelections);
+      });
+    }
+
+    const previewLinks = Array.from(picker.querySelectorAll('[data-media-preview-url]'));
+    previewLinks.forEach((link) => bindPreviewHandlers(link));
+    updateAltVisibility(picker);
+  };
 
   const renderSelectionList = (picker, items) => {
     const list = picker.querySelector('[data-gallery-multi-list]');
@@ -1291,9 +1339,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   mediaPickers.forEach((picker) => {
-    if (picker.dataset.galleryMode === 'multi') {
-      renderSelectionList(picker, getPickerSelections(picker));
-    }
+    bindMediaPicker(picker);
   });
 
   const previewLinks = Array.from(document.querySelectorAll('[data-media-preview-url]'));
@@ -1343,15 +1389,17 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => setSelectorTab(button.dataset.gallerySelectorTab));
   });
 
-  pickerButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const picker = button.closest('[data-gallery-picker]');
-      openSelector(picker);
-    });
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-gallery-open]');
+    if (!button) return;
+    const picker = button.closest('[data-gallery-picker]');
+    openSelector(picker);
   });
 
-  pickerCloseButtons.forEach((button) => {
-    button.addEventListener('click', closeSelector);
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-gallery-close]');
+    if (!button) return;
+    closeSelector();
   });
 
   selectorItems.forEach((item) => {
@@ -1411,52 +1459,6 @@ document.addEventListener('DOMContentLoaded', () => {
       updateAltVisibility(activePicker);
       closeSelector();
     });
-  });
-
-  mediaPickers.forEach((picker) => {
-    const uploadButton = picker.querySelector('[data-upload-trigger]');
-    const uploadInput = picker.querySelector('[data-upload-input]');
-    if (uploadButton && uploadInput) {
-      uploadButton.addEventListener('click', () => uploadInput.click());
-      uploadInput.addEventListener('change', () => {
-        const file = uploadInput.files?.[0];
-        const inputs = Array.from(picker.querySelectorAll('[data-gallery-input]'));
-        inputs.forEach((input) => {
-          input.value = '';
-        });
-        const preview = picker.querySelector('[data-gallery-preview]');
-        if (preview) {
-          preview.textContent = file ? `Ausgewählt: ${file.name}` : 'Keine Datei ausgewählt.';
-        }
-        if (file) {
-          const fallbackAlt = stripExtension(file.name);
-          setAltInputs(picker, fallbackAlt, fallbackAlt);
-        }
-        updateAltVisibility(picker);
-      });
-    }
-
-    const uploadMultiButton = picker.querySelector('[data-upload-trigger-multi]');
-    const uploadMultiInput = picker.querySelector('[data-upload-input-multi]');
-    if (uploadMultiButton && uploadMultiInput) {
-      uploadMultiButton.addEventListener('click', () => uploadMultiInput.click());
-      uploadMultiInput.addEventListener('change', () => {
-        const files = Array.from(uploadMultiInput.files || []);
-        const selections = getPickerSelections(picker).filter((item) => item.source !== 'upload');
-        const uploadSelections = files.map((file, index) => ({
-          source: 'upload',
-          type: file.type.startsWith('video/') ? 'video' : 'image',
-          uploadIndex: index,
-          label: file.name
-        }));
-        const nextSelections = [...selections, ...uploadSelections];
-        setPickerSelections(picker, nextSelections);
-      });
-    }
-  });
-
-  mediaPickers.forEach((picker) => {
-    updateAltVisibility(picker);
   });
 
   const initDynamicList = (container) => {
@@ -1537,6 +1539,132 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('[data-dynamic-list]').forEach(initDynamicList);
   document.querySelectorAll('[data-dynamic-faq]').forEach(initDynamicFaq);
+
+  const initContentEditor = (editor) => {
+    const form = editor.closest('form');
+    const blocksContainer = editor.querySelector('[data-content-blocks]');
+    const sortList = editor.querySelector('[data-content-sort-list]');
+    const orderInput = editor.querySelector('[data-content-order]');
+    const addSelect = editor.querySelector('[data-content-add-select]');
+    const addButton = editor.querySelector('[data-content-add]');
+    const saveOrderButton = editor.querySelector('[data-content-save-order]');
+    if (!blocksContainer || !sortList || !orderInput) return;
+
+    const templates = new Map(
+      Array.from(editor.querySelectorAll('template[data-content-template]'))
+        .map((template) => [template.dataset.contentTemplate, template])
+    );
+
+    const updateOrderInput = () => {
+      const ids = Array.from(sortList.querySelectorAll('[data-block-id]'))
+        .map((item) => item.dataset.blockId)
+        .filter(Boolean);
+      orderInput.value = JSON.stringify(ids);
+      return ids;
+    };
+
+    const syncBlockOrder = () => {
+      const ids = updateOrderInput();
+      ids.forEach((id) => {
+        const block = blocksContainer.querySelector(`[data-block-id="${id}"]`);
+        if (block) {
+          blocksContainer.appendChild(block);
+        }
+      });
+    };
+
+    const createSortItem = (blockId, label) => {
+      const item = document.createElement('li');
+      item.className = 'admin-content-sort__item';
+      item.draggable = true;
+      item.dataset.blockId = blockId;
+      item.innerHTML = `<span class="admin-content-sort__handle" aria-hidden="true">↕</span><span>${label}</span>`;
+      return item;
+    };
+
+    blocksContainer.addEventListener('click', (event) => {
+      const removeButton = event.target.closest('[data-content-remove]');
+      if (!removeButton) return;
+      const block = removeButton.closest('[data-content-block]');
+      if (!block) return;
+      const blockId = block.dataset.blockId;
+      block.remove();
+      if (blockId) {
+        const sortItem = sortList.querySelector(`[data-block-id="${blockId}"]`);
+        if (sortItem) sortItem.remove();
+      }
+      updateOrderInput();
+    });
+
+    if (addButton && addSelect) {
+      addButton.addEventListener('click', () => {
+        const type = addSelect.value;
+        const template = templates.get(type);
+        if (!template) return;
+        const blockId = `block-${Date.now()}`;
+        const html = template.innerHTML.replaceAll('__BLOCK_ID__', blockId);
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html.trim();
+        const newBlock = wrapper.firstElementChild;
+        if (!newBlock) return;
+        blocksContainer.appendChild(newBlock);
+        const label = addSelect.selectedOptions[0]?.textContent?.trim() || type;
+        sortList.appendChild(createSortItem(blockId, label));
+        updateOrderInput();
+        Array.from(newBlock.querySelectorAll('[data-gallery-picker]')).forEach((picker) => {
+          bindMediaPicker(picker);
+        });
+      });
+    }
+
+    if (saveOrderButton && form) {
+      saveOrderButton.addEventListener('click', () => {
+        updateOrderInput();
+        form.submit();
+      });
+    }
+
+    let draggedItem = null;
+    sortList.addEventListener('dragstart', (event) => {
+      const item = event.target.closest('[data-block-id]');
+      if (!item) return;
+      draggedItem = item;
+      item.classList.add('is-dragging');
+      event.dataTransfer?.setData('text/plain', item.dataset.blockId || '');
+      event.dataTransfer?.setDragImage(item, 0, 0);
+    });
+
+    sortList.addEventListener('dragend', () => {
+      if (draggedItem) {
+        draggedItem.classList.remove('is-dragging');
+      }
+      draggedItem = null;
+      syncBlockOrder();
+    });
+
+    sortList.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      const afterElement = Array.from(sortList.querySelectorAll('.admin-content-sort__item:not(.is-dragging)'))
+        .find((item) => {
+          const box = item.getBoundingClientRect();
+          return event.clientY < box.top + box.height / 2;
+        });
+      if (!draggedItem) return;
+      if (afterElement) {
+        sortList.insertBefore(draggedItem, afterElement);
+      } else {
+        sortList.appendChild(draggedItem);
+      }
+    });
+
+    if (form) {
+      form.addEventListener('submit', () => {
+        updateOrderInput();
+      });
+    }
+  };
+
+  document.querySelectorAll('[data-content-editor]').forEach(initContentEditor);
 
   const downloadGroups = Array.from(document.querySelectorAll('[data-rahmenplan-downloads]'));
   downloadGroups.forEach((group) => {

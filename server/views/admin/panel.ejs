@@ -108,12 +108,27 @@
          </button>
        </div>
        <% pagesList.forEach((page) => { %>
-       <%- include('./partials/page-form', { page, activeTab }) %>
+       <%- include('./partials/page-form', {
+         page,
+         activeTab,
+         safeValue,
+         isChecked,
+         getHeroCtaLabel,
+         getHeroCtaHref,
+         getHeroImage,
+         getHeroAlt
+       }) %>
        <% }) %>
        <% if (selectedLeistungenSubpageEntry) { %>
        <%- include('./partials/page-form', {
          page: selectedLeistungenSubpageEntry,
          activeTab,
+         safeValue,
+         isChecked,
+         getHeroCtaLabel,
+         getHeroCtaHref,
+         getHeroImage,
+         getHeroAlt,
          pagePanelId: 'leistungen-subpages',
          pagePanelGroup: 'pages',
          panelKind: 'leistungen-subpages',

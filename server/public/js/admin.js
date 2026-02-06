@@ -868,22 +868,56 @@ document.addEventListener('DOMContentLoaded', () => {
   const linkHelper = document.createElement('div');
   linkHelper.className = 'admin-link-helper is-hidden';
   linkHelper.innerHTML = `
-    <div class="admin-link-helper__header">Link hinzufügen</div>
-    <label class="admin-link-helper__field">
-      <span>Linktext</span>
-      <input type="text" data-link-text placeholder="z.B. Tickets">
-    </label>
-    <label class="admin-link-helper__field">
-      <span>Link</span>
-      <input type="text" data-link-url placeholder="z.B. /ticket">
-    </label>
-    <button type="button" class="admin-link-helper__button" data-link-insert>Link hinzufügen</button>
+    <div class="admin-link-helper__header">Element hinzufügen</div>
+    <div class="admin-link-helper__menu" data-inline-menu>
+      <button type="button" class="admin-link-helper__option" data-inline-type="link">Link</button>
+      <button type="button" class="admin-link-helper__option" data-inline-type="strong">Strong</button>
+      <button type="button" class="admin-link-helper__option" data-inline-type="em">Em</button>
+      <button type="button" class="admin-link-helper__option" data-inline-type="h2">H2</button>
+      <button type="button" class="admin-link-helper__option" data-inline-type="h3">H3</button>
+    </div>
+    <div class="admin-link-helper__submenu is-hidden" data-inline-submenu>
+      <div class="admin-link-helper__subheader" data-inline-title>Link hinzufügen</div>
+      <label class="admin-link-helper__field" data-inline-text-field>
+        <span data-inline-text-label>Linktext</span>
+        <input type="text" data-inline-text placeholder="z.B. Tickets">
+      </label>
+      <label class="admin-link-helper__field" data-inline-url-field>
+        <span>Link</span>
+        <input type="text" data-inline-url placeholder="z.B. /ticket">
+      </label>
+      <label class="admin-link-helper__field is-hidden" data-inline-class-field>
+        <span>CSS-Klasse</span>
+        <input type="text" data-inline-class placeholder="z.B. highlight">
+      </label>
+      <div class="admin-link-helper__actions">
+        <button type="button" class="admin-link-helper__back" data-inline-back>Zurück</button>
+        <button type="button" class="admin-link-helper__button" data-inline-insert>Einfügen</button>
+      </div>
+    </div>
   `;
   document.body.appendChild(linkHelper);
 
-  const linkTextInput = linkHelper.querySelector('[data-link-text]');
-  const linkUrlInput = linkHelper.querySelector('[data-link-url]');
-  const linkInsertButton = linkHelper.querySelector('[data-link-insert]');
+  const inlineMenu = linkHelper.querySelector('[data-inline-menu]');
+  const inlineSubmenu = linkHelper.querySelector('[data-inline-submenu]');
+  const inlineTitle = linkHelper.querySelector('[data-inline-title]');
+  const inlineTextLabel = linkHelper.querySelector('[data-inline-text-label]');
+  const inlineTextInput = linkHelper.querySelector('[data-inline-text]');
+  const inlineUrlField = linkHelper.querySelector('[data-inline-url-field]');
+  const inlineUrlInput = linkHelper.querySelector('[data-inline-url]');
+  const inlineClassField = linkHelper.querySelector('[data-inline-class-field]');
+  const inlineClassInput = linkHelper.querySelector('[data-inline-class]');
+  const inlineBackButton = linkHelper.querySelector('[data-inline-back]');
+  const inlineInsertButton = linkHelper.querySelector('[data-inline-insert]');
+  const inlineTypeButtons = Array.from(linkHelper.querySelectorAll('[data-inline-type]'));
+  const inlineTypes = {
+    link: { title: 'Link hinzufügen', textLabel: 'Linktext', textPlaceholder: 'z.B. Tickets', requiresUrl: true },
+    strong: { title: 'Strong hinzufügen', textLabel: 'Text', textPlaceholder: 'z.B. Wichtig', tag: 'strong' },
+    em: { title: 'Em hinzufügen', textLabel: 'Text', textPlaceholder: 'z.B. Hinweis', tag: 'em' },
+    h2: { title: 'H2 hinzufügen', textLabel: 'Text', textPlaceholder: 'z.B. Überschrift', tag: 'h2' },
+    h3: { title: 'H3 hinzufügen', textLabel: 'Text', textPlaceholder: 'z.B. Untertitel', tag: 'h3' }
+  };
+  let activeInlineType = null;
   let activeLinkField = null;
   let activeSelection = { start: 0, end: 0 };
 
@@ -909,10 +943,50 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const updateInsertState = () => {
-    if (!linkInsertButton) return;
-    const hasText = Boolean(linkTextInput?.value.trim());
-    const hasUrl = Boolean(linkUrlInput?.value.trim());
-    linkInsertButton.disabled = !hasText || !hasUrl;
+    if (!inlineInsertButton) return;
+    const typeConfig = activeInlineType ? inlineTypes[activeInlineType] : null;
+    const hasText = Boolean(inlineTextInput?.value.trim());
+    const hasUrl = Boolean(inlineUrlInput?.value.trim());
+    const requiresUrl = Boolean(typeConfig?.requiresUrl);
+    inlineInsertButton.disabled = !hasText || (requiresUrl && !hasUrl);
+  };
+
+  const resetInlineInputs = () => {
+    if (inlineTextInput) inlineTextInput.value = '';
+    if (inlineUrlInput) inlineUrlInput.value = '';
+    if (inlineClassInput) inlineClassInput.value = '';
+  };
+
+  const showInlineMenu = () => {
+    activeInlineType = null;
+    inlineMenu?.classList.remove('is-hidden');
+    inlineSubmenu?.classList.add('is-hidden');
+    resetInlineInputs();
+    updateInsertState();
+  };
+
+  const showInlineSubmenu = (type) => {
+    const typeConfig = inlineTypes[type];
+    if (!typeConfig) return;
+    activeInlineType = type;
+    inlineMenu?.classList.add('is-hidden');
+    inlineSubmenu?.classList.remove('is-hidden');
+    if (inlineTitle) inlineTitle.textContent = typeConfig.title;
+    if (inlineTextLabel) inlineTextLabel.textContent = typeConfig.textLabel;
+    if (inlineTextInput) {
+      inlineTextInput.placeholder = typeConfig.textPlaceholder;
+      inlineTextInput.value = '';
+    }
+    if (inlineUrlField) {
+      inlineUrlField.classList.toggle('is-hidden', !typeConfig.requiresUrl);
+    }
+    if (inlineClassField) {
+      inlineClassField.classList.toggle('is-hidden', Boolean(typeConfig.requiresUrl));
+    }
+    if (inlineUrlInput) inlineUrlInput.value = '';
+    if (inlineClassInput) inlineClassInput.value = '';
+    updateInsertState();
+    inlineTextInput?.focus();
   };
 
   const positionHelper = (field) => {
@@ -932,6 +1006,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isLinkableField(field)) return;
     activeLinkField = field;
     updateSelection();
+    showInlineMenu();
     positionHelper(field);
   };
 
@@ -972,26 +1047,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  linkTextInput?.addEventListener('input', updateInsertState);
-  linkUrlInput?.addEventListener('input', updateInsertState);
+  inlineTextInput?.addEventListener('input', updateInsertState);
+  inlineUrlInput?.addEventListener('input', updateInsertState);
+  inlineTypeButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const { inlineType } = button.dataset;
+      if (!inlineType) return;
+      showInlineSubmenu(inlineType);
+      updateSelection();
+    });
+  });
+  inlineBackButton?.addEventListener('click', () => {
+    showInlineMenu();
+  });
   updateInsertState();
 
-  linkInsertButton?.addEventListener('click', () => {
+  inlineInsertButton?.addEventListener('click', () => {
     if (!activeLinkField) return;
-    const linkText = linkTextInput?.value.trim() || '';
-    const linkUrl = linkUrlInput?.value.trim() || '';
-    if (!linkText || !linkUrl) return;
+    const typeConfig = activeInlineType ? inlineTypes[activeInlineType] : null;
+    if (!typeConfig) return;
+    const inlineText = inlineTextInput?.value.trim() || '';
+    const inlineUrl = inlineUrlInput?.value.trim() || '';
+    const inlineClass = inlineClassInput?.value.trim() || '';
+    if (!inlineText || (typeConfig.requiresUrl && !inlineUrl)) return;
     updateSelection();
     const before = activeLinkField.value.slice(0, activeSelection.start);
     const after = activeLinkField.value.slice(activeSelection.end);
-    const linkMarkup = `<a class="admin-inline-link" href="${linkUrl}">${linkText}</a>`;
-    activeLinkField.value = `${before}${linkMarkup}${after}`;
-    const nextCursor = activeSelection.start + linkMarkup.length;
+    const classAttribute = inlineClass ? ` class="${inlineClass}"` : '';
+    const markup = typeConfig.requiresUrl
+      ? `<a class="admin-inline-link" href="${inlineUrl}">${inlineText}</a>`
+      : `<${typeConfig.tag}${classAttribute}>${inlineText}</${typeConfig.tag}>`;
+    activeLinkField.value = `${before}${markup}${after}`;
+    const nextCursor = activeSelection.start + markup.length;
     activeLinkField.setSelectionRange(nextCursor, nextCursor);
     activeLinkField.dispatchEvent(new Event('input', { bubbles: true }));
     activeLinkField.focus();
-    linkTextInput.value = '';
-    linkUrlInput.value = '';
+    showInlineMenu();
     updateInsertState();
   });
 

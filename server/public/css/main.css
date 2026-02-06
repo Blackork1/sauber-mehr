@@ -2413,6 +2413,18 @@ input[type="reset"]:hover,
 
 .admin-grid--steps {
   align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+‚
+.admin-grid[hidden] {
+  display: none;
+}
+
+.admin-grid--steps [data-dynamic-rows-items] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  width: 100%;
 }
 
 .admin-step-card {

@@ -255,7 +255,7 @@
                      <input type="text" name="content_block_<%= block._adminId %>__subline" value="<%= safeValue(block.subline) %>">
                    </div>
                  </div>
-                 <div class="admin-grid" data-hero-layout-group="default">
+                 <div class="admin-grid" data-hero-layout-group="default" <%= heroLayout === 'default' ? '' : 'hidden' %>>
                    <div class="admin-field">
                      <label>CTA Label</label>
                      <input type="text" name="content_block_<%= block._adminId %>__cta.label" value="<%= safeValue(getHeroCtaLabel(block)) %>">
@@ -496,13 +496,13 @@
                      <input type="text" name="content_block_<%= block._adminId %>__action" value="<%= safeValue(block.action) %>">
                    </div>
                  </div>
-                 <div class="admin-grid" data-kontakt-layout-group="default">
+                 <div class="admin-grid" data-kontakt-layout-group="default" <%= kontaktLayout === 'default' ? '' : 'hidden' %>>
                    <div class="admin-field">
                      <label>Badge</label>
                      <input type="text" name="content_block_<%= block._adminId %>__badge" value="<%= safeValue(block.badge) %>">
                    </div>
                  </div>
-                 <div class="admin-grid" data-kontakt-layout-group="default">
+                 <div class="admin-grid" data-kontakt-layout-group="default" <%= kontaktLayout === 'default' ? '' : 'hidden' %>>
                    <div class="admin-field">
                      <label>Headline</label>
                      <input type="text" name="content_block_<%= block._adminId %>__headline" value="<%= safeValue(block.headline) %>">
@@ -512,7 +512,7 @@
                      <input type="text" name="content_block_<%= block._adminId %>__headlineAccent" value="<%= safeValue(block.headlineAccent) %>">
                    </div>
                  </div>
-                 <div class="admin-grid" data-kontakt-layout-group="default">
+                 <div class="admin-grid" data-kontakt-layout-group="default" <%= kontaktLayout === 'default' ? '' : 'hidden' %>>
                    <div class="admin-field">
                      <label>Intro</label>
                      <textarea name="content_block_<%= block._adminId %>__intro" rows="3"><%= safeValue(block.intro) %></textarea>
@@ -538,7 +538,7 @@
                      <% }) %>
                    </div>
                  </div>
-                 <div class="admin-grid admin-grid--steps" data-kontakt-layout-group="default">
+                 <div class="admin-grid admin-grid--steps" data-kontakt-layout-group="default" <%= kontaktLayout === 'default' ? '' : 'hidden' %>>
                    <% contactItems.forEach((item, index) => { %>
                    <div class="admin-step-card">
                      <div class="admin-field">
@@ -552,7 +552,7 @@
                    </div>
                    <% }) %>
                  </div>
-                 <div class="admin-grid" data-kontakt-layout-group="services">
+                 <div class="admin-grid" data-kontakt-layout-group="services" <%= kontaktLayout === 'services' ? '' : 'hidden' %>>
                    <div class="admin-field">
                      <label>Seitentitel</label>
                      <input type="text" name="content_block_<%= block._adminId %>__sideTitle" value="<%= safeValue(block.sideTitle) %>">
@@ -562,7 +562,7 @@
                      <input type="text" name="content_block_<%= block._adminId %>__sideSubheading" value="<%= safeValue(block.sideSubheading) %>">
                    </div>
                  </div>
-                 <div class="admin-grid" data-kontakt-layout-group="services">
+                 <div class="admin-grid" data-kontakt-layout-group="services" <%= kontaktLayout === 'services' ? '' : 'hidden' %>>
                    <div class="admin-field">
                      <label>Seitentext</label>
                      <textarea name="content_block_<%= block._adminId %>__sideDescription" rows="3"><%= safeValue(block.sideDescription) %></textarea>
@@ -1113,7 +1113,7 @@
                        </div>
                      </div>
                    </div>
-                   <div class="admin-grid" data-kontakt-layout-group="services">
+                   <div class="admin-grid" data-kontakt-layout-group="services" hidden>
                      <div class="admin-field">
                        <label>Seitentitel</label>
                        <input type="text" name="content_block___BLOCK_ID___sideTitle" value="">
@@ -1123,7 +1123,7 @@
                        <input type="text" name="content_block___BLOCK_ID___sideSubheading" value="">
                      </div>
                    </div>
-                   <div class="admin-grid" data-kontakt-layout-group="services">
+                   <div class="admin-grid" data-kontakt-layout-group="services" hidden>
                      <div class="admin-field">
                        <label>Seitentext</label>
                        <textarea name="content_block___BLOCK_ID___sideDescription" rows="3"></textarea>

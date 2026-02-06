@@ -511,6 +511,18 @@ export async function getAdminPanel(req, res, next) {
       const [homePage] = pagesOrdered.splice(homeIndex, 1);
       pagesOrdered.unshift(homePage);
     }
+
+    const isLeistungenSubpage = (page) =>
+      page?.canonical_path?.startsWith('/leistungen/')
+      && page?.canonical_path !== '/leistungen';
+    const leistungenSubpages = pagesOrdered.filter(isLeistungenSubpage);
+    const pageTabs = pagesOrdered.filter((page) => !isLeistungenSubpage(page));
+    const requestedSubpageId = Number(req.query.subpageId);
+    const selectedLeistungenSubpage =
+      leistungenSubpages.find((page) => page.id === requestedSubpageId)
+      || leistungenSubpages[0]
+      || null;
+
     const [galleryImages, galleryVideos, newsletterSubscriptions] = await Promise.all([
       getGalleryImages(pool),
       getGalleryVideos(pool),
@@ -524,7 +536,9 @@ export async function getAdminPanel(req, res, next) {
         locale: 'de-DE'
       },
       schemaGraphJson: '',
-      pages: pagesOrdered,
+      pages: pageTabs,
+      leistungenSubpages,
+      selectedLeistungenSubpage,
       galleryImages,
       galleryVideos,
       newsletterSubscriptions,
@@ -570,6 +584,21 @@ export async function updatePage(req, res, next) {
           });
           if (resolved.src) block.image = resolved.src;
           if (resolved.alt) block.imageAlt = resolved.alt;
+          const galleryItems = Array.isArray(block.gallery) ? block.gallery : [];
+          for (let index = 0; index < galleryItems.length; index += 1) {
+            const galleryFieldBase = `content_block_${blockId}__gallery.${index}.src`;
+            const resolvedGallery = await resolveImageFieldSimple({
+              upload: req.files?.[`${galleryFieldBase}_upload`],
+              galleryId: req.body[`${galleryFieldBase}_gallery_id`],
+              currentUrl: galleryItems[index]?.src,
+              alt: galleryItems[index]?.alt,
+              pool
+            });
+            galleryItems[index] = galleryItems[index] || {};
+            if (resolvedGallery.src) galleryItems[index].src = resolvedGallery.src;
+            if (resolvedGallery.alt) galleryItems[index].alt = resolvedGallery.alt;
+          }
+          block.gallery = galleryItems;
         }
         if (block.type === 'kosten') {
           const steps = Array.isArray(block.steps) ? block.steps : [];
@@ -637,6 +666,19 @@ export async function updatePage(req, res, next) {
         }
 
         if (block.type === 'bereiche') {
+          const imageFieldBase = `content_block_${blockId}__image.src`;
+          const resolvedImage = await resolveImageFieldSimple({
+            upload: req.files?.[`${imageFieldBase}_upload`],
+            galleryId: req.body[`${imageFieldBase}_gallery_id`],
+            currentUrl: block?.image?.src,
+            alt: block?.image?.alt,
+            pool
+          });
+          if (resolvedImage.src || resolvedImage.alt) {
+            block.image = block.image || {};
+            if (resolvedImage.src) block.image.src = resolvedImage.src;
+            if (resolvedImage.alt) block.image.alt = resolvedImage.alt;
+          }
           const slides = Array.isArray(block?.slider?.slides) ? block.slider.slides : [];
           for (let index = 0; index < slides.length; index += 1) {
             const fieldBase = `content_block_${blockId}__slider.slides.${index}.image.src`;
@@ -731,6 +773,65 @@ export async function updatePage(req, res, next) {
     );
 
     return res.redirect(`/adminbackend?nav=pages&tab=page-${pageId}&saved=1`);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function createLeistungenSubpage(req, res, next) {
+  try {
+    const pool = req.app.get('db');
+    const timestamp = Date.now();
+    const slug = `leistungen-unterseite-${timestamp}`;
+    const canonicalPath = `/leistungen/${slug}`;
+    const content = [
+      {
+        type: 'hero',
+        layout: 'leistungen-detail',
+        headline: '',
+        subline: '',
+        gallery: [{}, {}, {}]
+      },
+      {
+        type: 'kontaktformular',
+        layout: 'services',
+        services: []
+      },
+      {
+        type: 'kosten'
+      },
+      {
+        type: 'bereiche',
+        layout: 'single',
+        image: {}
+      },
+      {
+        type: 'leistungenCards'
+      },
+      {
+        type: 'faq'
+      }
+    ];
+
+    const { rows } = await pool.query(
+      `INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display, locale)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING id`,
+      [
+        slug,
+        canonicalPath,
+        'Neue Leistung',
+        null,
+        null,
+        JSON.stringify(content),
+        false,
+        false,
+        false,
+        'de-DE'
+      ]
+    );
+    const pageId = rows[0]?.id;
+    return res.redirect(`/adminbackend?nav=pages&tab=leistungen-subpages&subpageId=${pageId}`);
   } catch (err) {
     return next(err);
   }

@@ -1,4 +1,4 @@
-import { getPageByCanonicalPath, getPageBySlug } from '../services/pageService.js';
+import { getPageByCanonicalPath, getPageBySlug, listLeistungenSubpages } from '../services/pageService.js';
 import { normalizeBlocks } from '../helpers/componentRegistry.js';
 
 import {
@@ -45,6 +45,7 @@ async function renderPage(page, req, res, next) {
   try {
     const pool = req.app.get('db');
     const blocks = normalizeBlocks(page.content || []);
+    const servicePages = await listLeistungenSubpages(pool);
 
     const translations = await loadTranslations(pool, page);
     const alternates = [];
@@ -59,7 +60,8 @@ async function renderPage(page, req, res, next) {
       blocks,
       meta,
       schemaGraphJson: safeJsonLd(schemaGraph),
-      translations
+      translations,
+      servicePages
     });
   } catch (err) {
     return next(err);

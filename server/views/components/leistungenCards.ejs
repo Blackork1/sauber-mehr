@@ -1,0 +1,44 @@
+<%
+  const title = block?.title || 'Weitere Leistungen';
+  const description = block?.description || '';
+  const buttonLabel = block?.buttonLabel || 'Mehr Infos';
+  const emptyText = block?.emptyText || 'Aktuell sind keine weiteren Leistungen vorhanden.';
+  const servicePagesList = Array.isArray(servicePages) ? servicePages : [];
+  const cardItems = servicePagesList.map((servicePage) => {
+    const blocks = Array.isArray(servicePage?.content) ? servicePage.content : [];
+    const heroBlock = blocks.find((entry) => entry?.type === 'hero') || {};
+    const heroGallery = Array.isArray(heroBlock.gallery) ? heroBlock.gallery : [];
+    const imageSource = heroGallery[0]?.src || heroBlock.image || '';
+    const imageAlt = heroGallery[0]?.alt || heroBlock.imageAlt || servicePage?.title || '';
+    const summary = heroBlock.subline || servicePage?.meta_description || '';
+    return {
+      title: heroBlock.headline || servicePage?.title || '',
+      description: summary,
+      href: servicePage?.canonical_path || '',
+      buttonLabel,
+      image: {
+        src: imageSource,
+        alt: imageAlt
+      }
+    };
+  });
+%>
+
+<section class="leistungen-unterseiten section">
+  <div class="section__inner leistungen-unterseiten__inner">
+    <div class="leistungen-unterseiten__header">
+      <h2 class="leistungen-unterseiten__title"><%- renderTextWithLinks(title) %></h2>
+      <% if (description) { %>
+      <p class="leistungen-unterseiten__text"><%- renderTextWithLinks(description) %></p>
+      <% } %>
+    </div>
+
+    <%- include('./universalSlider', {
+      sliderClass: 'leistungen-unterseiten__slider',
+      sliderItems: cardItems,
+      sliderItemPartial: 'components/partials/leistungenCardItem',
+      sliderEmptyText: emptyText,
+      sliderItemSelector: '[data-slider-item]'
+    }) %>
+  </div>
+</section>

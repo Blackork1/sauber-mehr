@@ -1,6 +1,6 @@
 <%
   const action = block?.action || '/contact';
-const layout = block?.layout || 'default';
+  const layout = block?.layout || 'default';
   const badge = block?.badge || 'Kontakt';
   const headline = block?.headline || 'Kontaktiere uns noch';
   const headlineAccent = block?.headlineAccent || 'Heute';
@@ -23,6 +23,11 @@ const layout = block?.layout || 'default';
     })
     .filter((service) => service?.label);
   const contactItems = block?.contactItems || [];
+    const isLeistungenSubpage =
+      page?.canonical_path?.startsWith('/leistungen/')
+    && page?.canonical_path !== '/leistungen';
+  const autoServiceName = block?.serviceName || page?.title || '';
+  const shouldAutoService = layout === 'services' && isLeistungenSubpage && autoServiceName;
 %>
 
 <section class="sauber-kontakt section" id="kontakt">
@@ -68,6 +73,13 @@ const layout = block?.layout || 'default';
           <span>Deine Mail</span>
           <input type="email" name="email" placeholder="Mail" required>
         </label>
+        <% if (shouldAutoService) { %>
+        <label class="sauber-kontakt__field">
+          <span>Leistung</span>
+          <input type="text" value="<%= autoServiceName %>" readonly>
+          <input type="hidden" name="service" value="<%= autoServiceName %>">
+        </label>
+        <% } else { %>
         <label class="sauber-kontakt__field">
           <span>Leistung auswählen</span>
           <select name="service" required>
@@ -77,6 +89,7 @@ const layout = block?.layout || 'default';
             <% }) %>
           </select>
         </label>
+        <% } %>
         <label class="sauber-kontakt__field">
           <span>Bilder hochladen (optional)</span>
           <input type="file" name="attachments" accept="image/*" multiple>

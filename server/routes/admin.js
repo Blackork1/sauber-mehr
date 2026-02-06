@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import {
   getAdminPanel,
   updatePage,
+  createLeistungenSubpage,
   createGalleryImageAdmin,
   createGalleryVideoAdmin,
   deleteGalleryImageAdmin,
@@ -125,6 +126,7 @@ router.post(
   parseMultipart({ targetDir: imageUploadDir }),
   updatePage
 );
+router.post('/adminbackend/leistungen-subpages/new', requireAdmin, createLeistungenSubpage);
 router.post(
   '/adminbackend/gallery/images',
   requireAdmin,

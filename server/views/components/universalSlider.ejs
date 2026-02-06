@@ -1,0 +1,59 @@
+<%
+  const sliderClasses = ['u-slider'];
+  if (sliderClass) sliderClasses.push(sliderClass);
+  const contentClasses = ['u-slider__content'];
+  if (contentClass) contentClasses.push(contentClass);
+  const carouselClasses = ['u-slider__carousel'];
+  if (carouselClass) carouselClasses.push(carouselClass);
+  const dotsClasses = ['u-slider__dots'];
+  if (dotsClass) dotsClasses.push(dotsClass);
+  const itemSelector = sliderItemSelector || '[data-slider-item]';
+  const dotClassName = sliderDotClass || 'u-slider__dot';
+  const items = Array.isArray(sliderItems) ? sliderItems : [];
+  const showArrows = showSliderArrows !== false;
+  const showDots = showSliderDots !== false;
+  const previousLabel = sliderPreviousLabel || 'Vorherig';
+  const nextLabel = sliderNextLabel || 'Nächste';
+%>
+
+<div
+  class="<%= sliderClasses.join(' ') %>"
+  data-component="universal-slider"
+  data-slider-item-selector="<%= itemSelector %>"
+  data-slider-dot-class="<%= dotClassName %>"
+  <%= sliderFlipSelector ? `data-slider-flip-selector="${sliderFlipSelector}"` : '' %>
+>
+  <div class="<%= contentClasses.join(' ') %>">
+    <% if (showArrows) { %>
+    <button class="u-slider__arrow u-slider__arrow--left <%= leftArrowClass || '' %>" type="button" data-slider-scroll="left" aria-label="<%= previousLabel %>">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M15.4 6.4 10 12l5.4 5.6-1.4 1.4L7.2 12l6.8-6.9 1.4 1.3z"></path>
+      </svg>
+    </button>
+    <% } %>
+
+    <div class="<%= carouselClasses.join(' ') %>" data-slider-carousel>
+      <% if (!items.length) { %>
+      <div class="u-slider__empty <%= emptyClass || '' %>" data-slider-empty><%= sliderEmptyText || '' %></div>
+      <% } %>
+
+      <% if (sliderItemPartial) { %>
+      <% items.forEach((item, index) => { %>
+      <%- include(sliderItemPartial, { item, index }) %>
+      <% }) %>
+      <% } %>
+    </div>
+
+    <% if (showArrows) { %>
+    <button class="u-slider__arrow u-slider__arrow--right <%= rightArrowClass || '' %>" type="button" data-slider-scroll="right" aria-label="<%= nextLabel %>">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m8.6 17.6 5.4-5.6-5.4-5.6 1.4-1.4 6.8 6.9-6.8 6.9-1.4-1.2z"></path>
+      </svg>
+    </button>
+    <% } %>
+  </div>
+
+  <% if (showDots) { %>
+  <div class="<%= dotsClasses.join(' ') %>" data-slider-dots></div>
+  <% } %>
+</div>

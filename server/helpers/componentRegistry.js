@@ -10,6 +10,7 @@ export const COMPONENT_REGISTRY = {
   imageText: 'imageText',
   imageSlider: 'imageSlider',
   bereiche: 'bereiche',
+  leistungenCards: 'leistungenCards',
   faq: 'faq',
   angebote: 'angebote',
   kontaktformular: 'kontaktformular',

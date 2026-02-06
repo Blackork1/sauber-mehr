@@ -7,10 +7,21 @@
   const isLeistungenPage =
       page?.canonical_path?.startsWith('/leistungen')
     || ['leistungen', 'leistungen-de', 'leistungen-en'].includes(page?.slug);
-  const heroLayout = block?.layout || (isLeistungenPage ? 'leistungen' : 'default');
-  const isLeistungenHero = heroLayout === 'leistungen';
+  const isLeistungenSubpage =
+      page?.canonical_path?.startsWith('/leistungen/')
+    && page?.canonical_path !== '/leistungen';
+  const heroLayout = block?.layout || (isLeistungenSubpage ? 'leistungen-detail' : (isLeistungenPage ? 'leistungen' : 'default'));
+  const isLeistungenHero = heroLayout === 'leistungen' || heroLayout === 'leistungen-detail';
+  const galleryDefaults = [432, 582, 432];
+  const galleryItems = Array.isArray(block?.gallery) && block.gallery.length
+    ? block.gallery
+    : [
+        { src: heroImage, alt: heroHeadline, width: galleryDefaults[0] },
+        { src: heroImage, alt: heroHeadline, width: galleryDefaults[1] },
+        { src: heroImage, alt: heroHeadline, width: galleryDefaults[2] }
+      ];
 %>
-<section class="sauber-hero <%= isLeistungenHero ? 'sauber-hero--leistungen' : '' %>" aria-labelledby="sauber-hero-title">
+<section class="sauber-hero <%= isLeistungenHero ? 'sauber-hero--leistungen' : '' %> <%= heroLayout === 'leistungen-detail' ? 'sauber-hero--leistungen-detail' : '' %>" aria-labelledby="sauber-hero-title">
   <% if (isLeistungenHero) { %>
   <div class="section__inner sauber-hero__inner">
     <h1 class="sauber-hero__title" id="sauber-hero-title"><%- renderTextWithLinks(heroHeadline) %></h1>
@@ -22,9 +33,21 @@
           <a class="sauber-hero__button sauber-hero__button--secondary" href="https://wa.me/491795163864" target="_blank" rel="noopener noreferrer">WhatsApp</a>
         </div>
       </div>
+      <% if (heroLayout === 'leistungen-detail') { %>
+      <div class="sauber-hero__gallery">
+        <% galleryItems.forEach((item, index) => { %>
+        <div class="sauber-hero__gallery-item" style="--gallery-width: <%= item?.width || galleryDefaults[index] || 432 %>px;">
+          <% if (item?.src) { %>
+          <img src="<%= item.src %>" alt="<%= item.alt || heroHeadline %>" loading="lazy" />
+          <% } %>
+        </div>
+        <% }) %>
+      </div>
+      <% } else { %>
       <div class="sauber-hero__visual">
         <img src="<%= heroImage %>" alt="<%= heroHeadline %>" loading="lazy" />
       </div>
+      <% } %>
     </div>
   </div>
   <% } else { %>

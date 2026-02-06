@@ -33,3 +33,16 @@ export async function listNavPages(pool) {
   );
   return rows;
 }
+
+
+export async function listLeistungenSubpages(pool) {
+  const { rows } = await pool.query(
+    `SELECT id, slug, canonical_path, title, meta_title, meta_description, content
+     FROM pages
+     WHERE display = true
+       AND canonical_path LIKE '/leistungen/%'
+       AND canonical_path <> '/leistungen'
+     ORDER BY title`
+  );
+  return rows;
+}

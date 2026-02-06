@@ -2,7 +2,7 @@
   const action = block?.action || '/contact';
   const breadcrumb = block?.breadcrumb || 'Startseite > Kontakt';
   const headline = block?.headline || 'Kontaktiere uns und';
-  const headlineAccent = block?.headlineAccent || 'erhalte dein Angebot';
+  const headlineAccent = block?.headlineAccent || '';
   const description = block?.description || 'Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.';
   const primaryCta = block?.primaryCta || { label: 'Jetzt anrufen', href: 'tel:+493028641263' };
   const secondaryCta = block?.secondaryCta || { label: 'WhatsApp Nachricht', href: 'https://wa.me/493028641263' };
@@ -64,10 +64,10 @@
       <div class="kontakt-flow__breadcrumb"><%= breadcrumb %></div>
       <% } %>
       <h1 class="kontakt-flow__headline">
-        <span><%= headline %></span>
-        <span class="kontakt-flow__headline-accent"><%= headlineAccent %></span>
+        <span><%- renderTextWithLinks(headline) %></span>
+        <span class="kontakt-flow__headline-accent"><%- renderTextWithLinks(headlineAccent) %></span>
       </h1>
-      <p class="kontakt-flow__description"><%= description %></p>
+      <p class="kontakt-flow__description"><%- description %></p>
       <div class="kontakt-flow__cta">
         <% if (primaryCta?.label) { %>
         <a class="sauber-hero__button" href="<%= primaryCta.href || '#' %>"><%= primaryCta.label %></a>

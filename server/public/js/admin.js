@@ -1688,12 +1688,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const layoutSelect = block.querySelector('[data-hero-layout]');
       if (!layoutSelect) return;
       const updateLayout = () => {
-        const layout = layoutSelect.value === 'leistungen' ? 'leistungen' : 'default';
+        const layout = ['leistungen', 'leistungen-detail'].includes(layoutSelect.value)
+          ? layoutSelect.value
+          : 'default';
         block.querySelectorAll('[data-hero-layout-group]').forEach((group) => {
           const groupLayout = group.dataset.heroLayoutGroup || 'default';
           group.hidden = groupLayout !== layout;
         });
-        const title = layout === 'leistungen' ? 'Hero (Leistungen)' : 'Hero (Standard)';
+        const title = layout === 'leistungen-detail'
+          ? 'Hero (Leistungen Unterseite)'
+          : (layout === 'leistungen' ? 'Hero (Leistungen)' : 'Hero (Standard)');
         const titleElement = block.querySelector('.admin-content-block__title');
         if (titleElement) titleElement.textContent = title;
         const blockId = block.dataset.blockId;
@@ -1701,6 +1705,20 @@ document.addEventListener('DOMContentLoaded', () => {
           const labelElement = sortList.querySelector(`[data-block-id="${blockId}"] span:last-child`);
           if (labelElement) labelElement.textContent = title;
         }
+      };
+      layoutSelect.addEventListener('change', updateLayout);
+      updateLayout();
+    };
+
+    const initBereicheLayout = (block) => {
+      const layoutSelect = block.querySelector('[data-bereiche-layout]');
+      if (!layoutSelect) return;
+      const updateLayout = () => {
+        const layout = layoutSelect.value === 'single' ? 'single' : 'slider';
+        block.querySelectorAll('[data-bereiche-layout-group]').forEach((group) => {
+          const groupLayout = group.dataset.bereicheLayoutGroup || 'slider';
+          group.hidden = groupLayout !== layout;
+        });
       };
       layoutSelect.addEventListener('change', updateLayout);
       updateLayout();
@@ -1746,6 +1764,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         initKontaktLayout(newBlock);
         initHeroLayout(newBlock);
+        initBereicheLayout(newBlock);
       });
     }
 
@@ -1797,10 +1816,32 @@ document.addEventListener('DOMContentLoaded', () => {
     blocksContainer.querySelectorAll('[data-content-block]').forEach((block) => {
       initKontaktLayout(block);
       initHeroLayout(block);
+      initBereicheLayout(block);
     });
   };
 
   document.querySelectorAll('[data-content-editor]').forEach(initContentEditor);
+
+  const subpageSelect = document.querySelector('[data-leistungen-subpage-select]');
+  if (subpageSelect) {
+    subpageSelect.addEventListener('change', () => {
+      const value = subpageSelect.value;
+      if (!value) return;
+      const params = new URLSearchParams(window.location.search);
+      params.set('nav', 'pages');
+      params.set('tab', 'leistungen-subpages');
+      params.set('subpageId', value);
+      window.location.search = params.toString();
+    });
+  }
+
+  const createSubpageButton = document.querySelector('[data-create-leistungen-subpage]');
+  const createSubpageForm = document.getElementById('leistungen-subpage-create');
+  if (createSubpageButton && createSubpageForm) {
+    createSubpageButton.addEventListener('click', () => {
+      createSubpageForm.submit();
+    });
+  }
 
   const downloadGroups = Array.from(document.querySelectorAll('[data-rahmenplan-downloads]'));
   downloadGroups.forEach((group) => {

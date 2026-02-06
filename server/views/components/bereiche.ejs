@@ -1,8 +1,10 @@
 <%
   const title = block?.title || 'In diesen Bereichen reinigen wir Berlin:';
   const description = block?.description || '';
+  const layout = block?.layout || 'slider';
   const slider = block?.slider || {};
   const sliderBlock = { ...slider, variant: 'bereiche' };
+  const image = block?.image || {};
   const descriptionParts = String(description || '')
     .split(/\r?\n+/)
     .map((paragraph) => paragraph.trim())
@@ -17,8 +19,14 @@
       <p class="sauber-bereiche__text"><%- renderTextWithLinks(paragraph) %></p>
       <% }) %>
     </div>
+    <% if (layout === 'single' && image?.src) { %>
+    <div class="sauber-bereiche__image">
+      <img src="<%= image.src %>" alt="<%= image.alt || title %>" loading="lazy" />
+    </div>
+    <% } else { %>
     <div class="sauber-bereiche__slider">
       <%- include('./imageSlider', { block: sliderBlock, page }) %>
     </div>
+    <% } %>
   </div>
 </section>

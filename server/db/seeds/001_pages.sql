@@ -860,3 +860,256 @@ ON CONFLICT (slug) DO UPDATE SET
   show_in_nav = EXCLUDED.show_in_nav,
   display = EXCLUDED.display,
   updated_at = now();
+
+INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display)
+VALUES
+  (
+    'leistungen-haushalt',
+    '/leistungen/haushalt',
+    'Haushaltsreinigung',
+    'Haushaltsreinigung – Sauber Mehr',
+    'Gründliche Haushaltsreinigung in Berlin.',
+    '[
+  {
+    "type": "hero",
+    "layout": "leistungen-detail",
+    "headline": "Haushaltsreinigung in Berlin",
+    "subline": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und individuell erstellt.",
+    "gallery": [
+      { "src": "/images/unterhaltsreinigung.webp", "alt": "Haushaltsreinigung" },
+      { "src": "/images/team.webp", "alt": "Team Sauber Mehr" },
+      { "src": "/images/angebot.webp", "alt": "Angebot Haushaltsreinigung" }
+    ]
+  },
+  {
+    "type": "kontaktformular",
+    "layout": "services",
+    "action": "/contact",
+    "sideTitle": "Professionelle Haushaltsreinigung",
+    "sideDescription": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.",
+    "sideSubheading": "Folgende Leistungen sind enthalten:",
+    "services": [
+      "Wir melden uns innerhalb von 24 Stunden bei dir.",
+      "Individuelle Reinigungsintervalle nach Bedarf.",
+      "Feste Ansprechpartner und klare Abläufe."
+    ]
+  },
+  {
+    "type": "kosten",
+    "headline": "Was kostet die Haushaltsreinigung?",
+    "subline": "In 3 einfachen Schritten zu deinem unverbindlichen Angebot"
+  },
+  {
+    "type": "bereiche",
+    "layout": "single",
+    "title": "Zuverlässig Haushalte in Berlin reinigen lassen",
+    "description": "Wir reinigen gründlich, flexibel und abgestimmt auf deinen Alltag.",
+    "image": { "src": "/images/unterhaltsreinigung.webp", "alt": "Haushaltsreinigung" }
+  },
+  {
+    "type": "leistungenCards",
+    "title": "Weitere Leistungen",
+    "description": "Entdecke weitere Unterseiten aus unserem Leistungsangebot."
+  },
+  {
+    "type": "faq",
+    "title": "Typische Fragen zur Haushaltsreinigung",
+    "items": [
+      { "q": "Wie schnell erhalte ich ein Angebot?", "a": "Wir melden uns innerhalb von 24 Stunden und erstellen ein individuelles Angebot." }
+    ]
+  }
+]'::jsonb,
+    false,
+    false,
+    true
+  ),
+  (
+    'leistungen-buero',
+    '/leistungen/buero',
+    'Büroreinigung',
+    'Büroreinigung – Sauber Mehr',
+    'Professionelle Büroreinigung in Berlin.',
+    '[
+  {
+    "type": "hero",
+    "layout": "leistungen-detail",
+    "headline": "Büroreinigung in Berlin",
+    "subline": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und individuell erstellt.",
+    "gallery": [
+      { "src": "/images/büroreinigung.webp", "alt": "Büroreinigung" },
+      { "src": "/images/team.webp", "alt": "Team Sauber Mehr" },
+      { "src": "/images/unterhaltsreinigung.webp", "alt": "Unterhaltsreinigung" }
+    ]
+  },
+  {
+    "type": "kontaktformular",
+    "layout": "services",
+    "action": "/contact",
+    "sideTitle": "Professionelle Büroreinigung",
+    "sideDescription": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.",
+    "sideSubheading": "Folgende Leistungen sind enthalten:",
+    "services": [
+      "Wir melden uns innerhalb von 24 Stunden bei dir.",
+      "Reinigung nach deinem Turnus und Bedarf.",
+      "Feste Ansprechpartner und schnelle Rückmeldung."
+    ]
+  },
+  {
+    "type": "kosten",
+    "headline": "Was kostet die Büroreinigung?",
+    "subline": "In 3 einfachen Schritten zu deinem unverbindlichen Angebot"
+  },
+  {
+    "type": "bereiche",
+    "layout": "single",
+    "title": "Zuverlässig Büroräume in Berlin reinigen lassen",
+    "description": "Wir reinigen Büros, Konferenzräume und Gemeinschaftsflächen nach deinem Bedarf.",
+    "image": { "src": "/images/büroreinigung.webp", "alt": "Büroreinigung" }
+  },
+  {
+    "type": "leistungenCards",
+    "title": "Weitere Leistungen",
+    "description": "Entdecke weitere Unterseiten aus unserem Leistungsangebot."
+  },
+  {
+    "type": "faq",
+    "title": "Typische Fragen zur Büroreinigung",
+    "items": [
+      { "q": "Wie schnell erhalte ich ein Angebot?", "a": "Wir melden uns innerhalb von 24 Stunden und erstellen ein individuelles Angebot." }
+    ]
+  }
+]'::jsonb,
+    false,
+    false,
+    true
+  ),
+  (
+    'leistungen-treppenhaus',
+    '/leistungen/treppenhaus',
+    'Treppenhausreinigung',
+    'Treppenhausreinigung – Sauber Mehr',
+    'Treppenhausreinigung für Wohn- und Geschäftshäuser in Berlin.',
+    '[
+  {
+    "type": "hero",
+    "layout": "leistungen-detail",
+    "headline": "Treppenhausreinigung in Berlin",
+    "subline": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und individuell erstellt.",
+    "gallery": [
+      { "src": "/images/aufgangsreinigung.webp", "alt": "Treppenhausreinigung" },
+      { "src": "/images/team.webp", "alt": "Team Sauber Mehr" },
+      { "src": "/images/unterhaltsreinigung.webp", "alt": "Treppenhausreinigung" }
+    ]
+  },
+  {
+    "type": "kontaktformular",
+    "layout": "services",
+    "action": "/contact",
+    "sideTitle": "Professionelle Treppenhausreinigung",
+    "sideDescription": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.",
+    "sideSubheading": "Folgende Leistungen sind enthalten:",
+    "services": [
+      "Wir melden uns innerhalb von 24 Stunden bei dir.",
+      "Regelmäßige Reinigung von Treppen, Geländern und Eingängen.",
+      "Klare Abläufe und feste Ansprechpartner."
+    ]
+  },
+  {
+    "type": "kosten",
+    "headline": "Was kostet die Treppenhausreinigung?",
+    "subline": "In 3 einfachen Schritten zu deinem unverbindlichen Angebot"
+  },
+  {
+    "type": "bereiche",
+    "layout": "single",
+    "title": "Zuverlässig Treppenhäuser in Berlin reinigen lassen",
+    "description": "Saubere Aufgänge sorgen für einen gepflegten Eindruck bei Bewohnern und Gästen.",
+    "image": { "src": "/images/aufgangsreinigung.webp", "alt": "Treppenhausreinigung" }
+  },
+  {
+    "type": "leistungenCards",
+    "title": "Weitere Leistungen",
+    "description": "Entdecke weitere Unterseiten aus unserem Leistungsangebot."
+  },
+  {
+    "type": "faq",
+    "title": "Typische Fragen zur Treppenhausreinigung",
+    "items": [
+      { "q": "Wie schnell erhalte ich ein Angebot?", "a": "Wir melden uns innerhalb von 24 Stunden und erstellen ein individuelles Angebot." }
+    ]
+  }
+]'::jsonb,
+    false,
+    false,
+    true
+  ),
+  (
+    'leistungen-fenster',
+    '/leistungen/fenster',
+    'Fensterreinigung',
+    'Fensterreinigung – Sauber Mehr',
+    'Streifenfreie Fensterreinigung in Berlin.',
+    '[
+  {
+    "type": "hero",
+    "layout": "leistungen-detail",
+    "headline": "Fensterreinigung in Berlin",
+    "subline": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und individuell erstellt.",
+    "gallery": [
+      { "src": "/images/fensterreinigung.webp", "alt": "Fensterreinigung" },
+      { "src": "/images/team.webp", "alt": "Team Sauber Mehr" },
+      { "src": "/images/unterhaltsreinigung.webp", "alt": "Fensterreinigung" }
+    ]
+  },
+  {
+    "type": "kontaktformular",
+    "layout": "services",
+    "action": "/contact",
+    "sideTitle": "Professionelle Fensterreinigung",
+    "sideDescription": "Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.",
+    "sideSubheading": "Folgende Leistungen sind enthalten:",
+    "services": [
+      "Wir melden uns innerhalb von 24 Stunden bei dir.",
+      "Streifenfreie Reinigung für alle Glasflächen.",
+      "Transparente Angebote und feste Ansprechpartner."
+    ]
+  },
+  {
+    "type": "kosten",
+    "headline": "Was kostet die Fensterreinigung?",
+    "subline": "In 3 einfachen Schritten zu deinem unverbindlichen Angebot"
+  },
+  {
+    "type": "bereiche",
+    "layout": "single",
+    "title": "Zuverlässig Fenster in Berlin reinigen lassen",
+    "description": "Klare Sicht und gepflegte Fassaden für Büro und Zuhause.",
+    "image": { "src": "/images/fensterreinigung.webp", "alt": "Fensterreinigung" }
+  },
+  {
+    "type": "leistungenCards",
+    "title": "Weitere Leistungen",
+    "description": "Entdecke weitere Unterseiten aus unserem Leistungsangebot."
+  },
+  {
+    "type": "faq",
+    "title": "Typische Fragen zur Fensterreinigung",
+    "items": [
+      { "q": "Wie schnell erhalte ich ein Angebot?", "a": "Wir melden uns innerhalb von 24 Stunden und erstellen ein individuelles Angebot." }
+    ]
+  }
+]'::jsonb,
+    false,
+    false,
+    true
+  )
+ON CONFLICT (slug) DO UPDATE SET
+  canonical_path = EXCLUDED.canonical_path,
+  title = EXCLUDED.title,
+  meta_title = EXCLUDED.meta_title,
+  meta_description = EXCLUDED.meta_description,
+  content = EXCLUDED.content,
+  nav = EXCLUDED.nav,
+  show_in_nav = EXCLUDED.show_in_nav,
+  display = EXCLUDED.display,
+  updated_at = now();

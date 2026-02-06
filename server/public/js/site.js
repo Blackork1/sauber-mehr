@@ -123,6 +123,207 @@ function initSocialRailScrollState() {
 
 initSocialRailScrollState();
 
+function initUniversalSliders() {
+  const sliders = document.querySelectorAll('[data-component="universal-slider"]');
+  if (!sliders.length) return;
+
+  sliders.forEach((slider) => {
+    const carousel = slider.matches('[data-slider-carousel]')
+      ? slider
+      : slider.querySelector('[data-slider-carousel]');
+
+    if (!carousel) return;
+
+    const dots = slider.querySelector('[data-slider-dots]');
+    const leftHint = slider.querySelector('[data-slider-scroll="left"]');
+    const rightHint = slider.querySelector('[data-slider-scroll="right"]');
+    const itemSelector = slider.dataset.sliderItemSelector || slider.dataset.sliderCardSelector || '[data-slider-item], [data-slider-card]';
+    const flipSelector = slider.dataset.sliderFlipSelector || '';
+    const dotClass = slider.dataset.sliderDotClass || 'u-slider__dot';
+
+    const items = Array.from(carousel.querySelectorAll(itemSelector));
+    const emptyState = carousel.querySelector('[data-slider-empty]');
+    const itemCount = emptyState ? 0 : items.length;
+
+    const getItemPositions = () => items.map((item) => item.offsetLeft);
+
+    const getClosestIndex = () => {
+      if (!items.length) return 0;
+      const positions = getItemPositions();
+      const current = carousel.scrollLeft;
+      let closestIndex = 0;
+      let closestDistance = Math.abs(current - positions[0]);
+
+      positions.forEach((position, index) => {
+        const distance = Math.abs(current - position);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+
+      return closestIndex;
+    };
+
+    const updateDots = () => {
+      if (!dots) return;
+      dots.innerHTML = '';
+      if (itemCount <= 1) {
+        dots.setAttribute('hidden', 'true');
+        return;
+      }
+      dots.removeAttribute('hidden');
+      for (let index = 0; index < itemCount; index += 1) {
+        const dot = document.createElement('span');
+        dot.className = dotClass;
+        if (index === 0) dot.classList.add('is-active');
+        dots.appendChild(dot);
+      }
+    };
+
+    const updateActiveDot = (index) => {
+      if (!dots) return;
+      const dotItems = dots.querySelectorAll(`.${dotClass.split(' ').join('.')}`);
+      dotItems.forEach((dot, idx) => {
+        dot.classList.toggle('is-active', idx === index);
+      });
+    };
+
+    const updateHints = () => {
+      if (!leftHint || !rightHint) return;
+      if (items.length <= 1) {
+        leftHint.setAttribute('hidden', 'true');
+        rightHint.setAttribute('hidden', 'true');
+        return;
+      }
+      const index = getClosestIndex();
+      leftHint.toggleAttribute('hidden', index === 0);
+      rightHint.toggleAttribute('hidden', index === items.length - 1);
+    };
+
+    const scrollToIndex = (index) => {
+      if (!items.length) return;
+      const positions = getItemPositions();
+      const target = positions[Math.min(index, positions.length - 1)];
+      carousel.scrollTo({ left: target, behavior: 'smooth' });
+    };
+
+    updateDots();
+    updateHints();
+
+    if (itemCount > 1) {
+      carousel.addEventListener('scroll', () => {
+        const index = getClosestIndex();
+        updateActiveDot(index);
+        updateHints();
+      });
+
+      rightHint?.addEventListener('click', () => {
+        const index = getClosestIndex() + 1;
+        scrollToIndex(Math.min(index, items.length - 1));
+      });
+
+      leftHint?.addEventListener('click', () => {
+        const index = getClosestIndex() - 1;
+        scrollToIndex(Math.max(index, 0));
+      });
+    }
+
+    carousel.querySelectorAll('a, img').forEach((el) => {
+      el.setAttribute('draggable', 'false');
+    });
+    carousel.addEventListener('dragstart', (event) => {
+      event.preventDefault();
+    });
+
+    let startX = 0;
+    let scrollStart = 0;
+    let wasDragging = false;
+    let startFlipButton = null;
+    let suppressClick = false;
+
+    const stopDragging = (event) => {
+      if (event && carousel.hasPointerCapture(event.pointerId)) {
+        carousel.releasePointerCapture(event.pointerId);
+      }
+      carousel.classList.remove('is-dragging');
+    };
+
+    carousel.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0 && event.pointerType === 'mouse') return;
+      wasDragging = false;
+      startFlipButton = flipSelector ? event.target.closest(flipSelector) : null;
+      startX = event.pageX;
+      scrollStart = carousel.scrollLeft;
+      carousel.classList.add('is-dragging');
+      carousel.setPointerCapture(event.pointerId);
+    });
+
+    carousel.addEventListener('pointermove', (event) => {
+      if (!carousel.hasPointerCapture(event.pointerId)) return;
+      const walk = startX - event.pageX;
+      if (Math.abs(walk) > 6) {
+        wasDragging = true;
+      }
+      carousel.scrollLeft = scrollStart + walk;
+    });
+
+    carousel.addEventListener('pointerup', stopDragging);
+    carousel.addEventListener('pointercancel', stopDragging);
+    carousel.addEventListener('pointerleave', stopDragging);
+
+    carousel.addEventListener('click', (event) => {
+      if (!wasDragging) return;
+      const target = event.target;
+      if (target.closest('a, button')) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      wasDragging = false;
+    });
+
+    carousel.addEventListener('pointerup', (event) => {
+      if (!startFlipButton || wasDragging) {
+        startFlipButton = null;
+        return;
+      }
+      const card = startFlipButton.closest(itemSelector);
+      if (!card) return;
+      const isFlipped = card.classList.toggle('is-flipped');
+      startFlipButton.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
+      suppressClick = true;
+      startFlipButton = null;
+      stopDragging(event);
+    });
+
+    carousel.addEventListener('pointercancel', () => {
+      startFlipButton = null;
+    });
+
+    carousel.addEventListener('pointerleave', () => {
+      startFlipButton = null;
+    });
+
+    if (!flipSelector) return;
+
+    items.forEach((item) => {
+      const button = item.querySelector(flipSelector);
+      if (!button) return;
+      button.addEventListener('click', () => {
+        if (suppressClick) {
+          suppressClick = false;
+          return;
+        }
+        if (wasDragging) return;
+        const isFlipped = item.classList.toggle('is-flipped');
+        button.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
+      });
+    });
+  });
+}
+
+initUniversalSliders();
+
 function initMediaShowcases() {
   const sections = document.querySelectorAll('[data-component="media-showcase"]');
   if (!sections.length) return;

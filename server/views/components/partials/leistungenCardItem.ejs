@@ -1,0 +1,16 @@
+<article class="leistungen-card" data-slider-item>
+  <% if (item?.image?.src) { %>
+  <div class="leistungen-card__media">
+    <img src="<%= item.image.src %>" alt="<%= item.image.alt || '' %>" loading="lazy" />
+  </div>
+  <% } %>
+  <div class="leistungen-card__title">
+    <h3><%- renderTextWithLinks(item?.title || '') %></h3>
+  </div>
+  <div class="leistungen-card__body">
+    <% if (item?.description) { %>
+    <p><%- renderTextWithLinks(item.description) %></p>
+    <% } %>
+    <a class="leistungen-card__button" href="<%= item?.href || '#' %>"><%= item?.buttonLabel || 'Mehr Infos' %></a>
+  </div>
+</article>

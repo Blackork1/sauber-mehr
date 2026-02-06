@@ -1,31 +1,43 @@
 <%
+  const sliderClassValue = typeof sliderClass !== 'undefined' ? sliderClass : '';
+  const contentClassValue = typeof contentClass !== 'undefined' ? contentClass : '';
+  const carouselClassValue = typeof carouselClass !== 'undefined' ? carouselClass : '';
+  const dotsClassValue = typeof dotsClass !== 'undefined' ? dotsClass : '';
+  const leftArrowClassValue = typeof leftArrowClass !== 'undefined' ? leftArrowClass : '';
+  const rightArrowClassValue = typeof rightArrowClass !== 'undefined' ? rightArrowClass : '';
+  const emptyClassValue = typeof emptyClass !== 'undefined' ? emptyClass : '';
+  const sliderEmptyTextValue = typeof sliderEmptyText !== 'undefined' ? sliderEmptyText : '';
+  const sliderItemPartialValue = typeof sliderItemPartial !== 'undefined' ? sliderItemPartial : '';
+  const itemSelectorValue = typeof sliderItemSelector !== 'undefined' ? sliderItemSelector : '';
+  const dotClassValue = typeof sliderDotClass !== 'undefined' ? sliderDotClass : '';
+  const flipSelectorValue = typeof sliderFlipSelector !== 'undefined' ? sliderFlipSelector : '';
+  const showSliderArrowsValue = typeof showSliderArrows !== 'undefined' ? showSliderArrows : true;
+  const showSliderDotsValue = typeof showSliderDots !== 'undefined' ? showSliderDots : true;
+  const sliderPreviousLabelValue = typeof sliderPreviousLabel !== 'undefined' ? sliderPreviousLabel : '';
+  const sliderNextLabelValue = typeof sliderNextLabel !== 'undefined' ? sliderNextLabel : '';
+  const sliderItemsValue = typeof sliderItems !== 'undefined' ? sliderItems : [];
+
   const sliderClasses = ['u-slider'];
-  if (sliderClass) sliderClasses.push(sliderClass);
+  if (sliderClassValue) sliderClasses.push(sliderClassValue);
   const contentClasses = ['u-slider__content'];
-  if (contentClass) contentClasses.push(contentClass);
+  if (contentClassValue) contentClasses.push(contentClassValue);
   const carouselClasses = ['u-slider__carousel'];
-  if (carouselClass) carouselClasses.push(carouselClass);
+  if (carouselClassValue) carouselClasses.push(carouselClassValue);
   const dotsClasses = ['u-slider__dots'];
-  if (dotsClass) dotsClasses.push(dotsClass);
-  const itemSelector = sliderItemSelector || '[data-slider-item]';
-  const dotClassName = sliderDotClass || 'u-slider__dot';
-  const items = Array.isArray(sliderItems) ? sliderItems : [];
-  const showArrows = showSliderArrows !== false;
-  const showDots = showSliderDots !== false;
-  const previousLabel = sliderPreviousLabel || 'Vorherig';
-  const nextLabel = sliderNextLabel || 'Nächste';
+  if (dotsClassValue) dotsClasses.push(dotsClassValue);
+  const itemSelector = itemSelectorValue || '[data-slider-item]';
+  const dotClassName = dotClassValue || 'u-slider__dot';
+  const items = Array.isArray(sliderItemsValue) ? sliderItemsValue : [];
+  const showArrows = showSliderArrowsValue !== false;
+  const showDots = showSliderDotsValue !== false;
+  const previousLabel = sliderPreviousLabelValue || 'Vorherig';
+  const nextLabel = sliderNextLabelValue || 'Nächste';
 %>
 
-<div
-  class="<%= sliderClasses.join(' ') %>"
-  data-component="universal-slider"
-  data-slider-item-selector="<%= itemSelector %>"
-  data-slider-dot-class="<%= dotClassName %>"
-  <%= sliderFlipSelector ? `data-slider-flip-selector="${sliderFlipSelector}"` : '' %>
->
+<div class="<%= sliderClasses.join(' ') %>" data-component="universal-slider" data-slider-item-selector="<%= itemSelector %>" data-slider-dot-class="<%= dotClassName %>" <%= flipSelectorValue ? `data-slider-flip-selector="${flipSelectorValue}"` : '' %>>
   <div class="<%= contentClasses.join(' ') %>">
     <% if (showArrows) { %>
-    <button class="u-slider__arrow u-slider__arrow--left <%= leftArrowClass || '' %>" type="button" data-slider-scroll="left" aria-label="<%= previousLabel %>">
+    <button class="u-slider__arrow u-slider__arrow--left <%= leftArrowClassValue || '' %>" type="button" data-slider-scroll="left" aria-label="<%= previousLabel %>">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M15.4 6.4 10 12l5.4 5.6-1.4 1.4L7.2 12l6.8-6.9 1.4 1.3z"></path>
       </svg>
@@ -34,18 +46,18 @@
 
     <div class="<%= carouselClasses.join(' ') %>" data-slider-carousel>
       <% if (!items.length) { %>
-      <div class="u-slider__empty <%= emptyClass || '' %>" data-slider-empty><%= sliderEmptyText || '' %></div>
+      <div class="u-slider__empty <%= emptyClassValue || '' %>" data-slider-empty><%= sliderEmptyTextValue || '' %></div>
       <% } %>
 
-      <% if (sliderItemPartial) { %>
+      <% if (sliderItemPartialValue) { %>
       <% items.forEach((item, index) => { %>
-      <%- include(sliderItemPartial, { item, index }) %>
+      <%- include(sliderItemPartialValue, { item, index }) %>
       <% }) %>
       <% } %>
     </div>
 
     <% if (showArrows) { %>
-    <button class="u-slider__arrow u-slider__arrow--right <%= rightArrowClass || '' %>" type="button" data-slider-scroll="right" aria-label="<%= nextLabel %>">
+    <button class="u-slider__arrow u-slider__arrow--right <%= rightArrowClassValue || '' %>" type="button" data-slider-scroll="right" aria-label="<%= nextLabel %>">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="m8.6 17.6 5.4-5.6-5.4-5.6 1.4-1.4 6.8 6.9-6.8 6.9-1.4-1.2z"></path>
       </svg>

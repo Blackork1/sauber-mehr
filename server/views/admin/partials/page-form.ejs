@@ -1,16 +1,22 @@
 <%
-  const panelId = pagePanelId || `page-${page.id}`;
-  const panelGroup = pagePanelGroup || 'pages';
-  const isActivePanel = activeTab === panelId;
+  const pagePanelIdValue = typeof pagePanelId !== 'undefined' ? pagePanelId : '';
+  const pagePanelGroupValue = typeof pagePanelGroup !== 'undefined' ? pagePanelGroup : '';
+  const panelKindValue = typeof panelKind !== 'undefined' ? panelKind : '';
+  const leistungenSubpagesListValue = typeof leistungenSubpagesList !== 'undefined' ? leistungenSubpagesList : [];
+  const selectedLeistungenSubpageValue = typeof selectedLeistungenSubpage !== 'undefined' ? selectedLeistungenSubpage : null;
+  const activeTabValue = typeof activeTab !== 'undefined' ? activeTab : '';
+  const panelId = pagePanelIdValue || `page-${page.id}`;
+  const panelGroup = pagePanelGroupValue || 'pages';
+  const isActivePanel = activeTabValue === panelId;
   const blocks = Array.isArray(page.content) ? page.content : [];
 %>
 
 <form class="admin-panel <%= isActivePanel ? '' : 'is-hidden' %>" method="post" action="/adminbackend/pages/<%= page.id %>" enctype="multipart/form-data" data-panel="<%= panelId %>" data-panel-group="<%= panelGroup %>">
   <input type="hidden" name="page_mode" value="blocks">
-  <% if (panelKind === 'leistungen-subpages') { %>
+  <% if (panelKindValue === 'leistungen-subpages') { %>
   <%
-           const subpagesList = Array.isArray(leistungenSubpagesList) ? leistungenSubpagesList : [];
-           const selectedSubpageId = selectedLeistungenSubpage?.id || page?.id;
+           const subpagesList = Array.isArray(leistungenSubpagesListValue) ? leistungenSubpagesListValue : [];
+           const selectedSubpageId = selectedLeistungenSubpageValue?.id || page?.id;
          %>
   <div class="admin-panel__section">
     <div class="admin-subpages__toolbar">

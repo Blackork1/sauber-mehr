@@ -1459,9 +1459,9 @@ input[type="reset"]:hover,
 
 .kontakt-flow__inner {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: 64px;
-  align-items: start;
+  align-items: center;
 }
 
 .kontakt-flow__content {
@@ -1511,12 +1511,18 @@ input[type="reset"]:hover,
 }
 
 .kontakt-flow__card {
+  justify-items: center;
   background: var(--sauber-light-indigo);
   border-radius: 20px;
   padding: 28px;
   box-shadow: 0 18px 36px rgba(83, 111, 212, 0.15);
   display: grid;
   gap: 20px;
+  min-height: 300px;
+}
+
+.kontakt-flow__card[hidden] {
+  display: none;
 }
 
 .kontakt-flow__card-title {
@@ -1537,10 +1543,10 @@ input[type="reset"]:hover,
 
 .kontakt-flow__option {
   border: none;
-  background: #fdfdff;
+  background: var(--sauber-focus);
   border-radius: 16px;
   padding: 12px;
-  display: grid;
+  display: flex;
   gap: 10px;
   text-align: left;
   cursor: pointer;
@@ -1549,6 +1555,9 @@ input[type="reset"]:hover,
     transform 0.2s ease,
     box-shadow 0.2s ease;
   font-family: inherit;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
 }
 
 .kontakt-flow__option:hover,

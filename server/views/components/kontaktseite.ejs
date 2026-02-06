@@ -141,7 +141,7 @@
         </div>
 
         <div class="kontakt-flow__card" data-contact-card data-step="sector" hidden>
-          <h3 class="kontakt-flow__card-title"><%= sectorCard?.title || 'Was soll gereinigt werden?' %></h3>
+          <h3 class="kontakt-flow__card-title"><%= sectorCard?.title || 'In welcher Branche?' %></h3>
           <div class="kontakt-flow__options kontakt-flow__options--grid">
             <% sectorOptions.forEach((option) => { %>
             <button type="button" class="kontakt-flow__option" data-contact-option data-value="<%= option?.label %>" data-next="<%= option?.isOther ? 'other' : 'contact-method' %>" data-is-other="<%= option?.isOther ? 'true' : 'false' %>">
@@ -185,11 +185,7 @@
           </div>
         </div>
 
-        <div class="kontakt-flow__card" data-contact-card data-step="contact-details" hidden
-          data-email-label="<%= contactDetailsCard?.emailLabel || 'Deine Mail' %>"
-          data-email-placeholder="<%= contactDetailsCard?.emailPlaceholder || 'name@beispiel.de' %>"
-          data-phone-label="<%= contactDetailsCard?.phoneLabel || 'Deine Rufnummer' %>"
-          data-phone-placeholder="<%= contactDetailsCard?.phonePlaceholder || '+49 123 456789' %>">
+        <div class="kontakt-flow__card" data-contact-card data-step="contact-details" hidden data-email-label="<%= contactDetailsCard?.emailLabel || 'Deine Mail' %>" data-email-placeholder="<%= contactDetailsCard?.emailPlaceholder || 'name@beispiel.de' %>" data-phone-label="<%= contactDetailsCard?.phoneLabel || 'Deine Rufnummer' %>" data-phone-placeholder="<%= contactDetailsCard?.phonePlaceholder || '+49 123 456789' %>">
           <h3 class="kontakt-flow__card-title"><%= contactDetailsCard?.title || 'Gebe deine Kontaktdaten ein' %></h3>
           <label class="kontakt-flow__field">
             <span><%= contactDetailsCard?.nameLabel || 'Dein Name (optional)' %></span>

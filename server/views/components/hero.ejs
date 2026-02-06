@@ -4,9 +4,11 @@
   const heroCtaLabel = block?.cta?.label || block?.ctaLabel || 'Beratungstermin buchen';
   const heroCtaHref = block?.cta?.href || block?.ctaHref || '#kontakt';
   const heroImage = block?.image || '/images/team.webp';
-  const isLeistungenHero =
-    page?.canonical_path?.startsWith('/leistungen')
+  const isLeistungenPage =
+      page?.canonical_path?.startsWith('/leistungen')
     || ['leistungen', 'leistungen-de', 'leistungen-en'].includes(page?.slug);
+  const heroLayout = block?.layout || (isLeistungenPage ? 'leistungen' : 'default');
+  const isLeistungenHero = heroLayout === 'leistungen';
 %>
 <section class="sauber-hero <%= isLeistungenHero ? 'sauber-hero--leistungen' : '' %>" aria-labelledby="sauber-hero-title">
   <% if (isLeistungenHero) { %>

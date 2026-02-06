@@ -1228,7 +1228,7 @@ document.addEventListener('DOMContentLoaded', () => {
     element.dataset.previewBound = 'true';
   };
 
-    const bindMediaPicker = (picker) => {
+  const bindMediaPicker = (picker) => {
     if (!picker || picker.dataset.pickerBound) return;
     picker.dataset.pickerBound = 'true';
     if (picker.dataset.galleryMode === 'multi') {
@@ -1490,6 +1490,85 @@ document.addEventListener('DOMContentLoaded', () => {
     ensureTrailingInput();
   };
 
+  const initDynamicRows = (container) => {
+    const itemsContainer = container.querySelector('[data-dynamic-rows-items]');
+    if (!itemsContainer) return;
+    const max = Number(container.dataset.max || 8);
+
+    const getRows = () => Array.from(itemsContainer.querySelectorAll('[data-dynamic-row]'));
+
+    const rowHasValue = (row) => Array.from(row.querySelectorAll('[data-dynamic-input]')).some((input) => {
+      if (input.type === 'file') {
+        return Boolean(input.files && input.files.length);
+      }
+      return Boolean(input.value && input.value.trim());
+    });
+
+    const updateRowIndex = (row, index) => {
+      row.dataset.dynamicRowIndex = String(index);
+      row.querySelectorAll('[data-dynamic-name-template]').forEach((input) => {
+        const template = input.dataset.dynamicNameTemplate;
+        if (template) {
+          input.name = template.replace('__INDEX__', String(index));
+        }
+      });
+      row.querySelectorAll('[data-dynamic-label-template]').forEach((label) => {
+        const template = label.dataset.dynamicLabelTemplate;
+        if (template) {
+          label.textContent = template.replace('__INDEX__', String(index + 1));
+        }
+      });
+    };
+
+    const resetRowValues = (row) => {
+      row.querySelectorAll('input, textarea, select').forEach((input) => {
+        if (input.matches('[data-dynamic-preserve]')) return;
+        if (input.type === 'checkbox' || input.type === 'radio') {
+          input.checked = false;
+          return;
+        }
+        if (input.type === 'file') {
+          input.value = '';
+          return;
+        }
+        input.value = '';
+      });
+      row.querySelectorAll('[data-gallery-preview]').forEach((preview) => {
+        preview.textContent = 'Keine Datei ausgewählt.';
+      });
+      row.querySelectorAll('.admin-media-picker__preview-link').forEach((link) => {
+        link.remove();
+      });
+    };
+
+    const attachRowListeners = (row) => {
+      row.querySelectorAll('[data-dynamic-input]').forEach((input) => {
+        input.addEventListener('input', () => {
+          ensureTrailingRow();
+        });
+      });
+    };
+
+    const ensureTrailingRow = () => {
+      const rows = getRows();
+      const lastRow = rows[rows.length - 1];
+      if (!lastRow || rows.length >= max) return;
+      if (!rowHasValue(lastRow)) return;
+      const newRow = lastRow.cloneNode(true);
+      const newIndex = rows.length;
+      updateRowIndex(newRow, newIndex);
+      resetRowValues(newRow);
+      itemsContainer.appendChild(newRow);
+      attachRowListeners(newRow);
+    };
+
+    getRows().forEach((row, index) => {
+      updateRowIndex(row, index);
+      attachRowListeners(row);
+    });
+    ensureTrailingRow();
+  };
+
   const initDynamicFaq = (container) => {
     const itemsContainer = container.querySelector('[data-dynamic-faq-items]');
     if (!itemsContainer) return;
@@ -1538,6 +1617,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   document.querySelectorAll('[data-dynamic-list]').forEach(initDynamicList);
+  document.querySelectorAll('[data-dynamic-rows]').forEach(initDynamicRows);
   document.querySelectorAll('[data-dynamic-faq]').forEach(initDynamicFaq);
 
   const initContentEditor = (editor) => {
@@ -1582,6 +1662,50 @@ document.addEventListener('DOMContentLoaded', () => {
       return item;
     };
 
+    const initKontaktLayout = (block) => {
+      const layoutSelect = block.querySelector('[data-kontakt-layout]');
+      if (!layoutSelect) return;
+      const updateLayout = () => {
+        const layout = layoutSelect.value === 'services' ? 'services' : 'default';
+        block.querySelectorAll('[data-kontakt-layout-group]').forEach((group) => {
+          const groupLayout = group.dataset.kontaktLayoutGroup || 'default';
+          group.hidden = groupLayout !== layout;
+        });
+        const title = layout === 'services' ? 'Kontaktformular (Leistungen)' : 'Kontaktformular (Standard)';
+        const titleElement = block.querySelector('.admin-content-block__title');
+        if (titleElement) titleElement.textContent = title;
+        const blockId = block.dataset.blockId;
+        if (blockId && sortList) {
+          const labelElement = sortList.querySelector(`[data-block-id="${blockId}"] span:last-child`);
+          if (labelElement) labelElement.textContent = title;
+        }
+      };
+      layoutSelect.addEventListener('change', updateLayout);
+      updateLayout();
+    };
+
+    const initHeroLayout = (block) => {
+      const layoutSelect = block.querySelector('[data-hero-layout]');
+      if (!layoutSelect) return;
+      const updateLayout = () => {
+        const layout = layoutSelect.value === 'leistungen' ? 'leistungen' : 'default';
+        block.querySelectorAll('[data-hero-layout-group]').forEach((group) => {
+          const groupLayout = group.dataset.heroLayoutGroup || 'default';
+          group.hidden = groupLayout !== layout;
+        });
+        const title = layout === 'leistungen' ? 'Hero (Leistungen)' : 'Hero (Standard)';
+        const titleElement = block.querySelector('.admin-content-block__title');
+        if (titleElement) titleElement.textContent = title;
+        const blockId = block.dataset.blockId;
+        if (blockId && sortList) {
+          const labelElement = sortList.querySelector(`[data-block-id="${blockId}"] span:last-child`);
+          if (labelElement) labelElement.textContent = title;
+        }
+      };
+      layoutSelect.addEventListener('change', updateLayout);
+      updateLayout();
+    };
+
     blocksContainer.addEventListener('click', (event) => {
       const removeButton = event.target.closest('[data-content-remove]');
       if (!removeButton) return;
@@ -1608,12 +1732,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const newBlock = wrapper.firstElementChild;
         if (!newBlock) return;
         blocksContainer.appendChild(newBlock);
-        const label = addSelect.selectedOptions[0]?.textContent?.trim() || type;
+        const selectedOption = addSelect.selectedOptions[0];
+        const label = selectedOption?.textContent?.trim() || type;
+        const layout = selectedOption?.dataset?.layout;
+        if (layout) {
+          const layoutSelect = newBlock.querySelector('[data-kontakt-layout], [data-hero-layout]');
+          if (layoutSelect) layoutSelect.value = layout;
+        }
         sortList.appendChild(createSortItem(blockId, label));
         updateOrderInput();
         Array.from(newBlock.querySelectorAll('[data-gallery-picker]')).forEach((picker) => {
           bindMediaPicker(picker);
         });
+        initKontaktLayout(newBlock);
+        initHeroLayout(newBlock);
       });
     }
 
@@ -1662,6 +1794,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateOrderInput();
       });
     }
+    blocksContainer.querySelectorAll('[data-content-block]').forEach((block) => {
+      initKontaktLayout(block);
+      initHeroLayout(block);
+    });
   };
 
   document.querySelectorAll('[data-content-editor]').forEach(initContentEditor);

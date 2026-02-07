@@ -858,9 +858,25 @@ input[type="reset"]:hover,
 
 .sauber-hero--leistungen .sauber-hero__body {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
   gap: 32px;
   align-items: center;
+}
+
+.breadcrumb-hero__container {
+  display: flex;
+  gap: 32px;
+  flex-direction: column;
+}
+
+.sauber-hero--leistungen .sauber-hero__text {
+  justify-content: space-between;
+  gap: 16px;
+  height: 100%;
+}
+
+.sauber-hero--leistungen .sauber-hero__header {
+  margin-bottom: 4px;
 }
 
 .sauber-hero--leistungen .sauber-hero__title {
@@ -973,7 +989,7 @@ input[type="reset"]:hover,
 }
 
 .sauber-hero__title {
-  font-size: clamp(36px, 6vw, 64px);
+  font-size: clamp(32px, 6vw, 64px);
   font-weight: 700;
   line-height: 1.05;
   color: var(--sauber-hero-aqua);
@@ -2054,6 +2070,10 @@ input[type="reset"]:hover,
   margin: 0;
   color: var(--sauber-muted);
   line-height: 1.6;
+}
+
+.leistungen-card__title h3 em {
+    color: white !important;
 }
 
 .leistungen-card {

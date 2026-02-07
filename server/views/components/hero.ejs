@@ -13,7 +13,7 @@
   const breadcrumbCurrentLabel = (page?.title || heroHeadline || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   const heroLayout = block?.layout || (isLeistungenSubpage ? 'leistungen-detail' : (isLeistungenPage ? 'leistungen' : 'default'));
   const isLeistungenHero = heroLayout === 'leistungen' || heroLayout === 'leistungen-detail';
-  const galleryDefaults = [432, 582, 432];
+  const galleryDefaults = ['80%', '100%', '80%'];
   const galleryItems = Array.isArray(block?.gallery) && block.gallery.length
     ? block.gallery
     : [
@@ -25,25 +25,32 @@
 <section class="sauber-hero <%= isLeistungenHero ? 'sauber-hero--leistungen' : '' %> <%= heroLayout === 'leistungen-detail' ? 'sauber-hero--leistungen-detail' : '' %>" aria-labelledby="sauber-hero-title">
   <% if (isLeistungenHero) { %>
   <div class="section__inner sauber-hero__inner">
-    <% if (heroLayout === 'leistungen' || heroLayout === 'leistungen-detail') { %>
+    <% if (heroLayout === 'leistungen') { %>
     <header class="sauber-hero__header">
       <nav class="sauber-hero__breadcrumb" aria-label="Breadcrumb">
         <a href="/">Startseite</a>
-        <% if (heroLayout === 'leistungen') { %>
         <span class="sauber-hero__breadcrumb-separator" aria-hidden="true">›</span>
         <span aria-current="page">Leistungen</span>
-        <% } else { %>
-        <span class="sauber-hero__breadcrumb-separator" aria-hidden="true">›</span>
-        <a href="/leistungen">Leistungen</a>
-        <span class="sauber-hero__breadcrumb-separator" aria-hidden="true">›</span>
-        <span aria-current="page"><%= breadcrumbCurrentLabel || 'Unterseite' %></span>
-        <% } %>
       </nav>
     </header>
-    <% } %>
     <h1 class="sauber-hero__title" id="sauber-hero-title"><%- renderTextWithLinks(heroHeadline) %></h1>
+    <% } %>
     <div class="sauber-hero__body">
       <div class="sauber-hero__text">
+        <% if (heroLayout === 'leistungen-detail') { %>
+        <div class="breadcrumb-hero__container">
+          <header class="sauber-hero__header">
+            <nav class="sauber-hero__breadcrumb" aria-label="Breadcrumb">
+              <a href="/">Startseite</a>
+              <span class="sauber-hero__breadcrumb-separator" aria-hidden="true">›</span>
+              <a href="/leistungen">Leistungen</a>
+              <span class="sauber-hero__breadcrumb-separator" aria-hidden="true">›</span>
+              <span aria-current="page"><%= breadcrumbCurrentLabel || 'Unterseite' %></span>
+            </nav>
+          </header>
+          <h1 class="sauber-hero__title" id="sauber-hero-title"><%- renderTextWithLinks(heroHeadline) %></h1>
+        </div>
+        <% } %>
         <p class="sauber-hero__subtitle"><%- renderTextWithLinks(heroSubline) %></p>
         <div class="sauber-hero__actions">
           <a class="sauber-hero__button" href="tel:+491795163864">Jetzt anrufen</a>
@@ -53,7 +60,7 @@
       <% if (heroLayout === 'leistungen-detail') { %>
       <div class="sauber-hero__gallery">
         <% galleryItems.forEach((item, index) => { %>
-        <div class="sauber-hero__gallery-item" style="--gallery-width: <%= item?.width || galleryDefaults[index] || 432 %>px;">
+        <div class="sauber-hero__gallery-item" style="--gallery-width: <%= item?.width || galleryDefaults[index] || '432px' %>;">
           <% if (item?.src) { %>
           <img src="<%= item.src %>" alt="<%= item.alt || heroHeadline %>" loading="lazy" />
           <% } %>

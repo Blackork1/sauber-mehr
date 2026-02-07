@@ -1,0 +1,70 @@
+<%
+  const headline = block?.headline || '';
+  const subline = block?.text || '';
+  const breadcrumbLabel = block?.breadcrumbLabel || page?.title || 'Über uns';
+  const teamMembers = Array.isArray(block?.teamMembers) ? block.teamMembers : [];
+  const specialCards = Array.isArray(block?.specialCards) ? block.specialCards : [];
+  const specialsTitle = block?.specialsTitle || '';
+  const specialsSubtitle = block?.specialsSubtitle || '';
+  const faqBlock = {
+    title: block?.faqTitle || '',
+    description: block?.faqDescription || '',
+    button: block?.faqButton || {},
+    items: Array.isArray(block?.faqItems) ? block.faqItems : []
+  };
+%>
+
+<section class="team-overview section" id="ueber">
+  <div class="section__inner team-overview__inner">
+    <nav class="team-overview__breadcrumb sauber-hero__breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Startseite</a>
+      <span class="sauber-hero__breadcrumb-separator" aria-hidden="true">›</span>
+      <span aria-current="page"><%= breadcrumbLabel %></span>
+    </nav>
+    <% if (headline || subline) { %>
+    <header class="team-overview__header">
+      <% if (headline) { %>
+      <h2 class="team-overview__title"><%- renderTextWithLinks(headline) %></h2>
+      <% } %>
+      <% if (subline) { %>
+      <p class="team-overview__subtitle"><%- renderTextWithLinks(subline) %></p>
+      <% } %>
+    </header>
+    <% } %>
+
+    <%- include('./universalSlider', {
+      sliderClass: 'team-overview__slider',
+      sliderItems: teamMembers,
+      sliderItemPartial: './partials/teamCardItem',
+      sliderItemSelector: '[data-slider-item]',
+      sliderFlipSelector: '[data-team-flip]',
+      sliderEmptyText: block?.teamEmptyText || ''
+    }) %>
+  </div>
+</section>
+
+<section class="specials section">
+  <div class="section__inner specials__inner">
+    <% if (specialsTitle || specialsSubtitle) { %>
+    <header class="specials__header">
+      <% if (specialsTitle) { %>
+      <h2><%- renderTextWithLinks(specialsTitle) %></h2>
+      <% } %>
+      <% if (specialsSubtitle) { %>
+      <p><%- renderTextWithLinks(specialsSubtitle) %></p>
+      <% } %>
+    </header>
+    <% } %>
+    <div class="specials__grid">
+      <% specialCards.forEach((card) => { %>
+      <article class="special-card">
+        <div class="special-card__icon"><%- card.icon %></div>
+        <h3><%= card.title %></h3>
+        <p><%= card.text %></p>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<%- include('./faq', { block: faqBlock }) %>

@@ -1,0 +1,13 @@
+<link rel="stylesheet" href="/cookie_banner/css/cookie-banner.css">
+
+<div id="cookie-banner" class="hidden" aria-live="polite" aria-label="Cookie Banner">
+  <p><%= bannerCopy.text %> <a href="<%= bannerCopy.privacyLink %>"><%= bannerCopy.privacyLabel %></a></p>
+  <button id="accept-all" class="cookie-banner__button cookie-banner__button--accept">
+    <%= bannerCopy.acceptAllLabel %>
+  </button>
+  <button id="accept-necessary" class="cookie-banner__button cookie-banner__button--necessary">
+    <%= bannerCopy.acceptNecessaryLabel %>
+  </button>
+</div>
+
+<script src="/cookie_banner/js/cookie-consent.js" defer></script>

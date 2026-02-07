@@ -1,0 +1,24 @@
+.cookie-banner-hero {
+  padding: 4rem 1.5rem;
+  background: #f8f8f8;
+  text-align: center;
+}
+
+.cookie-banner-hero__content h1 {
+  margin-bottom: 0.75rem;
+  font-size: 2rem;
+}
+
+.cookie-banner-hero__content p {
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.cookie-banner-hero__cta {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: #34c381;
+  color: #000;
+  text-decoration: none;
+}

@@ -2054,6 +2054,208 @@ input[type="reset"]:hover,
   font-family: "Inter", system-ui, sans-serif;
 }
 
+/* About */
+
+.team-overview__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.team-overview__breadcrumb {
+  align-self: flex-start;
+}
+
+.team-overview__header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.team-overview__title {
+  margin: 0;
+  font-size: clamp(1.8rem, 2.5vw, 2.6rem);
+  color: var(--sauber-text);
+}
+
+.team-overview__title em {
+  color: var(--sauber-primary-indigo);
+}
+
+.team-overview__subtitle {
+  margin: 0;
+  color: var(--sauber-muted);
+  max-width: 620px;
+  line-height: 1.6;
+}
+
+.team-overview__slider .u-slider__carousel {
+  padding: 16px 10px 24px;
+  gap: 28px;
+}
+
+.team-card {
+  width: min(320px, 80vw);
+  height: 380px;
+  flex: 0 0 auto;
+  perspective: 1000px;
+}
+
+.team-card__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+}
+
+.team-card.is-flipped .team-card__inner {
+  transform: rotateY(180deg);
+}
+
+.team-card__face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  backface-visibility: hidden;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+}
+
+.team-card__front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.team-card__back {
+  transform: rotateY(180deg);
+  background: linear-gradient(180deg, #45c7d6 0%, #f0fbff 100%);
+  color: #0f172a;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.team-card__content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.team-card__role {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--sauber-primary-indigo);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.team-card__content h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.team-card__description {
+  margin: 0;
+  color: var(--sauber-text);
+  line-height: 1.5;
+}
+
+.team-card__flip {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.team-card__flip--back {
+  inset: auto;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+}
+
+.specials {
+  background: #f3f5ff;
+}
+
+.specials__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  text-align: center;
+  max-width: 1400px;
+}
+
+.specials__header h2 {
+  margin: 0 0 8px;
+  color: var(--sauber-primary-indigo);
+}
+
+.specials__header p {
+  margin: 0;
+  color: var(--sauber-muted);
+}
+
+.specials__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+}
+
+.special-card {
+  width: 300px;
+  height: fit-content;
+  padding: 24px;
+  border-bottom: 5px solid var(--sauber-primary-indigo);
+  background: var(--sauber-white);
+  border-radius: var(--radius-md);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.special-card__icon {
+  width: 42px;
+  height: 42px;
+  color: var(--sauber-primary-indigo);
+}
+
+.special-card__icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.special-card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--sauber-text);
+}
+
+.special-card p {
+  margin: 0;
+  color: var(--sauber-muted);
+  line-height: 1.6;
+}
+
+/* Leistungen */
 .leistungen-unterseiten__inner {
   display: flex;
   flex-direction: column;
@@ -2073,7 +2275,7 @@ input[type="reset"]:hover,
 }
 
 .leistungen-card__title h3 em {
-    color: white !important;
+  color: white !important;
 }
 
 .leistungen-card {

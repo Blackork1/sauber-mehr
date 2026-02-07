@@ -1,0 +1,26 @@
+<article class="team-card" data-slider-item>
+  <div class="team-card__inner">
+    <div class="team-card__face team-card__front">
+      <img src="<%= item?.image?.src %>" alt="<%= item?.image?.alt || item?.name || 'Teammitglied' %>" loading="lazy" />
+      <button class="team-card__flip" type="button" data-team-flip aria-pressed="false">
+        <span class="sr-only">Mehr über <%= item?.name || 'diese Person' %> erfahren</span>
+      </button>
+    </div>
+    <div class="team-card__face team-card__back">
+      <button class="team-card__flip team-card__flip--back" type="button" data-team-flip aria-pressed="true">
+        <span class="sr-only">Zurück zur Vorderseite</span>
+      </button>
+      <div class="team-card__content">
+        <% if (item?.role) { %>
+        <p class="team-card__role"><%= item.role %></p>
+        <% } %>
+        <% if (item?.name) { %>
+        <h3><%= item.name %></h3>
+        <% } %>
+        <% if (item?.description) { %>
+        <p class="team-card__description"><%= item.description %></p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</article>

@@ -22,8 +22,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const imageUploadDir = path.join(__dirname, '..', '..', 'data', 'uploads', 'images');
 const videoUploadDir = path.join(__dirname, '..', '..', 'data', 'uploads', 'videos');
+const tmpUploadDir = path.join(__dirname, '..', '..', 'data', 'uploads', 'tmp');
 fs.mkdirSync(imageUploadDir, { recursive: true });
 fs.mkdirSync(videoUploadDir, { recursive: true });
+fs.mkdirSync(tmpUploadDir, { recursive: true });
 
 function splitMultipart(buffer, boundary) {
   const boundaryBuffer = Buffer.from(`--${boundary}`);
@@ -123,20 +125,20 @@ router.get('/adminbackend', requireAdmin, getAdminPanel);
 router.post(
   '/adminbackend/pages/:id',
   requireAdmin,
-  parseMultipart({ targetDir: imageUploadDir }),
+  parseMultipart({ targetDir: tmpUploadDir }),
   updatePage
 );
 router.post('/adminbackend/leistungen-subpages/new', requireAdmin, createLeistungenSubpage);
 router.post(
   '/adminbackend/gallery/images',
   requireAdmin,
-  parseMultipart({ targetDir: imageUploadDir }),
+  parseMultipart({ targetDir: tmpUploadDir }),
   createGalleryImageAdmin
 );
 router.post(
   '/adminbackend/gallery/videos',
   requireAdmin,
-  parseMultipart({ targetDir: videoUploadDir }),
+  parseMultipart({ targetDir: tmpUploadDir }),
   createGalleryVideoAdmin
 );
 router.post('/adminbackend/gallery/images/:id/delete', requireAdmin, deleteGalleryImageAdmin);

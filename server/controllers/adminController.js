@@ -19,6 +19,10 @@ import {
   updateGalleryVideoSortOrder,
   updateGalleryVideoVisibility
 } from '../services/galleryService.js';
+import {
+  processGalleryImageUpload,
+  processGalleryVideoUpload
+} from '../services/galleryUploadPipeline.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,58 +57,6 @@ const normalizeAltValue = (value) => {
 const stripFileExtension = (value) => {
   if (!value) return '';
   return String(value).replace(/\.[^/.]+$/, '');
-};
-
-const downloadToFile = async (url, targetPath) => {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Cloudflare download failed: ${response.status}`);
-  }
-  const arrayBuffer = await response.arrayBuffer();
-  await fs.promises.writeFile(targetPath, Buffer.from(arrayBuffer));
-};
-
-const compressImageWithCloudflare = async (sourcePath, targetPath) => {
-  const accountId = process.env.CLOUDFLARE_IMAGES_ACCOUNT_ID;
-  const apiToken = process.env.CLOUDFLARE_IMAGES_API_TOKEN;
-  if (!accountId || !apiToken) return null;
-  const uploadEndpoint = `https://api.cloudflare.com/client/v4/accounts/${accountId}/images/v1`;
-  const fileBuffer = await fs.promises.readFile(sourcePath);
-  const form = new FormData();
-  form.append('file', new Blob([fileBuffer]), path.basename(sourcePath));
-  const response = await fetch(uploadEndpoint, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiToken}`
-    },
-    body: form
-  });
-  const payload = await response.json();
-  if (!response.ok || !payload?.success) {
-    return null;
-  }
-  const variantUrl =
-    payload?.result?.variants?.[0]
-    || (process.env.CLOUDFLARE_IMAGES_DELIVERY_URL
-      ? `${process.env.CLOUDFLARE_IMAGES_DELIVERY_URL}/${payload.result?.id}/public`
-      : null);
-  if (!variantUrl) return null;
-  await downloadToFile(variantUrl, targetPath);
-  return variantUrl;
-};
-
-const storeCompressedImageUpload = async (upload) => {
-  if (!upload) return null;
-  const targetPath = path.join(imageUploadDir, upload.filename);
-  if (upload.path !== targetPath) {
-    await fs.promises.rename(upload.path, targetPath);
-  }
-  await compressImageWithCloudflare(targetPath, targetPath);
-  const stats = await fs.promises.stat(targetPath);
-  return {
-    localPath: `${imagePublicPrefix}/${upload.filename}`,
-    sizeBytes: stats.size
-  };
 };
 
 const safeJsonParse = (value, fallback) => {
@@ -206,14 +158,33 @@ const stripEmptyArrayItems = (value) => {
 
 const resolveImageFieldSimple = async ({ upload, galleryId, currentUrl, alt, pool }) => {
   const normalizedCurrentUrl = normalizeString(currentUrl);
-  const normalizedAlt = normalizeAltValue(alt);
+  const altValue = typeof alt === 'object' && alt !== null
+    ? (alt.de || alt.en || '')
+    : alt;
+  const normalizedAlt = normalizeAltValue(altValue);
   const uploadEntry = Array.isArray(upload) ? upload[0] : upload;
   if (uploadEntry) {
-    const stored = await storeCompressedImageUpload(uploadEntry);
     const fallbackAlt = stripFileExtension(uploadEntry.originalname || uploadEntry.filename);
+    const baseName = normalizedAlt || fallbackAlt;
+    const stored = await processGalleryImageUpload(uploadEntry, { baseName });
+    const resolvedAlt = normalizedAlt || fallbackAlt;
+    await createGalleryImage(pool, {
+      filename: stored.filename,
+      originalName: stored.originalName,
+      localPath: stored.localPath,
+      cloudinaryUrl: stored.cloudinaryUrl,
+      cloudinaryPublicId: stored.cloudinaryPublicId,
+      width: stored.width,
+      height: stored.height,
+      sizeBytes: stored.sizeBytes,
+      altDe: resolvedAlt,
+      altEn: resolvedAlt,
+      showInGallery: true,
+      galleryCategory: null
+    });
     return {
-      src: stored?.localPath || normalizedCurrentUrl,
-      alt: normalizedAlt || fallbackAlt
+      src: stored.localPath,
+      alt: resolvedAlt
     };
   }
   const parsedGalleryId = Number(galleryId);
@@ -837,15 +808,6 @@ export async function createLeistungenSubpage(req, res, next) {
   }
 }
 
-const resolveLocalAssetPath = (absolutePath, baseDir, publicPrefix) => {
-  if (!absolutePath) return null;
-  const normalized = absolutePath.replace(baseDir, '').replace(/\\/g, '/');
-  if (normalized.startsWith('/')) {
-    return `${publicPrefix}${normalized}`;
-  }
-  return `${publicPrefix}/${normalized}`;
-};
-
 export async function createGalleryImageAdmin(req, res, next) {
   try {
     const pool = req.app.get('db');
@@ -857,13 +819,18 @@ export async function createGalleryImageAdmin(req, res, next) {
     if (duplicate) {
       return res.redirect('/adminbackend?nav=gallery&error=gallery-duplicate-image');
     }
-    const stored = await storeCompressedImageUpload(file);
     const fallbackAlt = stripFileExtension(file.originalname || file.filename);
+    const baseName = normalizeAltValue(req.body.gallery_image_alt_de) || fallbackAlt;
+    const stored = await processGalleryImageUpload(file, { baseName });
     await createGalleryImage(pool, {
-      filename: file.filename,
+      filename: stored.filename,
       originalName: file.originalname,
-      localPath: stored?.localPath || `${imagePublicPrefix}/${file.filename}`,
-      sizeBytes: stored?.sizeBytes || file.size,
+      localPath: stored.localPath,
+      cloudinaryUrl: stored.cloudinaryUrl,
+      cloudinaryPublicId: stored.cloudinaryPublicId,
+      sizeBytes: stored.sizeBytes,
+      width: stored.width,
+      height: stored.height,
       altDe: normalizeAltValue(req.body.gallery_image_alt_de) || fallbackAlt,
       altEn: normalizeAltValue(req.body.gallery_image_alt_en) || fallbackAlt,
       showInGallery: true,
@@ -886,12 +853,16 @@ export async function createGalleryVideoAdmin(req, res, next) {
     if (duplicate) {
       return res.redirect('/adminbackend?nav=gallery&error=gallery-duplicate-video');
     }
-    const localPath = resolveLocalAssetPath(file.path, videoUploadDir, videoPublicPrefix);
+    const stored = await processGalleryVideoUpload(file);
     await createGalleryVideo(pool, {
-      filename: file.filename,
+      filename: stored.filename,
       originalName: file.originalname,
-      localPath,
-      sizeBytes: file.size,
+      localPath: stored.localPath,
+      cloudinaryUrl: stored.cloudinaryUrl,
+      cloudinaryPublicId: stored.cloudinaryPublicId,
+      sizeBytes: stored.sizeBytes,
+      width: stored.width,
+      height: stored.height,
       altDe: normalizeString(req.body.gallery_video_alt_de),
       altEn: normalizeString(req.body.gallery_video_alt_en),
       showInGallery: true,

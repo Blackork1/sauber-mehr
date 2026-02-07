@@ -258,44 +258,74 @@
           </div>
           <% } else if (block.type === 'kosten') { %>
           <%
-                   const steps = Array.isArray(block.steps) && block.steps.length ? block.steps : [{}, {}, {}];
-                 %>
+                   const hasValue = (value) => {
+                     if (typeof value === 'string') {
+                       return value.trim().length > 0;
+                     }
+                     return value !== null && typeof value !== 'undefined';
+                   };
+                   const fallbackValue = (value, fallback) => (hasValue(value) ? value : fallback);
+                   const defaultKostenSteps = [
+                     { title: 'Anruf oder Buchungsformular', imageUrl: '/images/anruf.webp', imageAlt: 'Anruf' },
+                     { title: 'kostenlose Besichtigung', imageUrl: '/images/besichtigung.webp', imageAlt: 'Besichtigung' },
+                     { title: 'individuelles Angebot', imageUrl: '/images/angebot.webp', imageAlt: 'Angebot' }
+                   ];
+                   const stepsSource = Array.isArray(block.steps) && block.steps.length ? block.steps : [{}, {}, {}];
+                   const steps = stepsSource.map((step, index) => ({
+                     title: fallbackValue(step?.title, defaultKostenSteps[index]?.title),
+                     imageUrl: fallbackValue(step?.imageUrl, defaultKostenSteps[index]?.imageUrl),
+                     imageAlt: fallbackValue(step?.imageAlt, defaultKostenSteps[index]?.imageAlt)
+                   }));
+                   const kostenDefaults = {
+                     headline: 'Was wird die Reinigung kosten?',
+                     subline: 'In 3 einfachen Schritten zu deinem unverbindlichen Angebot',
+                     leadText: 'Ab 01.26 sind wir in der Unterhaltsreinigung bei 15 Euro Mindestlohn, dazu kommen Nacht-, Sonn- und Feiertagszuschläge. In der Glasreinigung liegen wir bei 18,40 Euro Mindestlohn.',
+                     detailText: 'Wir unterliegen dem allgemein gültigen Rahmentarifvertrag (RTV), Lohntarifvertrag (LTV) verpflichtend für alle, die Reinigungsdienstleistungen anbieten.',
+                     primaryButton: {
+                       label: 'zum Buchungsformular',
+                       href: '#Kontakt'
+                     },
+                     secondaryButton: {
+                       label: 'Whats App',
+                       href: 'https://wa.me/491795163864'
+                     }
+                   };                 %>
           <div class="admin-grid">
             <div class="admin-field">
               <label>Headline</label>
-              <input type="text" name="content_block_<%= block._adminId %>__headline" value="<%= safeValue(block.headline) %>">
+              <input type="text" name="content_block_<%= block._adminId %>__headline" value="<%= safeValue(fallbackValue(block.headline, kostenDefaults.headline)) %>">
             </div>
             <div class="admin-field">
               <label>Subline</label>
-              <input type="text" name="content_block_<%= block._adminId %>__subline" value="<%= safeValue(block.subline) %>">
+              <input type="text" name="content_block_<%= block._adminId %>__subline" value="<%= safeValue(fallbackValue(block.subline, kostenDefaults.subline)) %>">
             </div>
           </div>
           <div class="admin-grid">
             <div class="admin-field">
               <label>Lead Text</label>
-              <textarea name="content_block_<%= block._adminId %>__leadText" rows="3"><%= safeValue(block.leadText) %></textarea>
+              <textarea name="content_block_<%= block._adminId %>__leadText" rows="3"><%= safeValue(fallbackValue(block.leadText, kostenDefaults.leadText)) %></textarea>
             </div>
             <div class="admin-field">
               <label>Detail Text</label>
-              <textarea name="content_block_<%= block._adminId %>__detailText" rows="3"><%= safeValue(block.detailText) %></textarea>
+              <textarea name="content_block_<%= block._adminId %>__detailText" rows="3"><%= safeValue(fallbackValue(block.detailText, kostenDefaults.detailText)) %></textarea>
             </div>
           </div>
           <div class="admin-grid">
             <div class="admin-field">
               <label>Primary Button Label</label>
-              <input type="text" name="content_block_<%= block._adminId %>__primaryButton.label" value="<%= safeValue(block.primaryButton?.label) %>">
+              <input type="text" name="content_block_<%= block._adminId %>__primaryButton.label" value="<%= safeValue(fallbackValue(block.primaryButton?.label, kostenDefaults.primaryButton.label)) %>">
             </div>
             <div class="admin-field">
               <label>Primary Button Link</label>
-              <input type="text" name="content_block_<%= block._adminId %>__primaryButton.href" value="<%= safeValue(block.primaryButton?.href) %>">
+              <input type="text" name="content_block_<%= block._adminId %>__primaryButton.href" value="<%= safeValue(fallbackValue(block.primaryButton?.href, kostenDefaults.primaryButton.href)) %>">
             </div>
             <div class="admin-field">
               <label>Secondary Button Label</label>
-              <input type="text" name="content_block_<%= block._adminId %>__secondaryButton.label" value="<%= safeValue(block.secondaryButton?.label) %>">
+              <input type="text" name="content_block_<%= block._adminId %>__secondaryButton.label" value="<%= safeValue(fallbackValue(block.secondaryButton?.label, kostenDefaults.secondaryButton.label)) %>">
             </div>
             <div class="admin-field">
               <label>Secondary Button Link</label>
-              <input type="text" name="content_block_<%= block._adminId %>__secondaryButton.href" value="<%= safeValue(block.secondaryButton?.href) %>">
+              <input type="text" name="content_block_<%= block._adminId %>__secondaryButton.href" value="<%= safeValue(fallbackValue(block.secondaryButton?.href, kostenDefaults.secondaryButton.href)) %>">
             </div>
           </div>
           <div class="admin-grid admin-grid--steps">

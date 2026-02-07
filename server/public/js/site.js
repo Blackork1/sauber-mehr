@@ -138,7 +138,8 @@ function initUniversalSliders() {
     const leftHint = slider.querySelector('[data-slider-scroll="left"]');
     const rightHint = slider.querySelector('[data-slider-scroll="right"]');
     const itemSelector = slider.dataset.sliderItemSelector || slider.dataset.sliderCardSelector || '[data-slider-item], [data-slider-card]';
-    const flipSelector = slider.dataset.sliderFlipSelector || '';
+    const rawFlipSelector = slider.dataset.sliderFlipSelector || '';
+    const flipSelector = rawFlipSelector.replace(/^['"]|['"]$/g, '');
     const dotClass = slider.dataset.sliderDotClass || 'u-slider__dot';
 
     const items = Array.from(carousel.querySelectorAll(itemSelector));
@@ -191,14 +192,22 @@ function initUniversalSliders() {
 
     const updateHints = () => {
       if (!leftHint || !rightHint) return;
-      if (items.length <= 1) {
+      const maxScroll = carousel.scrollWidth - carousel.clientWidth;
+      if (maxScroll <= 1) {
         leftHint.setAttribute('hidden', 'true');
         rightHint.setAttribute('hidden', 'true');
         return;
       }
-      const index = getClosestIndex();
-      leftHint.toggleAttribute('hidden', index === 0);
-      rightHint.toggleAttribute('hidden', index === items.length - 1);
+      if (carousel.scrollLeft <= 4) {
+        leftHint.setAttribute('hidden', 'true');
+      } else {
+        leftHint.removeAttribute('hidden');
+      }
+      if (carousel.scrollLeft >= maxScroll - 4) {
+        rightHint.setAttribute('hidden', 'true');
+      } else {
+        rightHint.removeAttribute('hidden');
+      }
     };
 
     const scrollToIndex = (index) => {
@@ -239,8 +248,17 @@ function initUniversalSliders() {
     let startX = 0;
     let scrollStart = 0;
     let wasDragging = false;
-    let startFlipButton = null;
+    let startFlipCard = null;
     let suppressClick = false;
+
+    const setItemFlipped = (item, shouldFlip) => {
+      if (!flipSelector) return;
+      item.classList.toggle('is-flipped', shouldFlip);
+      const flipButtons = item.querySelectorAll(flipSelector);
+      flipButtons.forEach((button) => {
+        button.setAttribute('aria-pressed', shouldFlip ? 'true' : 'false');
+      });
+    };
 
     const stopDragging = (event) => {
       if (event && carousel.hasPointerCapture(event.pointerId)) {
@@ -252,7 +270,7 @@ function initUniversalSliders() {
     carousel.addEventListener('pointerdown', (event) => {
       if (event.button !== 0 && event.pointerType === 'mouse') return;
       wasDragging = false;
-      startFlipButton = flipSelector ? event.target.closest(flipSelector) : null;
+      startFlipCard = flipSelector ? event.target.closest(itemSelector) : null;
       startX = event.pageX;
       scrollStart = carousel.scrollLeft;
       carousel.classList.add('is-dragging');
@@ -283,40 +301,41 @@ function initUniversalSliders() {
     });
 
     carousel.addEventListener('pointerup', (event) => {
-      if (!startFlipButton || wasDragging) {
-        startFlipButton = null;
+      if (!startFlipCard || wasDragging) {
+        startFlipCard = null;
         return;
       }
-      const card = startFlipButton.closest(itemSelector);
-      if (!card) return;
-      const isFlipped = card.classList.toggle('is-flipped');
-      startFlipButton.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
+      const card = startFlipCard;
+      const isFlipped = !card.classList.contains('is-flipped');
+      setItemFlipped(card, isFlipped);
       suppressClick = true;
-      startFlipButton = null;
+      startFlipCard = null;
       stopDragging(event);
     });
 
     carousel.addEventListener('pointercancel', () => {
-      startFlipButton = null;
+      startFlipCard = null;
     });
 
     carousel.addEventListener('pointerleave', () => {
-      startFlipButton = null;
+      startFlipCard = null;
     });
 
     if (!flipSelector) return;
 
     items.forEach((item) => {
-      const button = item.querySelector(flipSelector);
-      if (!button) return;
-      button.addEventListener('click', () => {
-        if (suppressClick) {
-          suppressClick = false;
-          return;
-        }
-        if (wasDragging) return;
-        const isFlipped = item.classList.toggle('is-flipped');
-        button.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
+      const buttons = item.querySelectorAll(flipSelector);
+      if (!buttons.length) return;
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          if (suppressClick) {
+            suppressClick = false;
+            return;
+          }
+          if (wasDragging) return;
+          const isFlipped = !item.classList.contains('is-flipped');
+          setItemFlipped(item, isFlipped);
+        });
       });
     });
   });
@@ -1541,185 +1560,194 @@ function initTicketsHero() {
   });
 }
 
-function initTeamSliders() {
-  const sliders = document.querySelectorAll('[data-component="team-slider"]');
-  if (!sliders.length) return;
+// function initTeamSliders() {
+//   const sliders = document.querySelectorAll('[data-component="team-slider"]');
+//   if (!sliders.length) return;
 
-  sliders.forEach((slider) => {
-    const carousel = slider.querySelector('[data-team-carousel]');
-    const dots = slider.querySelector('[data-team-dots]');
-    const leftHint = slider.querySelector('[data-team-scroll="left"]');
-    const rightHint = slider.querySelector('[data-team-scroll="right"]');
+//   sliders.forEach((slider) => {
+//     const carousel = slider.querySelector('[data-team-carousel]');
+//     const dots = slider.querySelector('[data-team-dots]');
+//     const leftHint = slider.querySelector('[data-team-scroll="left"]');
+//     const rightHint = slider.querySelector('[data-team-scroll="right"]');
 
-    if (!carousel) return;
+//     if (!carousel) return;
 
-    const cards = Array.from(carousel.querySelectorAll('.team-card'));
-    const emptyState = carousel.querySelector('[data-empty]');
-    const cardCount = emptyState ? 0 : cards.length;
-    let isDragging = false;
+//     const cards = Array.from(carousel.querySelectorAll('.team-card'));
+//     const emptyState = carousel.querySelector('[data-empty]');
+//     const cardCount = emptyState ? 0 : cards.length;
+//     let isDragging = false;
 
-    const updateDots = (count) => {
-      if (!dots) return;
-      dots.innerHTML = '';
-      if (count <= 1) {
-        dots.setAttribute('hidden', 'true');
-        return;
-      }
-      dots.removeAttribute('hidden');
-      for (let index = 0; index < count; index += 1) {
-        const dot = document.createElement('span');
-        dot.className = 'team-slider__dot';
-        if (index === 0) dot.classList.add('is-active');
-        dots.appendChild(dot);
-      }
-    };
+//     const updateDots = (count) => {
+//       if (!dots) return;
+//       dots.innerHTML = '';
+//       if (count <= 1) {
+//         dots.setAttribute('hidden', 'true');
+//         return;
+//       }
+//       dots.removeAttribute('hidden');
+//       for (let index = 0; index < count; index += 1) {
+//         const dot = document.createElement('span');
+//         dot.className = 'team-slider__dot';
+//         if (index === 0) dot.classList.add('is-active');
+//         dots.appendChild(dot);
+//       }
+//     };
 
-    const getCardPositions = () => cards.map((card) => card.offsetLeft);
+//     const getCardPositions = () => cards.map((card) => card.offsetLeft);
 
-    const getClosestIndex = () => {
-      if (!cards.length) return 0;
-      const positions = getCardPositions();
-      const current = carousel.scrollLeft;
-      let closestIndex = 0;
-      let closestDistance = Math.abs(current - positions[0]);
-      positions.forEach((position, index) => {
-        const distance = Math.abs(current - position);
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          closestIndex = index;
-        }
-      });
-      return closestIndex;
-    };
+//     const getClosestIndex = () => {
+//       if (!cards.length) return 0;
+//       const positions = getCardPositions();
+//       const current = carousel.scrollLeft;
+//       let closestIndex = 0;
+//       let closestDistance = Math.abs(current - positions[0]);
+//       positions.forEach((position, index) => {
+//         const distance = Math.abs(current - position);
+//         if (distance < closestDistance) {
+//           closestDistance = distance;
+//           closestIndex = index;
+//         }
+//       });
+//       return closestIndex;
+//     };
 
-    const updateActiveDot = (index) => {
-      if (!dots) return;
-      const dotItems = dots.querySelectorAll('.team-slider__dot');
-      dotItems.forEach((dot, idx) => {
-        dot.classList.toggle('is-active', idx === index);
-      });
-    };
+//     const updateActiveDot = (index) => {
+//       if (!dots) return;
+//       const dotItems = dots.querySelectorAll('.team-slider__dot');
+//       dotItems.forEach((dot, idx) => {
+//         dot.classList.toggle('is-active', idx === index);
+//       });
+//     };
 
-    const updateHints = () => {
-      if (!leftHint || !rightHint) return;
-      if (cards.length <= 1) {
-        leftHint.setAttribute('hidden', 'true');
-        rightHint.setAttribute('hidden', 'true');
-        return;
-      }
-      const index = getClosestIndex();
-      leftHint.toggleAttribute('hidden', index === 0);
-      rightHint.toggleAttribute('hidden', index === cards.length - 1);
-    };
+//     const updateHints = () => {
+//       if (!leftHint || !rightHint) return;
+//       if (cards.length <= 1) {
+//         leftHint.setAttribute('hidden', 'true');
+//         rightHint.setAttribute('hidden', 'true');
+//         return;
+//       }
+//       const index = getClosestIndex();
+//       leftHint.toggleAttribute('hidden', index === 0);
+//       rightHint.toggleAttribute('hidden', index === cards.length - 1);
+//     };
 
-    const scrollToIndex = (index) => {
-      if (!cards.length) return;
-      const positions = getCardPositions();
-      const target = positions[Math.min(index, positions.length - 1)];
-      carousel.scrollTo({ left: target, behavior: 'smooth' });
-    };
+//     const scrollToIndex = (index) => {
+//       if (!cards.length) return;
+//       const positions = getCardPositions();
+//       const target = positions[Math.min(index, positions.length - 1)];
+//       carousel.scrollTo({ left: target, behavior: 'smooth' });
+//     };
 
-    updateDots(cardCount);
-    updateHints();
+//     updateDots(cardCount);
+//     updateHints();
 
-    if (cardCount > 1) {
-      carousel.addEventListener('scroll', () => {
-        if (!cards.length) return;
-        const index = getClosestIndex();
-        updateActiveDot(index);
-        updateHints();
-      });
+//     if (cardCount > 1) {
+//       carousel.addEventListener('scroll', () => {
+//         if (!cards.length) return;
+//         const index = getClosestIndex();
+//         updateActiveDot(index);
+//         updateHints();
+//       });
 
-      rightHint?.addEventListener('click', () => {
-        const index = getClosestIndex() + 1;
-        scrollToIndex(Math.min(index, cards.length - 1));
-      });
+//       rightHint?.addEventListener('click', () => {
+//         const index = getClosestIndex() + 1;
+//         scrollToIndex(Math.min(index, cards.length - 1));
+//       });
 
-      leftHint?.addEventListener('click', () => {
-        const index = getClosestIndex() - 1;
-        scrollToIndex(Math.max(index, 0));
-      });
-    }
+//       leftHint?.addEventListener('click', () => {
+//         const index = getClosestIndex() - 1;
+//         scrollToIndex(Math.max(index, 0));
+//       });
+//     }
 
-    let startX = 0;
-    let scrollStart = 0;
+//     let startX = 0;
+//     let scrollStart = 0;
 
-    const stopDragging = (event) => {
-      if (event && carousel.hasPointerCapture(event.pointerId)) {
-        carousel.releasePointerCapture(event.pointerId);
-      }
-      isDragging = false;
-      carousel.classList.remove('is-dragging');
-    };
+//     const stopDragging = (event) => {
+//       if (event && carousel.hasPointerCapture(event.pointerId)) {
+//         carousel.releasePointerCapture(event.pointerId);
+//       }
+//       isDragging = false;
+//       carousel.classList.remove('is-dragging');
+//     };
 
-    let wasDragging = false;
-    let startFlipButton = null;
-    let suppressClick = false;
+//     let wasDragging = false;
+//     let startFlipCard = null;
+//     let suppressClick = false;
 
-    carousel.addEventListener('pointerdown', (event) => {
-      isDragging = false;
-      wasDragging = false;
-      startFlipButton = event.target.closest('[data-team-flip]');
-      startX = event.pageX;
-      scrollStart = carousel.scrollLeft;
-      carousel.classList.add('is-dragging');
-      carousel.setPointerCapture(event.pointerId);
-    });
+//     const setCardFlipped = (card, shouldFlip) => {
+//       card.classList.toggle('is-flipped', shouldFlip);
+//       const flipButtons = card.querySelectorAll('[data-team-flip]');
+//       flipButtons.forEach((button) => {
+//         button.setAttribute('aria-pressed', shouldFlip ? 'true' : 'false');
+//       });
+//     };
 
-    carousel.addEventListener('dragstart', (event) => {
-      if (event.target && event.target.tagName === 'IMG') {
-        event.preventDefault();
-      }
-    });
+//     carousel.addEventListener('pointerdown', (event) => {
+//       isDragging = false;
+//       wasDragging = false;
+//       startFlipCard = event.target.closest('.team-card');
+//       startX = event.pageX;
+//       scrollStart = carousel.scrollLeft;
+//       carousel.classList.add('is-dragging');
+//       carousel.setPointerCapture(event.pointerId);
+//     });
 
-    carousel.addEventListener('pointermove', (event) => {
-      if (!carousel.hasPointerCapture(event.pointerId)) return;
-      const walk = startX - event.pageX;
-      if (Math.abs(walk) > 6) {
-        isDragging = true;
-        wasDragging = true;
-      }
-      carousel.scrollLeft = scrollStart + walk;
-    });
+//     carousel.addEventListener('dragstart', (event) => {
+//       if (event.target && event.target.tagName === 'IMG') {
+//         event.preventDefault();
+//       }
+//     });
 
-    carousel.addEventListener('pointerup', stopDragging);
-    carousel.addEventListener('pointercancel', stopDragging);
-    carousel.addEventListener('pointerleave', stopDragging);
-    carousel.addEventListener('pointerup', (event) => {
-      if (!startFlipButton || wasDragging) {
-        startFlipButton = null;
-        return;
-      }
-      const card = startFlipButton.closest('.team-card');
-      if (!card) return;
-      const isFlipped = card.classList.toggle('is-flipped');
-      startFlipButton.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
-      suppressClick = true;
-      startFlipButton = null;
-      stopDragging(event);
-    });
-    carousel.addEventListener('pointercancel', () => {
-      startFlipButton = null;
-    });
-    carousel.addEventListener('pointerleave', () => {
-      startFlipButton = null;
-    });
+//     carousel.addEventListener('pointermove', (event) => {
+//       if (!carousel.hasPointerCapture(event.pointerId)) return;
+//       const walk = startX - event.pageX;
+//       if (Math.abs(walk) > 6) {
+//         isDragging = true;
+//         wasDragging = true;
+//       }
+//       carousel.scrollLeft = scrollStart + walk;
+//     });
 
-    cards.forEach((card) => {
-      const button = card.querySelector('[data-team-flip]');
-      if (!button) return;
-      button.addEventListener('click', () => {
-        if (suppressClick) {
-          suppressClick = false;
-          return;
-        }
-        if (wasDragging) return;
-        const isFlipped = card.classList.toggle('is-flipped');
-        button.setAttribute('aria-pressed', isFlipped ? 'true' : 'false');
-      });
-    });
-  });
-}
+//     carousel.addEventListener('pointerup', stopDragging);
+//     carousel.addEventListener('pointercancel', stopDragging);
+//     carousel.addEventListener('pointerleave', stopDragging);
+//     carousel.addEventListener('pointerup', (event) => {
+//       if (!startFlipCard || wasDragging) {
+//         startFlipCard = null;
+//         return;
+//       }
+//       const card = startFlipCard;
+//       const isFlipped = !card.classList.contains('is-flipped');
+//       setCardFlipped(card, isFlipped);
+//       suppressClick = true;
+//       startFlipCard = null;
+//       stopDragging(event);
+//     });
+//     carousel.addEventListener('pointercancel', () => {
+//       startFlipCard = null;
+//     });
+//     carousel.addEventListener('pointerleave', () => {
+//       startFlipCard = null;
+//     });
+
+//     cards.forEach((card) => {
+//       const buttons = card.querySelectorAll('[data-team-flip]');
+//       if (!buttons.length) return;
+//       buttons.forEach((button) => {
+//         button.addEventListener('click', () => {
+//           if (suppressClick) {
+//             suppressClick = false;
+//             return;
+//           }
+//           if (wasDragging) return;
+//           const isFlipped = !card.classList.contains('is-flipped');
+//           setCardFlipped(card, isFlipped);
+//         });
+//       });
+//     });
+//   });
+// }
 
 function initDonationForms() {
   const sections = document.querySelectorAll('[data-donation]');

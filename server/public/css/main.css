@@ -834,6 +834,28 @@ input[type="reset"]:hover,
   max-width: 1400px;
 }
 
+.sauber-hero__header {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.sauber-hero__breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--sauber-muted);
+}
+
+.sauber-hero__breadcrumb a {
+  text-decoration: none;
+}
+
+.sauber-hero__breadcrumb a:hover {
+  color: var(--sauber-text);
+  text-decoration: underline;
+}
+
 .sauber-hero--leistungen .sauber-hero__body {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
@@ -2342,6 +2364,9 @@ input[type="reset"]:hover,
   .sauber-hero--leistungen .sauber-hero__actions {
     display: flex;
     flex-wrap: nowrap;
+    justify-content: center;
+  }
+  .sauber-hero__header {
     justify-content: center;
   }
   .sauber-hero--leistungen .sauber-hero__subtitle,

@@ -269,6 +269,11 @@ function initUniversalSliders() {
 
     carousel.addEventListener('pointerdown', (event) => {
       if (event.button !== 0 && event.pointerType === 'mouse') return;
+      if (event.target.closest('a')) {
+        wasDragging = false;
+        startFlipCard = null;
+        return;
+      }
       wasDragging = false;
       startFlipCard = flipSelector ? event.target.closest(itemSelector) : null;
       startX = event.pageX;

@@ -10,6 +10,7 @@
   const isLeistungenSubpage =
       page?.canonical_path?.startsWith('/leistungen/')
     && page?.canonical_path !== '/leistungen';
+  const breadcrumbCurrentLabel = (page?.title || heroHeadline || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
   const heroLayout = block?.layout || (isLeistungenSubpage ? 'leistungen-detail' : (isLeistungenPage ? 'leistungen' : 'default'));
   const isLeistungenHero = heroLayout === 'leistungen' || heroLayout === 'leistungen-detail';
   const galleryDefaults = [432, 582, 432];
@@ -24,12 +25,19 @@
 <section class="sauber-hero <%= isLeistungenHero ? 'sauber-hero--leistungen' : '' %> <%= heroLayout === 'leistungen-detail' ? 'sauber-hero--leistungen-detail' : '' %>" aria-labelledby="sauber-hero-title">
   <% if (isLeistungenHero) { %>
   <div class="section__inner sauber-hero__inner">
-    <% if (heroLayout === 'leistungen') { %>
+    <% if (heroLayout === 'leistungen' || heroLayout === 'leistungen-detail') { %>
     <header class="sauber-hero__header">
       <nav class="sauber-hero__breadcrumb" aria-label="Breadcrumb">
         <a href="/">Startseite</a>
+        <% if (heroLayout === 'leistungen') { %>
         <span class="sauber-hero__breadcrumb-separator" aria-hidden="true">›</span>
         <span aria-current="page">Leistungen</span>
+        <% } else { %>
+        <span class="sauber-hero__breadcrumb-separator" aria-hidden="true">›</span>
+        <a href="/leistungen">Leistungen</a>
+        <span class="sauber-hero__breadcrumb-separator" aria-hidden="true">›</span>
+        <span aria-current="page"><%= breadcrumbCurrentLabel || 'Unterseite' %></span>
+        <% } %>
       </nav>
     </header>
     <% } %>

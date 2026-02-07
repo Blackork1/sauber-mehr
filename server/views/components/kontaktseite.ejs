@@ -1,6 +1,7 @@
 <%
   const action = block?.action || '/contact';
-  const breadcrumb = block?.breadcrumb || 'Startseite > Kontakt';
+  const breadcrumb = block?.breadcrumb || '';
+  const breadcrumbMarkup = breadcrumb || '<a href="/">Startseite</a> <span class="kontakt-flow__breadcrumb-separator" aria-hidden="true">›</span> <span aria-current="page">Kontakt</span>';
   const headline = block?.headline || 'Kontaktiere uns und';
   const headlineAccent = block?.headlineAccent || '';
   const description = block?.description || 'Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.';
@@ -60,8 +61,8 @@
 <section class="kontakt-flow section" id="kontakt">
   <div class="section__inner kontakt-flow__inner">
     <div class="kontakt-flow__content">
-      <% if (breadcrumb) { %>
-      <div class="kontakt-flow__breadcrumb"><%= breadcrumb %></div>
+      <% if (breadcrumbMarkup) { %>
+      <div class="kontakt-flow__breadcrumb"><%- breadcrumbMarkup %></div>
       <% } %>
       <h1 class="kontakt-flow__headline">
         <span><%- renderTextWithLinks(headline) %></span>

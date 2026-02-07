@@ -37,6 +37,30 @@ function pagePathFromSlug(slug) {
   return `/${slug}`;
 }
 
+function buildBreadcrumbItems(page, meta) {
+  const canonicalPath = page.canonical_path || pagePathFromSlug(page.slug);
+  const normalizedPath = canonicalPath === '/' ? '/' : canonicalPath.replace(/\/$/, '');
+  const items = [{ name: 'Startseite', item: absUrl('/') }];
+
+  if (normalizedPath === '/' || normalizedPath === '/de' || normalizedPath === '/en') {
+    return items;
+  }
+
+  if (normalizedPath === '/leistungen') {
+    items.push({ name: 'Leistungen', item: meta.canonical });
+    return items;
+  }
+
+  if (normalizedPath.startsWith('/leistungen/')) {
+    items.push({ name: 'Leistungen', item: absUrl('/leistungen') });
+    items.push({ name: page.title || meta.title || 'Leistung', item: meta.canonical });
+    return items;
+  }
+
+  items.push({ name: page.title || meta.title || 'Seite', item: meta.canonical });
+  return items;
+}
+
 export function absUrl(pathOrUrl) {
   if (!pathOrUrl) return '';
   if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
@@ -132,6 +156,20 @@ export function buildSchemaGraph({ page, blocks, meta }) {
       }
       : {})
   });
+
+  const breadcrumbItems = buildBreadcrumbItems(page, meta);
+  if (breadcrumbItems.length) {
+    graph.push({
+      '@type': 'BreadcrumbList',
+      '@id': url + '#breadcrumb',
+      itemListElement: breadcrumbItems.map((crumb, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: crumb.name,
+        item: crumb.item
+      }))
+    });
+  }
 
   const faqBlock = Array.isArray(page.content)
     ? page.content.find((block) => block?.type === 'faq' && Array.isArray(block?.items) && block.items.length)

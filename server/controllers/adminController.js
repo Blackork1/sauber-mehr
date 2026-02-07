@@ -636,6 +636,42 @@ export async function updatePage(req, res, next) {
           block.cards = cards;
         }
 
+        if (block.type === 'teamAbout') {
+          const teamMembers = Array.isArray(block.teamMembers) ? block.teamMembers : [];
+          for (let index = 0; index < teamMembers.length; index += 1) {
+            const fieldBase = `content_block_${blockId}__teamMembers.${index}.image.src`;
+            const resolved = await resolveImageFieldSimple({
+              upload: req.files?.[`${fieldBase}_upload`],
+              galleryId: req.body[`${fieldBase}_gallery_id`],
+              currentUrl: teamMembers[index]?.image?.src,
+              alt: teamMembers[index]?.image?.alt,
+              pool
+            });
+            teamMembers[index].image = teamMembers[index].image || {};
+            if (resolved.src) teamMembers[index].image.src = resolved.src;
+            if (resolved.alt) teamMembers[index].image.alt = resolved.alt;
+          }
+          block.teamMembers = teamMembers;
+        }
+
+        if (block.type === 'specialCards') {
+          const cards = Array.isArray(block.cards) ? block.cards : [];
+          for (let index = 0; index < cards.length; index += 1) {
+            const fieldBase = `content_block_${blockId}__cards.${index}.icon.src`;
+            const resolved = await resolveImageFieldSimple({
+              upload: req.files?.[`${fieldBase}_upload`],
+              galleryId: req.body[`${fieldBase}_gallery_id`],
+              currentUrl: cards[index]?.icon?.src,
+              alt: cards[index]?.icon?.alt,
+              pool
+            });
+            cards[index].icon = cards[index].icon || {};
+            if (resolved.src) cards[index].icon.src = resolved.src;
+            if (resolved.alt) cards[index].icon.alt = resolved.alt;
+          }
+          block.cards = cards;
+        }
+
         if (block.type === 'bereiche') {
           const imageFieldBase = `content_block_${blockId}__image.src`;
           const resolvedImage = await resolveImageFieldSimple({

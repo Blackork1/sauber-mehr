@@ -1,0 +1,39 @@
+<%
+  const title = block?.title || block?.specialsTitle || '';
+  const subtitle = block?.subtitle || block?.specialsSubtitle || '';
+  const cards = Array.isArray(block?.cards) ? block.cards : (Array.isArray(block?.specialCards) ? block.specialCards : []);
+%>
+
+<section class="specials section">
+  <div class="section__inner specials__inner">
+    <% if (title || subtitle) { %>
+    <header class="specials__header">
+      <% if (title) { %>
+      <h2><%- renderTextWithLinks(title) %></h2>
+      <% } %>
+      <% if (subtitle) { %>
+      <p><%- renderTextWithLinks(subtitle) %></p>
+      <% } %>
+    </header>
+    <% } %>
+    <div class="specials__grid">
+      <% cards.forEach((card) => { %>
+      <article class="special-card">
+        <% if (card?.icon?.src) { %>
+        <div class="special-card__icon">
+          <img src="<%= card.icon.src %>" alt="<%= card.icon.alt || card.title || '' %>" loading="lazy" />
+        </div>
+        <% } else if (card?.icon) { %>
+        <div class="special-card__icon"><%- card.icon %></div>
+        <% } %>
+        <% if (card?.title) { %>
+        <h3><%= card.title %></h3>
+        <% } %>
+        <% if (card?.text) { %>
+        <p><%= card.text %></p>
+        <% } %>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>

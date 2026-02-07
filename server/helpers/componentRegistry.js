@@ -16,6 +16,7 @@ export const COMPONENT_REGISTRY = {
   kontaktformular: 'kontaktformular',
   kontaktseite: 'kontaktseite',
   teamAbout: 'teamAbout',
+  specialCards: 'specialCards',
 };
 
 export function normalizeBlocks(blocks = []) {

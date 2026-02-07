@@ -107,7 +107,9 @@
             faq: 'FAQ',
             bereiche: 'Bereiche',
             leistungenCards: 'Leistungen Unterseiten',
-            kontaktseite: 'Kontaktseite'
+            kontaktseite: 'Kontaktseite',
+            teamAbout: 'Team Übersicht',
+            specialCards: 'Special Cards'
           };
           const getContentLabel = (block) => {
             if (block?.type === 'hero') {
@@ -138,7 +140,9 @@
             { type: 'faq', label: contentTypeLabels.faq },
             { type: 'bereiche', label: contentTypeLabels.bereiche },
             { type: 'leistungenCards', label: contentTypeLabels.leistungenCards },
-            { type: 'kontaktseite', label: contentTypeLabels.kontaktseite }
+            { type: 'kontaktseite', label: contentTypeLabels.kontaktseite },
+            { type: 'teamAbout', label: contentTypeLabels.teamAbout },
+            { type: 'specialCards', label: contentTypeLabels.specialCards }
           ];
           const contentBlocks = blocks.map((block, index) => ({
             ...block,
@@ -467,6 +471,128 @@
               </div>
             </div>
             <% }) %>
+          </div>
+          <% } else if (block.type === 'teamAbout') { %>
+          <%
+                  const teamMembers = Array.isArray(block.teamMembers) && block.teamMembers.length ? block.teamMembers : [{}];
+                %>
+          <div class="admin-grid">
+            <div class="admin-field">
+              <label>Headline</label>
+              <input type="text" name="content_block_<%= block._adminId %>__headline" value="<%= safeValue(block.headline) %>">
+            </div>
+            <div class="admin-field">
+              <label>Subline</label>
+              <input type="text" name="content_block_<%= block._adminId %>__text" value="<%= safeValue(block.text) %>">
+            </div>
+          </div>
+          <div class="admin-grid">
+            <div class="admin-field">
+              <label>Breadcrumb Label</label>
+              <input type="text" name="content_block_<%= block._adminId %>__breadcrumbLabel" value="<%= safeValue(block.breadcrumbLabel) %>">
+            </div>
+            <div class="admin-field">
+              <label>Team leer Text</label>
+              <input type="text" name="content_block_<%= block._adminId %>__teamEmptyText" value="<%= safeValue(block.teamEmptyText) %>">
+            </div>
+          </div>
+          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="12">
+            <div data-dynamic-rows-items>
+              <% teamMembers.forEach((member, index) => { %>
+              <div class="admin-step-card" data-dynamic-row>
+                <div class="admin-field">
+                  <label data-dynamic-label-template="Teammitglied __INDEX__ Name">Teammitglied <%= index + 1 %> Name</label>
+                  <input type="text" name="content_block_<%= block._adminId %>__teamMembers.<%= index %>.name" value="<%= safeValue(member?.name) %>" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__teamMembers.__INDEX__.name">
+                </div>
+                <div class="admin-field">
+                  <label>Rolle</label>
+                  <input type="text" name="content_block_<%= block._adminId %>__teamMembers.<%= index %>.role" value="<%= safeValue(member?.role) %>" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__teamMembers.__INDEX__.role">
+                </div>
+                <div class="admin-field">
+                  <label>Beschreibung</label>
+                  <textarea name="content_block_<%= block._adminId %>__teamMembers.<%= index %>.description" rows="2" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__teamMembers.__INDEX__.description"><%= safeValue(member?.description) %></textarea>
+                </div>
+                <div class="admin-field">
+                  <label>Bild</label>
+                  <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                    <div class="admin-media-picker__controls">
+                      <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                      <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                    </div>
+                    <input type="file" name="content_block_<%= block._adminId %>__teamMembers.<%= index %>.image.src_upload" accept="image/*" data-upload-input hidden data-dynamic-name-template="content_block_<%= block._adminId %>__teamMembers.__INDEX__.image.src_upload">
+                    <input type="hidden" name="content_block_<%= block._adminId %>__teamMembers.<%= index %>.image.src_gallery_id" data-gallery-input="image" value="" data-dynamic-name-template="content_block_<%= block._adminId %>__teamMembers.__INDEX__.image.src_gallery_id">
+                    <input type="hidden" name="content_block_<%= block._adminId %>__teamMembers.<%= index %>.image.src" value="<%= safeValue(member?.image?.src) %>" data-gallery-current data-dynamic-name-template="content_block_<%= block._adminId %>__teamMembers.__INDEX__.image.src">
+                    <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                      <div class="admin-field">
+                        <label>Alt-Text</label>
+                        <input type="text" name="content_block_<%= block._adminId %>__teamMembers.<%= index %>.image.alt" data-gallery-alt-input="de" value="<%= safeValue(member?.image?.alt) %>" data-dynamic-name-template="content_block_<%= block._adminId %>__teamMembers.__INDEX__.image.alt">
+                      </div>
+                    </div>
+                    <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                    <% if (member?.image?.src) { %>
+                    <a class="admin-media-picker__preview-link" href="<%= member.image.src %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= member.image.src %>" data-media-preview-type="image">
+                      Aktuelles Bild anzeigen
+                    </a>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </div>
+          </div>
+          <% } else if (block.type === 'specialCards') { %>
+          <%
+                  const cards = Array.isArray(block.cards) && block.cards.length ? block.cards : [{}];
+                %>
+          <div class="admin-grid">
+            <div class="admin-field">
+              <label>Titel</label>
+              <input type="text" name="content_block_<%= block._adminId %>__title" value="<%= safeValue(block.title || block.specialsTitle) %>">
+            </div>
+            <div class="admin-field">
+              <label>Untertitel</label>
+              <input type="text" name="content_block_<%= block._adminId %>__subtitle" value="<%= safeValue(block.subtitle || block.specialsSubtitle) %>">
+            </div>
+          </div>
+          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8">
+            <div data-dynamic-rows-items>
+              <% cards.forEach((card, index) => { %>
+              <div class="admin-step-card" data-dynamic-row>
+                <div class="admin-field">
+                  <label data-dynamic-label-template="Karte __INDEX__ Titel">Karte <%= index + 1 %> Titel</label>
+                  <input type="text" name="content_block_<%= block._adminId %>__cards.<%= index %>.title" value="<%= safeValue(card?.title) %>" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__cards.__INDEX__.title">
+                </div>
+                <div class="admin-field">
+                  <label>Text</label>
+                  <textarea name="content_block_<%= block._adminId %>__cards.<%= index %>.text" rows="2" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__cards.__INDEX__.text"><%= safeValue(card?.text) %></textarea>
+                </div>
+                <div class="admin-field">
+                  <label>Icon</label>
+                  <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                    <div class="admin-media-picker__controls">
+                      <button type="button" class="admin-button" data-upload-trigger>Icon hochladen</button>
+                      <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                    </div>
+                    <input type="file" name="content_block_<%= block._adminId %>__cards.<%= index %>.icon.src_upload" accept="image/*" data-upload-input hidden data-dynamic-name-template="content_block_<%= block._adminId %>__cards.__INDEX__.icon.src_upload">
+                    <input type="hidden" name="content_block_<%= block._adminId %>__cards.<%= index %>.icon.src_gallery_id" data-gallery-input="image" value="" data-dynamic-name-template="content_block_<%= block._adminId %>__cards.__INDEX__.icon.src_gallery_id">
+                    <input type="hidden" name="content_block_<%= block._adminId %>__cards.<%= index %>.icon.src" value="<%= safeValue(card?.icon?.src) %>" data-gallery-current data-dynamic-name-template="content_block_<%= block._adminId %>__cards.__INDEX__.icon.src">
+                    <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                      <div class="admin-field">
+                        <label>Alt-Text</label>
+                        <input type="text" name="content_block_<%= block._adminId %>__cards.<%= index %>.icon.alt" data-gallery-alt-input="de" value="<%= safeValue(card?.icon?.alt) %>" data-dynamic-name-template="content_block_<%= block._adminId %>__cards.__INDEX__.icon.alt">
+                      </div>
+                    </div>
+                    <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                    <% if (card?.icon?.src) { %>
+                    <a class="admin-media-picker__preview-link" href="<%= card.icon.src %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= card.icon.src %>" data-media-preview-type="image">
+                      Aktuelles Icon anzeigen
+                    </a>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </div>
           </div>
           <% } else if (block.type === 'kontaktformular') { %>
           <%
@@ -1967,6 +2093,132 @@
                 </div>
               </div>
               <small data-gallery-preview>Keine Datei ausgewählt.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template data-content-template="teamAbout">
+      <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+        <input type="hidden" name="content_block___BLOCK_ID___type" value="teamAbout" data-block-type>
+        <div class="admin-content-block__header">
+          <div>
+            <h4 class="admin-content-block__title">Team Übersicht</h4>
+            <p class="admin-content-block__meta">Typ: teamAbout</p>
+          </div>
+          <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+        </div>
+        <div class="admin-grid">
+          <div class="admin-field">
+            <label>Headline</label>
+            <input type="text" name="content_block___BLOCK_ID___headline" value="">
+          </div>
+          <div class="admin-field">
+            <label>Subline</label>
+            <input type="text" name="content_block___BLOCK_ID___text" value="">
+          </div>
+        </div>
+        <div class="admin-grid">
+          <div class="admin-field">
+            <label>Breadcrumb Label</label>
+            <input type="text" name="content_block___BLOCK_ID___breadcrumbLabel" value="">
+          </div>
+          <div class="admin-field">
+            <label>Team leer Text</label>
+            <input type="text" name="content_block___BLOCK_ID___teamEmptyText" value="">
+          </div>
+        </div>
+        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="12">
+          <div data-dynamic-rows-items>
+            <div class="admin-step-card" data-dynamic-row>
+              <div class="admin-field">
+                <label data-dynamic-label-template="Teammitglied __INDEX__ Name">Teammitglied 1 Name</label>
+                <input type="text" name="content_block___BLOCK_ID___teamMembers.0.name" value="" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___teamMembers.__INDEX__.name">
+              </div>
+              <div class="admin-field">
+                <label>Rolle</label>
+                <input type="text" name="content_block___BLOCK_ID___teamMembers.0.role" value="" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___teamMembers.__INDEX__.role">
+              </div>
+              <div class="admin-field">
+                <label>Beschreibung</label>
+                <textarea name="content_block___BLOCK_ID___teamMembers.0.description" rows="2" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___teamMembers.__INDEX__.description"></textarea>
+              </div>
+              <div class="admin-field">
+                <label>Bild</label>
+                <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                  <div class="admin-media-picker__controls">
+                    <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                    <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                  </div>
+                  <input type="file" name="content_block___BLOCK_ID___teamMembers.0.image.src_upload" accept="image/*" data-upload-input hidden data-dynamic-name-template="content_block___BLOCK_ID___teamMembers.__INDEX__.image.src_upload">
+                  <input type="hidden" name="content_block___BLOCK_ID___teamMembers.0.image.src_gallery_id" data-gallery-input="image" value="" data-dynamic-name-template="content_block___BLOCK_ID___teamMembers.__INDEX__.image.src_gallery_id">
+                  <input type="hidden" name="content_block___BLOCK_ID___teamMembers.0.image.src" value="" data-gallery-current data-dynamic-name-template="content_block___BLOCK_ID___teamMembers.__INDEX__.image.src">
+                  <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                    <div class="admin-field">
+                      <label>Alt-Text</label>
+                      <input type="text" name="content_block___BLOCK_ID___teamMembers.0.image.alt" data-gallery-alt-input="de" value="" data-dynamic-name-template="content_block___BLOCK_ID___teamMembers.__INDEX__.image.alt">
+                    </div>
+                  </div>
+                  <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template data-content-template="specialCards">
+      <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+        <input type="hidden" name="content_block___BLOCK_ID___type" value="specialCards" data-block-type>
+        <div class="admin-content-block__header">
+          <div>
+            <h4 class="admin-content-block__title">Special Cards</h4>
+            <p class="admin-content-block__meta">Typ: specialCards</p>
+          </div>
+          <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+        </div>
+        <div class="admin-grid">
+          <div class="admin-field">
+            <label>Titel</label>
+            <input type="text" name="content_block___BLOCK_ID___title" value="">
+          </div>
+          <div class="admin-field">
+            <label>Untertitel</label>
+            <input type="text" name="content_block___BLOCK_ID___subtitle" value="">
+          </div>
+        </div>
+        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8">
+          <div data-dynamic-rows-items>
+            <div class="admin-step-card" data-dynamic-row>
+              <div class="admin-field">
+                <label data-dynamic-label-template="Karte __INDEX__ Titel">Karte 1 Titel</label>
+                <input type="text" name="content_block___BLOCK_ID___cards.0.title" value="" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___cards.__INDEX__.title">
+              </div>
+              <div class="admin-field">
+                <label>Text</label>
+                <textarea name="content_block___BLOCK_ID___cards.0.text" rows="2" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___cards.__INDEX__.text"></textarea>
+              </div>
+              <div class="admin-field">
+                <label>Icon</label>
+                <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                  <div class="admin-media-picker__controls">
+                    <button type="button" class="admin-button" data-upload-trigger>Icon hochladen</button>
+                    <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                  </div>
+                  <input type="file" name="content_block___BLOCK_ID___cards.0.icon.src_upload" accept="image/*" data-upload-input hidden data-dynamic-name-template="content_block___BLOCK_ID___cards.__INDEX__.icon.src_upload">
+                  <input type="hidden" name="content_block___BLOCK_ID___cards.0.icon.src_gallery_id" data-gallery-input="image" value="" data-dynamic-name-template="content_block___BLOCK_ID___cards.__INDEX__.icon.src_gallery_id">
+                  <input type="hidden" name="content_block___BLOCK_ID___cards.0.icon.src" value="" data-gallery-current data-dynamic-name-template="content_block___BLOCK_ID___cards.__INDEX__.icon.src">
+                  <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                    <div class="admin-field">
+                      <label>Alt-Text</label>
+                      <input type="text" name="content_block___BLOCK_ID___cards.0.icon.alt" data-gallery-alt-input="de" value="" data-dynamic-name-template="content_block___BLOCK_ID___cards.__INDEX__.icon.alt">
+                    </div>
+                  </div>
+                  <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                </div>
+              </div>
             </div>
           </div>
         </div>

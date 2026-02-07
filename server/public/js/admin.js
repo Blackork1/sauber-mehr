@@ -1558,6 +1558,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const newIndex = rows.length;
       updateRowIndex(newRow, newIndex);
       resetRowValues(newRow);
+      Array.from(newRow.querySelectorAll('[data-gallery-picker]')).forEach((picker) => {
+        bindMediaPicker(picker);
+      });
       itemsContainer.appendChild(newRow);
       attachRowListeners(newRow);
     };

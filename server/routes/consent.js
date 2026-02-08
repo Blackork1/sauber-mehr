@@ -1,7 +1,9 @@
 import { Router } from 'express';
-import { setConsent } from '../controllers/consentController.js';
+import { getConsent, postConsent, withdrawConsent } from '../controllers/consentController.js';
 
 const router = Router();
-router.post('/', setConsent);
+router.get('/consent', getConsent);
+router.post('/consent', postConsent);
+router.delete('/consent', withdrawConsent);
 
 export default router;

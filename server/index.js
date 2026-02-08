@@ -16,8 +16,10 @@ import adminRoutes from './routes/admin.js';
 import authRoutes from './routes/auth.js';
 import contactRoutes from './routes/contact.js';
 import pagesRoutes from './routes/pages.js';
+import consentRoutes from './routes/consent.js';
 import * as errorController from './controllers/errorController.js';
 import { renderTextWithLinks } from './helpers/textRenderer.js';
+import { loadCookieBannerCopy } from './helpers/cookieBannerData.js';
 
 dotenv.config();
 
@@ -69,6 +71,7 @@ app.use(session({
 /** App locals (DB-first rendering helpers) */
 app.set('db', pool);
 app.locals.renderTextWithLinks = renderTextWithLinks;
+const bannerCopy = loadCookieBannerCopy();
 
 app.use((req, res, next) => {
   if (typeof res.locals.meta === 'undefined') res.locals.meta = {};
@@ -81,9 +84,11 @@ app.use((req, res, next) => {
   if (typeof res.locals.gaEnabled === 'undefined') res.locals.gaEnabled = false;
   if (typeof res.locals.clarityEnabled === 'undefined') res.locals.clarityEnabled = false;
   if (typeof res.locals.clarityId === 'undefined') res.locals.clarityId = '';
+  if (typeof res.locals.bannerCopy === 'undefined') res.locals.bannerCopy = bannerCopy;
   next();
 });
 
+app.use('/api', consentRoutes);
 app.use('/', mainRoutes);
 app.use('/', authRoutes);
 app.use('/', adminRoutes);

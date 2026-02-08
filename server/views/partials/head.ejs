@@ -114,6 +114,8 @@
   })();
 </script>
 
+<%- include('./head-consent') %>
+
 
 <!-- CSS: Main -->
 <link rel="stylesheet" href="/css/main.css<%= assetSuffix || '' %>">
@@ -134,37 +136,6 @@
 <% if (typeof schemaGraphJson === 'string' && schemaGraphJson.trim().length) { %>
 <script type="application/ld+json">
   <%- schemaGraphJson %>
-</script>
-<% } %>
-
-<!-- Analytics nur bei Consent -->
-<% if (gaEnabled && process.env.GA_ID) { %>
-<script async src="https://www.googletagmanager.com/gtag/js?id=<%= process.env.GA_ID %>"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-
-  function gtag() {
-    dataLayer.push(arguments);
-  }
-  gtag('js', new Date());
-  gtag('config', '<%= process.env.GA_ID %>', {
-    anonymize_ip: true
-  });
-</script>
-<% } %>
-
-<% if (clarityEnabled && clarityId) { %>
-<script>
-  (function(c, l, a, r, i, t, y) {
-    c[a] = c[a] || function() {
-      (c[a].q = c[a].q || []).push(arguments)
-    };
-    t = l.createElement(r);
-    t.async = 1;
-    t.src = "https://www.clarity.ms/tag/" + i;
-    y = l.getElementsByTagName(r)[0];
-    y.parentNode.insertBefore(t, y);
-  })(window, document, "clarity", "script", "<%= clarityId %>");
 </script>
 <% } %>
 

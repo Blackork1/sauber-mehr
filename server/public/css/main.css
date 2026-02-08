@@ -2608,7 +2608,13 @@ input[type="reset"]:hover,
   }
 
   .kontakt-flow__options {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .kontakt-flow__options > .kontakt-flow__option:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: min(140px, 100%);
   }
   .image-slider__thumbnails {
     display: none;
@@ -2677,9 +2683,13 @@ input[type="reset"]:hover,
     gap: 32px;
   }
 
-  .sauber-kontakt__aside {
-    order: 3;
+  .sauber-kontakt__inner--services .sauber-kontakt__aside {
+    order: 1;
     width: 100%;
+  }
+
+  .sauber-kontakt__inner--services .sauber-kontakt__card-wrap {
+    order: 2;
   }
 
   .sauber-bereiche__inner {

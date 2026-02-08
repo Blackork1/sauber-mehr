@@ -1950,6 +1950,10 @@ input[type="reset"]:hover,
   gap: 16px;
 }
 
+.sauber-bereiche__image {
+  max-height: 500px;
+}
+
 .sauber-bereiche__slider {
   width: 100%;
 }

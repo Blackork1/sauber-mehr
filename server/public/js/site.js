@@ -298,7 +298,10 @@ function initUniversalSliders() {
     carousel.addEventListener('click', (event) => {
       if (!wasDragging) return;
       const target = event.target;
-      if (target.closest('a, button')) {
+      const clickedLink = target.closest('a');
+      const clickedFlipButton = flipSelector ? target.closest(flipSelector) : null;
+
+      if (clickedLink || clickedFlipButton) {
         event.preventDefault();
         event.stopPropagation();
       }
@@ -2057,6 +2060,6 @@ initVideoCarousels();
 initVideoHeroPlayer();
 initVideoScenesGallery();
 initTicketsHero();
-initTeamSliders();
+// initTeamSliders();
 initDonationForms();
 initKontaktFlow();

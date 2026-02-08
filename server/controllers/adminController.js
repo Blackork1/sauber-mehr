@@ -164,7 +164,22 @@ const resolveImageFieldSimple = async ({ upload, galleryId, currentUrl, alt, poo
   const normalizedAlt = normalizeAltValue(altValue);
   const uploadEntry = Array.isArray(upload) ? upload[0] : upload;
   if (uploadEntry) {
-    const fallbackAlt = stripFileExtension(uploadEntry.originalname || uploadEntry.filename);
+    const originalName = uploadEntry.originalname || uploadEntry.filename;
+    const fallbackAlt = stripFileExtension(originalName);
+    const duplicate = await findGalleryImageByName(pool, originalName);
+    if (duplicate) {
+      try {
+        if (uploadEntry.path) {
+          await fs.promises.unlink(uploadEntry.path);
+        }
+      } catch (_) {
+        // ignore
+      }
+      return {
+        src: duplicate.cloudinary_url || duplicate.local_path || normalizedCurrentUrl,
+        alt: normalizedAlt || fallbackAlt
+      };
+    }
     const baseName = normalizedAlt || fallbackAlt;
     const stored = await processGalleryImageUpload(uploadEntry, { baseName });
     const resolvedAlt = normalizedAlt || fallbackAlt;
@@ -179,11 +194,11 @@ const resolveImageFieldSimple = async ({ upload, galleryId, currentUrl, alt, poo
       sizeBytes: stored.sizeBytes,
       altDe: resolvedAlt,
       altEn: resolvedAlt,
-      showInGallery: true,
+      showInGallery: false,
       galleryCategory: null
     });
     return {
-      src: stored.localPath,
+      src: stored.cloudinaryUrl || stored.localPath,
       alt: resolvedAlt
     };
   }
@@ -869,7 +884,7 @@ export async function createGalleryImageAdmin(req, res, next) {
       height: stored.height,
       altDe: normalizeAltValue(req.body.gallery_image_alt_de) || fallbackAlt,
       altEn: normalizeAltValue(req.body.gallery_image_alt_en) || fallbackAlt,
-      showInGallery: true,
+      showInGallery: false,
       galleryCategory: normalizeString(req.body.gallery_image_category) || null
     });
     return res.redirect('/adminbackend?nav=gallery');
@@ -901,7 +916,7 @@ export async function createGalleryVideoAdmin(req, res, next) {
       height: stored.height,
       altDe: normalizeString(req.body.gallery_video_alt_de),
       altEn: normalizeString(req.body.gallery_video_alt_en),
-      showInGallery: true,
+      showInGallery: false,
       galleryCategory: normalizeString(req.body.gallery_video_category) || null
     });
     return res.redirect('/adminbackend?nav=gallery');

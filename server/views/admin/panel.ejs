@@ -8,6 +8,12 @@
   const selectedLeistungenSubpageEntry = selectedLeistungenSubpageValue || leistungenSubpagesList[0] || null;
   const adminQuery = query || {};
   const adminSaved = adminQuery.saved === '1';
+  const galleryError = adminQuery.error || '';
+  const galleryErrorMessage = galleryError === 'gallery-duplicate-image'
+    ? 'Bild liegt bereits in der Gallery vor.'
+    : (galleryError === 'gallery-duplicate-video'
+      ? 'Video liegt bereits in der Gallery vor.'
+      : '');
   const activeTab = adminQuery.tab || (pagesList[0] ? `page-${pagesList[0].id}` : '');
   const getBlock = (blocks, type) => (Array.isArray(blocks) ? blocks.find((block) => block?.type === type) : null) || {};
   const getHeroCtaLabel = (block) => block?.ctaLabel || block?.cta?.label || '';
@@ -155,6 +161,9 @@
            <h2>Admin Gallery</h2>
            <p>Verwalte Bilder und Videos für die Sauber Mehr Galerie.</p>
          </div>
+         <% if (galleryErrorMessage) { %>
+         <div class="admin-panel__alert admin-panel__alert--warning"><%= galleryErrorMessage %></div>
+         <% } %>
        </header>
        <div class="admin-tabs admin-tabs--sub" data-gallery-tabs>
          <button class="admin-tab is-active" type="button" data-gallery-tab="images">Bilder</button>

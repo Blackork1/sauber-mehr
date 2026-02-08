@@ -376,10 +376,11 @@
               <input type="text" name="content_block_<%= block._adminId %>__button.label" value="<%= safeValue(block?.button?.label) %>">
             </div>
           </div>
-          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8">
+          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="8">
             <div data-dynamic-rows-items>
               <% slides.forEach((slide, index) => { %>
               <div class="admin-step-card" data-dynamic-row>
+                <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Slide entfernen">×</button>
                 <div class="admin-field">
                   <label data-dynamic-label-template="Slide __INDEX__ Titel">Slide <%= index + 1 %> Titel</label>
                   <input type="text" name="content_block_<%= block._adminId %>__slides.<%= index %>.title" value="<%= safeValue(slide?.title) %>" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__slides.__INDEX__.title">
@@ -418,6 +419,9 @@
                 </div>
               </div>
               <% }) %>
+            </div>
+            <div class="admin-dynamic-actions">
+              <button type="button" class="admin-button" data-dynamic-add>+ Slide hinzufügen</button>
             </div>
           </div>
           <% } else if (block.type === 'angebote') { %>
@@ -496,10 +500,11 @@
               <input type="text" name="content_block_<%= block._adminId %>__teamEmptyText" value="<%= safeValue(block.teamEmptyText) %>">
             </div>
           </div>
-          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="12">
+          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="12">
             <div data-dynamic-rows-items>
               <% teamMembers.forEach((member, index) => { %>
               <div class="admin-step-card" data-dynamic-row>
+                <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Teammitglied entfernen">×</button>
                 <div class="admin-field">
                   <label data-dynamic-label-template="Teammitglied __INDEX__ Name">Teammitglied <%= index + 1 %> Name</label>
                   <input type="text" name="content_block_<%= block._adminId %>__teamMembers.<%= index %>.name" value="<%= safeValue(member?.name) %>" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__teamMembers.__INDEX__.name">
@@ -539,6 +544,9 @@
               </div>
               <% }) %>
             </div>
+            <div class="admin-dynamic-actions">
+              <button type="button" class="admin-button" data-dynamic-add>+ Teammitglied hinzufügen</button>
+            </div>
           </div>
           <% } else if (block.type === 'specialCards') { %>
           <%
@@ -554,10 +562,11 @@
               <input type="text" name="content_block_<%= block._adminId %>__subtitle" value="<%= safeValue(block.subtitle || block.specialsSubtitle) %>">
             </div>
           </div>
-          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8">
+          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="8">
             <div data-dynamic-rows-items>
               <% cards.forEach((card, index) => { %>
               <div class="admin-step-card" data-dynamic-row>
+                <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Karte entfernen">×</button>
                 <div class="admin-field">
                   <label data-dynamic-label-template="Karte __INDEX__ Titel">Karte <%= index + 1 %> Titel</label>
                   <input type="text" name="content_block_<%= block._adminId %>__cards.<%= index %>.title" value="<%= safeValue(card?.title) %>" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__cards.__INDEX__.title">
@@ -592,6 +601,9 @@
                 </div>
               </div>
               <% }) %>
+            </div>
+            <div class="admin-dynamic-actions">
+              <button type="button" class="admin-button" data-dynamic-add>+ Karte hinzufügen</button>
             </div>
           </div>
           <% } else if (block.type === 'kontaktformular') { %>
@@ -643,10 +655,11 @@
               <textarea name="content_block_<%= block._adminId %>__details" rows="3"><%= safeValue(block.details) %></textarea>
             </div>
           </div>
-          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8" data-kontakt-layout-group="services" <%= kontaktLayout === 'services' ? '' : 'hidden' %>>
+          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="8" data-kontakt-layout-group="services" <%= kontaktLayout === 'services' ? '' : 'hidden' %>>
             <div data-dynamic-rows-items>
               <% services.forEach((service, index) => { %>
               <div class="admin-step-card" data-dynamic-row>
+                <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Service entfernen">×</button>
                 <div class="admin-field">
                   <label data-dynamic-label-template="Service __INDEX__ Label">Service <%= index + 1 %> Label</label>
                   <input type="text" name="content_block_<%= block._adminId %>__services.<%= index %>.label" value="<%= safeValue(service?.label) %>" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__services.__INDEX__.label">
@@ -657,6 +670,9 @@
                 </div>
               </div>
               <% }) %>
+            </div>
+            <div class="admin-dynamic-actions">
+              <button type="button" class="admin-button" data-dynamic-add>+ Service hinzufügen</button>
             </div>
           </div>
           <div class="admin-grid admin-grid--steps" data-kontakt-layout-group="default" <%= kontaktLayout === 'default' ? '' : 'hidden' %>>
@@ -1126,10 +1142,11 @@
               <input type="text" name="content_block_<%= block._adminId %>__button.href" value="<%= safeValue(block.button?.href) %>">
             </div>
           </div>
-          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8">
+          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="8">
             <div data-dynamic-rows-items>
               <% faqItems.forEach((item, index) => { %>
               <div class="admin-step-card" data-dynamic-row>
+                <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="FAQ entfernen">×</button>
                 <div class="admin-field">
                   <label data-dynamic-label-template="Frage __INDEX__">Frage <%= index + 1 %></label>
                   <input type="text" name="content_block_<%= block._adminId %>__items.<%= index %>.q" value="<%= safeValue(item?.q) %>" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__items.__INDEX__.q">
@@ -1140,6 +1157,9 @@
                 </div>
               </div>
               <% }) %>
+            </div>
+            <div class="admin-dynamic-actions">
+              <button type="button" class="admin-button" data-dynamic-add>+ FAQ hinzufügen</button>
             </div>
           </div>
           <% } else if (block.type === 'bereiche') { %>
@@ -1199,10 +1219,11 @@
               </div>
             </div>
           </div>
-          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8" data-bereiche-layout-group="slider" <%= bereicheLayout === 'slider' ? '' : 'hidden' %>>
+          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="8" data-bereiche-layout-group="slider" <%= bereicheLayout === 'slider' ? '' : 'hidden' %>>
             <div data-dynamic-rows-items>
               <% sliderSlides.forEach((slide, index) => { %>
               <div class="admin-step-card" data-dynamic-row>
+                <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Slide entfernen">×</button>
                 <div class="admin-field">
                   <label data-dynamic-label-template="Slide __INDEX__ Titel">Slide <%= index + 1 %> Titel</label>
                   <input type="text" name="content_block_<%= block._adminId %>__slider.slides.<%= index %>.title" value="<%= safeValue(slide?.title) %>" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__slider.slides.__INDEX__.title">
@@ -1241,6 +1262,9 @@
                 </div>
               </div>
               <% }) %>
+            </div>
+            <div class="admin-dynamic-actions">
+              <button type="button" class="admin-button" data-dynamic-add>+ Slide hinzufügen</button>
             </div>
           </div>
         </div>
@@ -1489,9 +1513,10 @@
             <input type="text" name="content_block___BLOCK_ID___button.label" value="">
           </div>
         </div>
-        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8">
+        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="8">
           <div data-dynamic-rows-items>
             <div class="admin-step-card" data-dynamic-row>
+              <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Slide entfernen">×</button>
               <div class="admin-field">
                 <label data-dynamic-label-template="Slide __INDEX__ Titel">Slide 1 Titel</label>
                 <input type="text" name="content_block___BLOCK_ID___slides.0.title" value="" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___slides.__INDEX__.title">
@@ -1524,6 +1549,9 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div class="admin-dynamic-actions">
+            <button type="button" class="admin-button" data-dynamic-add>+ Slide hinzufügen</button>
           </div>
         </div>
       </div>
@@ -1636,9 +1664,10 @@
             <textarea name="content_block___BLOCK_ID___details" rows="3"></textarea>
           </div>
         </div>
-        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8" data-kontakt-layout-group="services" hidden>
+        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="8" data-kontakt-layout-group="services" hidden>
           <div data-dynamic-rows-items>
             <div class="admin-step-card" data-dynamic-row>
+              <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Service entfernen">×</button>
               <div class="admin-field">
                 <label data-dynamic-label-template="Service __INDEX__ Label">Service 1 Label</label>
                 <input type="text" name="content_block___BLOCK_ID___services.0.label" value="" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___services.__INDEX__.label">
@@ -1648,6 +1677,9 @@
                 <input type="text" name="content_block___BLOCK_ID___services.0.href" value="" data-dynamic-name-template="content_block___BLOCK_ID___services.__INDEX__.href">
               </div>
             </div>
+          </div>
+          <div class="admin-dynamic-actions">
+            <button type="button" class="admin-button" data-dynamic-add>+ Service hinzufügen</button>
           </div>
         </div>
         <div class="admin-grid admin-grid--steps" data-kontakt-layout-group="default">
@@ -2129,9 +2161,10 @@
             <input type="text" name="content_block___BLOCK_ID___teamEmptyText" value="">
           </div>
         </div>
-        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="12">
+        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="12">
           <div data-dynamic-rows-items>
             <div class="admin-step-card" data-dynamic-row>
+              <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Teammitglied entfernen">×</button>
               <div class="admin-field">
                 <label data-dynamic-label-template="Teammitglied __INDEX__ Name">Teammitglied 1 Name</label>
                 <input type="text" name="content_block___BLOCK_ID___teamMembers.0.name" value="" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___teamMembers.__INDEX__.name">
@@ -2165,6 +2198,9 @@
               </div>
             </div>
           </div>
+          <div class="admin-dynamic-actions">
+            <button type="button" class="admin-button" data-dynamic-add>+ Teammitglied hinzufügen</button>
+          </div>
         </div>
       </div>
     </template>
@@ -2189,9 +2225,10 @@
             <input type="text" name="content_block___BLOCK_ID___subtitle" value="">
           </div>
         </div>
-        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8">
+        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="8">
           <div data-dynamic-rows-items>
             <div class="admin-step-card" data-dynamic-row>
+              <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Karte entfernen">×</button>
               <div class="admin-field">
                 <label data-dynamic-label-template="Karte __INDEX__ Titel">Karte 1 Titel</label>
                 <input type="text" name="content_block___BLOCK_ID___cards.0.title" value="" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___cards.__INDEX__.title">
@@ -2220,6 +2257,9 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div class="admin-dynamic-actions">
+            <button type="button" class="admin-button" data-dynamic-add>+ Karte hinzufügen</button>
           </div>
         </div>
       </div>
@@ -2255,9 +2295,10 @@
             <input type="text" name="content_block___BLOCK_ID___button.href" value="">
           </div>
         </div>
-        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8">
+        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="8">
           <div data-dynamic-rows-items>
             <div class="admin-step-card" data-dynamic-row>
+              <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="FAQ entfernen">×</button>
               <div class="admin-field">
                 <label data-dynamic-label-template="Frage __INDEX__">Frage 1</label>
                 <input type="text" name="content_block___BLOCK_ID___items.0.q" value="" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___items.__INDEX__.q">
@@ -2267,6 +2308,9 @@
                 <textarea name="content_block___BLOCK_ID___items.0.a" rows="3" data-dynamic-name-template="content_block___BLOCK_ID___items.__INDEX__.a"></textarea>
               </div>
             </div>
+          </div>
+          <div class="admin-dynamic-actions">
+            <button type="button" class="admin-button" data-dynamic-add>+ FAQ hinzufügen</button>
           </div>
         </div>
       </div>
@@ -2326,9 +2370,10 @@
             </div>
           </div>
         </div>
-        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-max="8" data-bereiche-layout-group="slider">
+        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="8" data-bereiche-layout-group="slider">
           <div data-dynamic-rows-items>
             <div class="admin-step-card" data-dynamic-row>
+              <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Slide entfernen">×</button>
               <div class="admin-field">
                 <label data-dynamic-label-template="Slide __INDEX__ Titel">Slide 1 Titel</label>
                 <input type="text" name="content_block___BLOCK_ID___slider.slides.0.title" value="" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___slider.slides.__INDEX__.title">
@@ -2361,6 +2406,9 @@
                 </div>
               </div>
             </div>
+          </div>
+          <div class="admin-dynamic-actions">
+            <button type="button" class="admin-button" data-dynamic-add>+ Slide hinzufügen</button>
           </div>
         </div>
       </div>

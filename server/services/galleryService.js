@@ -84,7 +84,7 @@ export async function createGalleryImage(pool, data) {
       data.sizeBytes,
       data.altDe,
       data.altEn,
-      data.showInGallery ?? true,
+      data.showInGallery ?? false,
       data.galleryCategory ?? null
     ]
   );
@@ -109,7 +109,7 @@ export async function createGalleryVideo(pool, data) {
       data.sizeBytes,
       data.altDe,
       data.altEn,
-      data.showInGallery ?? true,
+      data.showInGallery ?? false,
       data.galleryCategory ?? null
     ]
   );

@@ -1494,6 +1494,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const itemsContainer = container.querySelector('[data-dynamic-rows-items]');
     if (!itemsContainer) return;
     const max = Number(container.dataset.max || 8);
+    const manualMode = container.hasAttribute('data-dynamic-manual');
+    const addButton = container.querySelector('[data-dynamic-add]');
 
     const getRows = () => Array.from(itemsContainer.querySelectorAll('[data-dynamic-row]'));
 
@@ -1550,6 +1552,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const ensureTrailingRow = () => {
+      if (manualMode) return;
       const rows = getRows();
       const lastRow = rows[rows.length - 1];
       if (!lastRow || rows.length >= max) return;
@@ -1563,13 +1566,61 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       itemsContainer.appendChild(newRow);
       attachRowListeners(newRow);
+      attachRemoveListener(newRow);
+    };
+
+    const reindexRows = () => {
+      getRows().forEach((row, index) => {
+        updateRowIndex(row, index);
+      });
+    };
+
+    const attachRemoveListener = (row) => {
+      const removeButton = row.querySelector('[data-dynamic-remove]');
+      if (!removeButton) return;
+      removeButton.addEventListener('click', () => {
+        const rows = getRows();
+        if (rows.length <= 1) {
+          resetRowValues(row);
+          return;
+        }
+        row.remove();
+        reindexRows();
+      });
+    };
+
+    const addRow = () => {
+      const rows = getRows();
+      if (!rows.length || rows.length >= max) return;
+      const lastRow = rows[rows.length - 1];
+      const newRow = lastRow.cloneNode(true);
+      const newIndex = rows.length;
+      updateRowIndex(newRow, newIndex);
+      resetRowValues(newRow);
+      Array.from(newRow.querySelectorAll('[data-gallery-picker]')).forEach((picker) => {
+        bindMediaPicker(picker);
+      });
+      itemsContainer.appendChild(newRow);
+      if (!manualMode) {
+        attachRowListeners(newRow);
+      }
+      attachRemoveListener(newRow);
     };
 
     getRows().forEach((row, index) => {
       updateRowIndex(row, index);
-      attachRowListeners(row);
+      if (!manualMode) {
+        attachRowListeners(row);
+      }
+      attachRemoveListener(row);
     });
-    ensureTrailingRow();
+    if (manualMode) {
+      if (addButton) {
+        addButton.addEventListener('click', addRow);
+      }
+    } else {
+      ensureTrailingRow();
+    }
   };
 
   const initDynamicFaq = (container) => {

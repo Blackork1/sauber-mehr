@@ -3145,6 +3145,7 @@ input[type="reset"]:hover,
 .admin-grid--steps {
   align-items: start;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  position: relative;
 }
 ‚ .admin-grid[hidden] {
   display: none;
@@ -3155,6 +3156,7 @@ input[type="reset"]:hover,
   flex-wrap: wrap;
   gap: 16px;
   width: 100%;
+  position: relative;
 }
 
 .admin-grid--steps [data-dynamic-rows-items] > .admin-step-card {
@@ -3176,9 +3178,34 @@ input[type="reset"]:hover,
 }
 
 .admin-step-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.admin-step-card__remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  color: #1f1f1f;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.admin-dynamic-actions {
+  position: absolute;
+  right: 50px;
+  top: -50px;
+  transform: translateX(50px);
 }
 
 .admin-media-picker__alt[hidden] {

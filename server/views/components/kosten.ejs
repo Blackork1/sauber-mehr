@@ -34,15 +34,15 @@
 
 <section class="sauber-kosten section section--align-center" aria-labelledby="sauber-kosten-title">
   <div class="section__inner">
-    <h2 class="sauber-kosten__title" id="sauber-kosten-title"><%- renderTextWithLinks(heading) %></h2>
+    <h2 class="sauber-kosten__title animate-on-scroll" id="sauber-kosten-title"><%- renderTextWithLinks(heading) %></h2>
     <% descriptionParts.forEach((paragraph) => { %>
-    <p class="sauber-kosten__description"><%- renderTextWithLinks(paragraph) %></p>
+    <p class="sauber-kosten__description animate-on-scroll"><%- renderTextWithLinks(paragraph) %></p>
     <% }) %>
     <% if (subheading) { %>
-    <h3 class="sauber-kosten__subheading"><%- renderTextWithLinks(subheading) %></h3>
+    <h3 class="sauber-kosten__subheading animate-on-scroll"><%- renderTextWithLinks(subheading) %></h3>
     <% } %>
     <% if (subtitle) { %>
-    <p class="sauber-kosten__subtitle"><%- renderTextWithLinks(subtitle) %></p>
+    <p class="sauber-kosten__subtitle animate-on-scroll"><%- renderTextWithLinks(subtitle) %></p>
     <% } %>
 
     <div class="sauber-kosten__flow">
@@ -65,12 +65,12 @@
       <% }) %>
     </div>
 
-    <p class="sauber-kosten__lead"><%- renderTextWithLinks(leadText) %><%- renderTextWithLinks(detailText) %></p>
+    <p class="sauber-kosten__lead animate-on-scroll"><%- renderTextWithLinks(leadText) %><%- renderTextWithLinks(detailText) %></p>
     <p class="sauber-kosten__detail"></p>
 
     <div class="sauber-kosten__buttons">
-      <a class="sauber-kosten__button sauber-kosten__button--primary" href="<%= primaryButton.href %>"><%= primaryButton.label %></a>
-      <a class="sauber-kosten__button sauber-kosten__button--secondary" href="<%= secondaryButton.href %>" target="_blank" rel="noopener noreferrer"><%= secondaryButton.label %></a>
+      <a class="sauber-kosten__button sauber-kosten__button--primary animate-on-scroll" href="<%= primaryButton.href %>"><%= primaryButton.label %></a>
+      <a class="sauber-kosten__button sauber-kosten__button--secondary animate-on-scroll" href="<%= secondaryButton.href %>" target="_blank" rel="noopener noreferrer"><%= secondaryButton.label %></a>
     </div>
 
   </div>

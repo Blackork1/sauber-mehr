@@ -17,10 +17,10 @@
         <% } %>
         <% if (variant === 'bereiche') { %>
         <div class="image-slider__overlay">
-          <a class="image-slider__overlay-button" href="<%= link || '#' %>"><%= label %></a>
+          <a class="image-slider__overlay-button animate-on-scroll" href="<%= link || '#' %>"><%= label %></a>
         </div>
         <% } else { %>
-        <div class="image-slider__content">
+        <div class="image-slider__content animate-on-scroll">
           <% if (slide?.title) { %><h3><%- renderTextWithLinks(slide.title) %></h3><% } %>
           <% if (slide?.description) { %>
           <% const paragraphs = String(slide.description).split(/\r?\n+/).map((paragraph) => paragraph.trim()).filter(Boolean); %>
@@ -34,7 +34,7 @@
       <% }) %>
     </div>
 
-    <div class="image-slider__thumbnails" data-image-thumbnails aria-hidden="true">
+    <div class="image-slider__thumbnails animate-on-scroll" data-image-thumbnails aria-hidden="true">
       <% slides.forEach((slide) => { %>
       <div class="image-slider__thumb">
         <% if (slide?.thumbnail?.src || slide?.image?.src) { %>
@@ -53,7 +53,7 @@
     </div>
 
     <div class="image-slider__cta">
-      <a class="image-slider__button" data-image-cta href="<%= slides[0]?.link || slides[0]?.href || '#' %>"><%= buttonLabel %></a>
+      <a class="image-slider__button animate-on-scroll" data-image-cta href="<%= slides[0]?.link || slides[0]?.href || '#' %>"><%= buttonLabel %></a>
     </div>
     <% } %>
   </div>

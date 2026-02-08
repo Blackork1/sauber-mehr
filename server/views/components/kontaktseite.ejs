@@ -60,7 +60,7 @@
 
 <section class="kontakt-flow section" id="kontakt">
   <div class="section__inner kontakt-flow__inner">
-    <div class="kontakt-flow__content">
+    <div class="kontakt-flow__content animate-on-scroll">
       <% if (breadcrumbMarkup) { %>
       <div class="kontakt-flow__breadcrumb"><%- breadcrumbMarkup %></div>
       <% } %>
@@ -79,7 +79,7 @@
       </div>
     </div>
 
-    <div class="kontakt-flow__form-wrapper" data-contact-flow>
+    <div class="kontakt-flow__form-wrapper animate-on-scroll" data-contact-flow>
       <form class="kontakt-flow__form" method="post" action="<%= action %>">
         <input type="hidden" name="service" value="" data-contact-field="service">
         <input type="hidden" name="area" value="" data-contact-field="area">

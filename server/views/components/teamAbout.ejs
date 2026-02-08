@@ -5,7 +5,7 @@
   const teamMembers = Array.isArray(block?.teamMembers) ? block.teamMembers : [];
 %>
 
-<section class="team-overview section" id="ueber">
+<section class="team-overview section animate-on-scroll" id="ueber">
   <div class="section__inner team-overview__inner">
     <nav class="team-overview__breadcrumb sauber-hero__breadcrumb" aria-label="Breadcrumb">
       <a href="/">Startseite</a>
@@ -13,7 +13,7 @@
       <span aria-current="page"><%= breadcrumbLabel %></span>
     </nav>
     <% if (headline || subline) { %>
-    <header class="team-overview__header">
+    <header class="team-overview__header ">
       <% if (headline) { %>
       <h2 class="team-overview__title"><%- renderTextWithLinks(headline) %></h2>
       <% } %>
@@ -24,7 +24,7 @@
     <% } %>
 
     <%- include('./universalSlider', {
-      sliderClass: 'team-overview__slider',
+      sliderClass: 'team-overview__slider animate-on-scroll',
       sliderItems: teamMembers,
       sliderItemPartial: './partials/teamCardItem',
       sliderItemSelector: '[data-slider-item]',

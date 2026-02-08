@@ -9,19 +9,19 @@
 <section class="faq section">
   <div class="section__inner faq__inner">
     <div class="faq__header">
-      <div class="faq__intro">
+      <div class="faq__intro animate-on-scroll">
         <% if (block.title) { %><h2><%- renderTextWithLinks(block.title) %></h2><% } %>
         <% descriptionParts.forEach((paragraph) => { %>
         <p><%- renderTextWithLinks(paragraph) %></p>
         <% }) %>
       </div>
       <% if (button?.label) { %>
-      <a class="faq__button" href="<%= button.href || '#' %>"><%= button.label %></a>
+      <a class="faq__button animate-on-scroll" href="<%= button.href || '#' %>"><%= button.label %></a>
       <% } %>
     </div>
     <div class="faq__list">
       <% (block.items || []).forEach(it => { %>
-      <details class="faq__item">
+      <details class="faq__item animate-on-scroll">
         <summary><%- renderTextWithLinks(it.q) %></summary>
         <div class="prose"><%- it.a %></div>
       </details>

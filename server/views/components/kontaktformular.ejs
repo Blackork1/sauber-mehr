@@ -34,7 +34,7 @@
   <div class="section__inner sauber-kontakt__inner <%= layout === 'services' ? 'sauber-kontakt__inner--services' : '' %>">
     <% if (layout !== 'services') { %>
     <div class="sauber-kontakt__content">
-      <div class="sauber-kontakt__badge">
+      <div class="sauber-kontakt__badge animate-on-scroll">
         <span class="sauber-kontakt__badge-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" role="img" focusable="false">
             <path d="M4 6h16v12H4z" fill="none" stroke="currentColor" stroke-width="2" />
@@ -43,16 +43,16 @@
         </span>
         <span><%= badge %></span>
       </div>
-      <h2 class="sauber-kontakt__headline">
+      <h2 class="sauber-kontakt__headline animate-on-scroll">
         <span><%= headline %></span>
         <span class="sauber-kontakt__headline-accent"><%= headlineAccent %></span>
       </h2>
-      <p class="sauber-kontakt__intro"><%= intro %></p>
-      <p class="sauber-kontakt__intro"><%= details %></p>
+      <p class="sauber-kontakt__intro animate-on-scroll"><%= intro %></p>
+      <p class="sauber-kontakt__intro animate-on-scroll"><%= details %></p>
 
       <div class="sauber-kontakt__items">
         <% contactItems.forEach(item => { %>
-        <div class="sauber-kontakt__item">
+        <div class="sauber-kontakt__item animate-on-scroll">
           <span class="sauber-kontakt__item-icon" aria-hidden="true">
             <%- item.icon %>
           </span>
@@ -100,12 +100,12 @@
 
     <% if (layout === 'services') { %>
     <div class="sauber-kontakt__aside">
-      <h2 class="sauber-kontakt__aside-title"><%- renderTextWithLinks(sideTitle) %></h2>
-      <p class="sauber-kontakt__aside-text"><%- renderTextWithLinks(sideDescription) %></p>
-      <h3 class="sauber-kontakt__aside-subtitle"><%- renderTextWithLinks(sideSubheading) %></h3>
+      <h2 class="sauber-kontakt__aside-title animate-on-scroll"><%- renderTextWithLinks(sideTitle) %></h2>
+      <p class="sauber-kontakt__aside-text animate-on-scroll"><%- renderTextWithLinks(sideDescription) %></p>
+      <h3 class="sauber-kontakt__aside-subtitle animate-on-scroll"><%- renderTextWithLinks(sideSubheading) %></h3>
       <ul class="sauber-kontakt__service-list">
         <% normalizedServices.forEach(service => { %>
-        <li class="sauber-kontakt__service-item">
+        <li class="sauber-kontakt__service-item animate-on-scroll">
           <span class="sauber-kontakt__service-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" role="img" focusable="false">
               <path d="M20 6 9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />

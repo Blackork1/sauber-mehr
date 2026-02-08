@@ -25,16 +25,16 @@
 %>
 
 <section class="leistungen-unterseiten section">
-  <div class="section__inner leistungen-unterseiten__inner">
+  <div class="section__inner leistungen-unterseiten__inner ">
     <div class="leistungen-unterseiten__header">
-      <h2 class="leistungen-unterseiten__title"><%- renderTextWithLinks(title) %></h2>
+      <h2 class="leistungen-unterseiten__title animate-on-scroll"><%- renderTextWithLinks(title) %></h2>
       <% if (description) { %>
-      <p class="leistungen-unterseiten__text"><%- renderTextWithLinks(description) %></p>
+      <p class="leistungen-unterseiten__text animate-on-scroll"><%- renderTextWithLinks(description) %></p>
       <% } %>
     </div>
 
     <%- include('./universalSlider', {
-      sliderClass: 'leistungen-unterseiten__slider',
+      sliderClass: 'leistungen-unterseiten__slider animate-on-scroll',
       sliderItems: cardItems,
       sliderItemPartial: './partials/leistungenCardItem',
       sliderEmptyText: emptyText,

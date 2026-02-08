@@ -14,17 +14,17 @@
 <section class="sauber-bereiche section">
   <div class="section__inner sauber-bereiche__inner">
     <div class="sauber-bereiche__content">
-      <h2 class="sauber-bereiche__title"><%- renderTextWithLinks(title) %></h2>
+      <h2 class="sauber-bereiche__title animate-on-scroll"><%- renderTextWithLinks(title) %></h2>
       <% descriptionParts.forEach((paragraph) => { %>
-      <p class="sauber-bereiche__text"><%- renderTextWithLinks(paragraph) %></p>
+      <p class="sauber-bereiche__text animate-on-scroll"><%- renderTextWithLinks(paragraph) %></p>
       <% }) %>
     </div>
     <% if (layout === 'single' && image?.src) { %>
-    <div class="sauber-bereiche__image">
+    <div class="sauber-bereiche__image animate-on-scroll">
       <img src="<%= image.src %>" alt="<%= image.alt || title %>" loading="lazy" />
     </div>
     <% } else { %>
-    <div class="sauber-bereiche__slider">
+    <div class="sauber-bereiche__slider animate-on-scroll">
       <%- include('./imageSlider', { block: sliderBlock, page }) %>
     </div>
     <% } %>

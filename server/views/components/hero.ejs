@@ -24,7 +24,7 @@
 %>
 <section class="sauber-hero <%= isLeistungenHero ? 'sauber-hero--leistungen' : '' %> <%= heroLayout === 'leistungen-detail' ? 'sauber-hero--leistungen-detail' : '' %>" aria-labelledby="sauber-hero-title">
   <% if (isLeistungenHero) { %>
-  <div class="section__inner sauber-hero__inner">
+  <div class="section__inner sauber-hero__inner animate-on-scroll">
     <% if (heroLayout === 'leistungen') { %>
     <header class="sauber-hero__header">
       <nav class="sauber-hero__breadcrumb" aria-label="Breadcrumb">
@@ -76,7 +76,7 @@
   </div>
   <% } else { %>
   <div class="sauber-hero__media" style="--hero-image: url('<%= heroImage %>')"></div>
-  <div class="sauber-hero__content">
+  <div class="sauber-hero__content animate-on-scroll">
     <div class="sauber-hero__upper">
       <h1 class="sauber-hero__title" id="sauber-hero-title"><%- renderTextWithLinks(heroHeadline) %></h1>
       <p class="sauber-hero__subtitle"><%- renderTextWithLinks(heroSubline) %></p>

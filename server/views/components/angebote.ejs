@@ -28,16 +28,16 @@
 <section class="sauber-offers section" id="angebote" data-component="angebote">
   <div class="section__inner">
     <header class="sauber-offers__header">
-      <h2 class="sauber-offers__title"><%- renderTextWithLinks(title) %></h2>
+      <h2 class="sauber-offers__title animate-on-scroll"><%- renderTextWithLinks(title) %></h2>
       <% if (description) { %>
-        <p class="sauber-offers__description"><%- renderTextWithLinks(description) %></p>
+        <p class="sauber-offers__description animate-on-scroll"><%- renderTextWithLinks(description) %></p>
       <% } %>
     </header>
 
     <% if (cards.length) { %>
       <div class="sauber-offers__grid" style="--offers-columns: <%= Math.min(cards.length, 3) %>;">
         <% cards.forEach((card) => { %>
-          <article class="sauber-offers__card">
+          <article class="sauber-offers__card animate-on-scroll">
             <div class="sauber-offers__media">
               <% if (card?.imageUrl) { %>
                 <img src="<%= card.imageUrl %>" alt="<%= card.imageAlt || card.title || '' %>">
@@ -45,9 +45,9 @@
             </div>
             <div class="sauber-offers__overlay"></div>
             <div class="sauber-offers__content">
-              <h3 class="sauber-offers__card-title"><%- renderTextWithLinks(card?.title || '') %></h3>
+              <h3 class="sauber-offers__card-title animate-on-scroll"><%- renderTextWithLinks(card?.title || '') %></h3>
               <% if (card?.description) { %>
-                <p class="sauber-offers__card-text"><%- renderTextWithLinks(card.description) %></p>
+                <p class="sauber-offers__card-text animate-on-scroll"><%- renderTextWithLinks(card.description) %></p>
               <% } %>
             </div>
           </article>

@@ -9,16 +9,16 @@
     <% if (title || subtitle) { %>
     <header class="specials__header">
       <% if (title) { %>
-      <h2><%- renderTextWithLinks(title) %></h2>
+      <h2 class="animate-on-scroll"><%- renderTextWithLinks(title) %></h2>
       <% } %>
       <% if (subtitle) { %>
-      <p><%- renderTextWithLinks(subtitle) %></p>
+      <p class="animate-on-scroll"><%- renderTextWithLinks(subtitle) %></p>
       <% } %>
     </header>
     <% } %>
     <div class="specials__grid">
       <% cards.forEach((card) => { %>
-      <article class="special-card">
+      <article class="special-card animate-on-scroll">
         <% if (card?.icon?.src) { %>
         <div class="special-card__icon">
           <img src="<%= card.icon.src %>" alt="<%= card.icon.alt || card.title || '' %>" loading="lazy" />

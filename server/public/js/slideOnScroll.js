@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ? 0.1    // Mobile: 20% sichtbar → einblenden
     : 0.7;   // Desktop: erst ab 70% sichtbar
 
-  const hideThreshold = showThreshold * 0.5;
+  const hideThreshold = showThreshold * 0.1;
   // z. B. showThreshold=0.7 → hideThreshold=0.35.
   // wir verstecken erst, wenn nur noch <35% sichtbar sind
 

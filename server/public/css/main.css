@@ -747,61 +747,64 @@ input[type="reset"]:hover,
 /* Ausgangszustand: Element ist nach links versetzt und unsichtbar */
 .animate-on-scroll {
   opacity: 0;
+  filter: blur(5px);
   transform: translateY(40px);
-  transition:
-    opacity 0.6s ease-out,
-    transform 0.6s ease-out;
+  transition: all 0.6s ease-out;
 }
 
 /* Wenn sichtbar (im Viewport): gleitet an Position und wird sichtbar */
 .animate-on-scroll.visible {
   opacity: 1;
+  filter: blur(0);
   transform: translateX(0);
 }
 
 /* Wenn gerade verlassen (Viewport nach oben verlassen): nach rechts versetzen und ausblenden */
 .animate-on-scroll.out {
   opacity: 0;
+  filter: blur(5px);
   transform: translateY(40px);
 }
 
 .animate-on-scroll-right {
   opacity: 0;
+  filter: blur(5px);
   transform: translateX(40px);
-  transition:
-    opacity 0.6s ease-in,
-    transform 0.6s ease-in;
+  transition: all 0.6s ease-out;
 }
 
 /* Wenn sichtbar (im Viewport): gleitet an Position und wird sichtbar */
 .animate-on-scroll-right.visible {
   opacity: 1;
+  filter: blur(0);
   transform: translateX(0px);
 }
 
 /* Wenn gerade verlassen (Viewport nach oben verlassen): nach rechts versetzen und ausblenden */
 .animate-on-scroll-right.out {
   opacity: 0;
+  filter: blur(5px);
   transform: translateX(40px);
 }
 
 .animate-on-scroll-left {
   opacity: 0;
+  filter: blur(5px);
   transform: translateX(-40px);
-  transition:
-    opacity 0.6s ease-in,
-    transform 0.6s ease-in;
+  transition: all 0.6s ease-in;
 }
 
 /* Wenn sichtbar (im Viewport): gleitet an Position und wird sichtbar */
 .animate-on-scroll-left.visible {
   opacity: 1;
+  filter: blur(0);
   transform: translateX(0px);
 }
 
 /* Wenn gerade verlassen (Viewport nach oben verlassen): nach rechts versetzen und ausblenden */
 .animate-on-scroll-left.out {
   opacity: 0;
+  filter: blur(5px);
   transform: translateX(-40px);
 }
 

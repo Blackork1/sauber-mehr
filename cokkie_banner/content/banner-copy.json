@@ -1,7 +1,93 @@
 {
-  "text": "Wir verwenden Cookies für Analyse und Marketing. Es werden keine persönlichen Daten gespeichert. Für das Nutzen des ChatBots ist es erforderlich, dass deine Fragen gespeichert werden.",
-  "privacyLink": "/datenschutz",
-  "privacyLabel": "Datenschutzvereinbarung",
-  "acceptAllLabel": "Alles akzeptieren",
-  "acceptNecessaryLabel": "Nur Notwendiges"
+  "banner": {
+    "title": "Cookie-Einstellungen",
+    "text": "Wir verwenden notwendige Cookies, damit die Website sicher funktioniert (z. B. Login und Sicherheit). Mit deiner Einwilligung nutzen wir Microsoft Clarity sowie Google Tag Manager/Google Analytics zur Analyse und laden YouTube-Videos als externe Inhalte. Du kannst deine Auswahl jederzeit in den Cookie-Einstellungen ändern oder widerrufen.",
+    "privacyLink": "/datenschutz",
+    "privacyLabel": "Datenschutzerklärung",
+    "imprintLink": "/impressum",
+    "imprintLabel": "Impressum",
+    "acceptAllLabel": "Alle akzeptieren",
+    "acceptNecessaryLabel": "Nur notwendige",
+    "openSettingsLabel": "Einstellungen"
+  },
+  "settings": {
+    "title": "Cookie-Einstellungen",
+    "description": "Hier kannst du festlegen, welche optionalen Kategorien aktiviert werden sollen. Notwendige Cookies sind immer aktiv, da die Website sonst nicht korrekt funktioniert.",
+    "saveLabel": "Auswahl speichern",
+    "rejectAllLabel": "Alle ablehnen",
+    "acceptAllLabel": "Alle akzeptieren",
+    "closeLabel": "Schließen",
+    "savedMessage": "Deine Auswahl wurde gespeichert. Du kannst sie jederzeit ändern.",
+    "categories": [
+      {
+        "key": "necessary",
+        "title": "Notwendig (immer aktiv)",
+        "description": "Erforderlich für Betrieb, Sicherheit und Speicherung deiner Cookie-Auswahl.",
+        "alwaysOn": true
+      },
+      {
+        "key": "analytics",
+        "title": "Statistik / Analyse",
+        "description": "Hilft uns zu verstehen, wie Besucher die Website nutzen (z. B. Klicks und Scrollen), um Inhalte und Bedienbarkeit zu verbessern (Microsoft Clarity sowie Google Tag Manager/Google Analytics).",
+        "alwaysOn": false
+      },
+      {
+        "key": "youtubeVideos",
+        "title": "Externe Medien (YouTube)",
+        "description": "Lädt eingebettete YouTube-Videos. Dabei kann deine IP-Adresse an YouTube/Google übertragen werden und es können Cookies gesetzt werden.",
+        "alwaysOn": false
+      }
+    ],
+    "servicesTitle": "Dienste im Detail",
+    "services": [
+      {
+        "name": "Eigenes Consent-Management",
+        "category": "Notwendig",
+        "provider": "Sauber & Mehr",
+        "purpose": "Speicherung und Nachweis deiner Cookie-Auswahl.",
+        "data": "Einwilligungsstatus, Zeitstempel, technische Session-Informationen",
+        "legal": "Art. 6 Abs. 1 lit. f DSGVO, § 25 Abs. 2 TDDDG"
+      },
+      {
+        "name": "Cloudinary",
+        "category": "Notwendig",
+        "provider": "Cloudinary",
+        "purpose": "Schnelle und optimierte Auslieferung von Bildern/Videos.",
+        "data": "IP-Adresse, technische Request-Daten, Geräte-/Browserinformationen",
+        "legal": "Art. 6 Abs. 1 lit. f DSGVO"
+      },
+      {
+        "name": "Microsoft Clarity",
+        "category": "Statistik / Analyse",
+        "provider": "Microsoft",
+        "purpose": "Nutzungsanalyse und UX-Optimierung (Heatmaps, Interaktionsauswertung).",
+        "data": "Interaktionsdaten, Geräte-/Browserdaten, technische Metadaten",
+        "legal": "Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG"
+      },
+      {
+        "name": "Google Tag Manager / Google Analytics",
+        "category": "Statistik / Analyse",
+        "provider": "Google",
+        "purpose": "Ausspielung und Steuerung von Analyse-Tags sowie Messung von Nutzungsdaten zur Optimierung der Website.",
+        "data": "Cookie-IDs, Nutzungsdaten, technische Browser-/Gerätedaten, gekürzte IP-Adresse",
+        "legal": "Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG"
+      },
+      {
+        "name": "Google Search Console",
+        "category": "Notwendig / SEO",
+        "provider": "Google",
+        "purpose": "Technische Überwachung und Optimierung der Auffindbarkeit in Suchmaschinen.",
+        "data": "Aggregierte Leistungsdaten und Suchanfragen in der Search-Console-Oberfläche",
+        "legal": "Art. 6 Abs. 1 lit. f DSGVO"
+      },
+      {
+        "name": "YouTube",
+        "category": "Externe Medien",
+        "provider": "Google",
+        "purpose": "Einbindung von Videoinhalten.",
+        "data": "IP-Adresse, Referrer, Browser-/Geräteinfos, ggf. Cookies/IDs",
+        "legal": "Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG"
+      }
+    ]
+  }
 }

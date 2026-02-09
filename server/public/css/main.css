@@ -352,13 +352,8 @@ input[type="reset"]:hover,
   position: relative;
 }
 
-.sauber-nav__dropdown > summary {
-  list-style: none;
+.sauber-nav__dropdown-trigger {
   cursor: pointer;
-}
-
-.sauber-nav__dropdown > summary::-webkit-details-marker {
-  display: none;
 }
 
 .sauber-nav__chevron {
@@ -370,7 +365,7 @@ input[type="reset"]:hover,
   transition: transform 0.2s ease;
 }
 
-.sauber-nav__dropdown[open] .sauber-nav__chevron {
+.sauber-nav__dropdown.is-open .sauber-nav__chevron {
   transform: rotate(-135deg);
 }
 
@@ -388,6 +383,22 @@ input[type="reset"]:hover,
   border-radius: 16px;
   box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
   z-index: 5;
+  opacity: 0;
+  transform: translateY(-8px);
+  max-height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition:
+    max-height 0.35s ease,
+    opacity 0.3s ease,
+    transform 0.35s ease;
+}
+
+.sauber-nav__dropdown.is-open .sauber-nav__dropdown-menu {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 420px;
+  pointer-events: auto;
 }
 
 .sauber-nav__dropdown-link {
@@ -406,6 +417,9 @@ input[type="reset"]:hover,
 }
 
 .sauber-nav__hamburger {
+  appearance: none;
+  border: none;
+  background: transparent;
   width: 44px;
   height: 44px;
   border-radius: 999px;
@@ -417,10 +431,6 @@ input[type="reset"]:hover,
   padding: 0;
 }
 
-.sauber-nav__hamburger::-webkit-details-marker {
-  display: none;
-}
-
 .sauber-nav__hamburger span {
   width: 26px;
   height: 4px;
@@ -429,24 +439,24 @@ input[type="reset"]:hover,
   transition: transform 0.2s ease;
 }
 
-.sauber-nav__mobile[open] .sauber-nav__hamburger span:nth-child(1) {
+.sauber-nav__mobile.is-open .sauber-nav__hamburger span:nth-child(1) {
   transform: translateY(6px) rotate(45deg);
 }
 
-.sauber-nav__mobile[open] .sauber-nav__hamburger span:nth-child(2) {
+.sauber-nav__mobile.is-open .sauber-nav__hamburger span:nth-child(2) {
   transform: scaleX(0);
 }
 
-.sauber-nav__mobile[open] .sauber-nav__hamburger span:nth-child(3) {
+.sauber-nav__mobile.is-open .sauber-nav__hamburger span:nth-child(3) {
   transform: translateY(-6px) rotate(-45deg);
 }
 
 .sauber-nav__mobile-menu {
-  display: none;
+  display: flex;
   position: absolute;
   top: calc(100% + 12px);
-  left: 0;
-  right: 0;
+  left: 24px;
+  right: 24px;
   background: var(--sauber-white);
   border: 1px solid var(--sauber-border);
   border-radius: 16px;
@@ -454,10 +464,23 @@ input[type="reset"]:hover,
   box-shadow: 0 18px 30px rgba(15, 23, 42, 0.14);
   flex-direction: column;
   gap: 12px;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition:
+    max-height 0.4s ease,
+    opacity 0.3s ease,
+    transform 0.35s ease;
+  z-index: 20;
 }
 
-.sauber-nav__mobile[open] .sauber-nav__mobile-menu {
-  display: flex;
+.sauber-nav__mobile.is-open .sauber-nav__mobile-menu {
+  max-height: 80vh;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .sauber-nav__mobile-link {
@@ -474,7 +497,7 @@ input[type="reset"]:hover,
 .sauber-nav__mobile-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   padding: 12px 0;
   border-top: 1px solid
     color-mix(in srgb, var(--sauber-border) 70%, transparent);
@@ -482,11 +505,16 @@ input[type="reset"]:hover,
     color-mix(in srgb, var(--sauber-border) 70%, transparent);
 }
 
-.sauber-nav__mobile-title {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: color-mix(in srgb, var(--sauber-text) 70%, transparent);
+.sauber-nav__mobile-services-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+  padding-left: 12px;
+  border-left: 2px solid color-mix(in srgb, var(--sauber-border) 80%, transparent);
+}
+
+.sauber-nav__mobile-services-root {
   font-weight: 700;
 }
 
@@ -592,11 +620,12 @@ input[type="reset"]:hover,
   display: grid;
   place-items: center;
   background: #eaf9fc;
-  color: #3ca0c5;
 }
-.site-footer__logo svg {
-  width: 40px;
-  height: 40px;
+
+.site-footer__logo img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
 }
 .site-footer__brand-text {
   display: flex;

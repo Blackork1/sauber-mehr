@@ -2,7 +2,18 @@
   const sessionData = typeof session !== 'undefined' ? session : {};
   const isLoggedIn = Boolean(sessionData?.user);
   const localeKey = String(meta?.locale || '').toLowerCase();
-  const homeHref = localeKey.startsWith('en') ? '/en' : '/';%>
+  const homeHref = localeKey.startsWith('en') ? '/en' : '/';
+  const navItems = Array.isArray(navPages) ? navPages : [];
+  const leistungenRootPath = typeof navLeistungenRootPath === 'string' ? navLeistungenRootPath : '/leistungen';
+  const leistungenItem = navItems.find((page) => page?.canonical_path === leistungenRootPath);
+  const leistungenLabel = leistungenItem?.label || 'Leistungen';
+  const navTopLevelItems = navItems.filter((page) => {
+    const path = String(page?.canonical_path || '');
+    if (!path || path.startsWith(`${leistungenRootPath}/`)) return false;
+    return true;
+  });
+  const leistungenSubpages = Array.isArray(navLeistungenSubpages) ? navLeistungenSubpages : [];
+%>
 
 <header class="sauber-nav">
   <div class="sauber-nav__inner">
@@ -11,41 +22,58 @@
     </a>
 
     <nav class="sauber-nav__links" aria-label="Hauptnavigation">
-      <a class="sauber-nav__link" href="/kontakt">Kontakt</a>
-      <details class="sauber-nav__dropdown">
-        <summary class="sauber-nav__link" aria-haspopup="true">
-          Leistungen <span class="sauber-nav__chevron" aria-hidden="true"></span>
-        </summary>
-        <div class="sauber-nav__dropdown-menu" role="menu">
-          <a class="sauber-nav__dropdown-link" href="/leistungen/haushalt" role="menuitem">Haushaltsreinigung</a>
-          <a class="sauber-nav__dropdown-link" href="/leistungen/buero" role="menuitem">Büroreinigung</a>
-          <a class="sauber-nav__dropdown-link" href="/leistungen/treppenhaus" role="menuitem">Treppenhausreinigung</a>
-          <a class="sauber-nav__dropdown-link" href="/leistungen/fenster" role="menuitem">Fensterreinigung</a>
+      <% navTopLevelItems.forEach((item) => { %>
+      <% if (item.canonical_path === leistungenRootPath && (leistungenItem || leistungenSubpages.length)) { %>
+      <div class="sauber-nav__dropdown" data-nav-dropdown>
+        <a
+          class="sauber-nav__link sauber-nav__dropdown-trigger"
+          href="<%= leistungenRootPath %>"
+          data-nav-dropdown-trigger
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="sauber-nav-services-menu"
+        >
+          <%= leistungenLabel %> <span class="sauber-nav__chevron" aria-hidden="true"></span>
+        </a>
+        <div class="sauber-nav__dropdown-menu" id="sauber-nav-services-menu" role="menu" data-nav-dropdown-menu>
+          <% leistungenSubpages.forEach((page) => { %>
+          <a class="sauber-nav__dropdown-link" href="<%= page.canonical_path %>" role="menuitem"><%= page.label %></a>
+          <% }) %>
         </div>
-      </details>
-      <a class="sauber-nav__link" href="/about">Über</a>
+      </div>
+      <% } else { %>
+      <a class="sauber-nav__link" href="<%= item.canonical_path %>"><%= item.label %></a>
+      <% } %>
+      <% }) %>
     </nav>
 
     <div class="sauber-nav__actions">
       <a class="sauber-nav__cta" href="tel:+491795163864">Jetzt anrufen</a>
-      <details class="sauber-nav__mobile" role="navigation">
-        <summary class="sauber-nav__hamburger" aria-label="Menü öffnen">
+
+      <div class="sauber-nav__mobile" role="navigation" aria-label="Mobile Navigation">
+        <button class="sauber-nav__hamburger" type="button" aria-label="Menü öffnen" aria-expanded="false" data-mobile-toggle>
           <span></span>
           <span></span>
           <span></span>
-        </summary>
-        <div class="sauber-nav__mobile-menu">
-          <a class="sauber-nav__mobile-link" href="/kontakt">Kontakt</a>
-          <div class="sauber-nav__mobile-group">
-            <span class="sauber-nav__mobile-title">Leistungen</span>
-            <a class="sauber-nav__mobile-link" href="/leistungen/haushalt">Haushaltsreinigung</a>
-            <a class="sauber-nav__mobile-link" href="/leistungen/buero">Büroreinigung</a>
-            <a class="sauber-nav__mobile-link" href="/leistungen/treppenhaus">Treppenhausreinigung</a>
-            <a class="sauber-nav__mobile-link" href="/leistungen/fenster">Fensterreinigung</a>
+        </button>
+
+        <div class="sauber-nav__mobile-menu" data-mobile-menu>
+          <% navTopLevelItems.forEach((item) => { %>
+          <% if (item.canonical_path === leistungenRootPath && (leistungenItem || leistungenSubpages.length)) { %>
+          <div class="sauber-nav__mobile-group" data-mobile-services>
+            <a class="sauber-nav__mobile-link sauber-nav__mobile-services-root" href="<%= leistungenRootPath %>"><%= leistungenLabel %></a>
+            <div class="sauber-nav__mobile-services-menu" id="sauber-nav-mobile-services-menu" data-mobile-services-menu>
+              <% leistungenSubpages.forEach((page) => { %>
+              <a class="sauber-nav__mobile-link" href="<%= page.canonical_path %>"><%= page.label %></a>
+              <% }) %>
+            </div>
           </div>
-          <a class="sauber-nav__mobile-link" href="/about">Über</a>
+          <% } else { %>
+          <a class="sauber-nav__mobile-link" href="<%= item.canonical_path %>"><%= item.label %></a>
+          <% } %>
+          <% }) %>
         </div>
-      </details>
+      </div>
     </div>
   </div>
 </header>

@@ -1,12 +1,20 @@
+<%
+  const navItems = Array.isArray(navPages) ? navPages : [];
+  const leistungenRootPath = typeof navLeistungenRootPath === 'string' ? navLeistungenRootPath : '/leistungen';
+  const leistungenSubpages = Array.isArray(navLeistungenSubpages) ? navLeistungenSubpages : [];
+  const footerMainItems = navItems.filter((page) => {
+    const path = String(page?.canonical_path || '');
+    if (!path || path.startsWith(`${leistungenRootPath}/`)) return false;
+    return true;
+  });
+%>
+
 <footer class="site-footer">
   <div class="site-footer__container">
     <div class="site-footer__top">
       <div class="site-footer__brand">
         <div class="site-footer__logo" aria-label="Sauber Mehr">
-          <svg viewBox="0 0 64 64" role="img" aria-hidden="true">
-            <path d="M32 6c-7.2 6.9-11 15-11 23.3 0 7 3 13.3 8.4 18.6l2.6 2.6 2.6-2.6C40 42.6 43 36.3 43 29.3 43 21 39.2 12.9 32 6z" fill="currentColor" opacity="0.9" />
-            <path d="M16 52c7.6-3.5 15-5.2 22.1-5.2 7.4 0 14.8 1.9 22.3 5.6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-          </svg>
+          <img src="/icons/iconLarge.png" alt="Sauber Mehr Logo">
         </div>
         <div class="site-footer__brand-text">
           <span class="site-footer__brand-name">Sauber Mehr</span>
@@ -18,18 +26,17 @@
         <div class="site-footer__column">
           <h3>Unternehmen</h3>
           <ul>
-            <li><a href="/leistungen">Leistungen</a></li>
-            <li><a href="#ueber">Über uns</a></li>
-            <li><a href="/kontakt">Kontakt</a></li>
+            <% footerMainItems.forEach((item) => { %>
+            <li><a href="<%= item.canonical_path %>"><%= item.label || item.title %></a></li>
+            <% }) %>
           </ul>
         </div>
         <div class="site-footer__column">
           <h3>Leistungen</h3>
           <ul>
-            <li><a href="/leistungen/haushalt">Haushaltsreinigung</a></li>
-            <li><a href="/leistungen/buero">Büroreinigung</a></li>
-            <li><a href="/leistungen/treppenhaus">Treppenhausreinigung</a></li>
-            <li><a href="/leistungen/fenster">Fensterreinigung</a></li>
+            <% leistungenSubpages.forEach((item) => { %>
+            <li><a href="<%= item.canonical_path %>"><%= item.label || item.title %></a></li>
+            <% }) %>
           </ul>
         </div>
         <div class="site-footer__column">

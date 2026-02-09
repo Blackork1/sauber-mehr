@@ -1,6 +1,6 @@
 // helpers/navHelper.js
 /**
- * Loads pages + industries from DB and exposes them as res.locals.* for EJS.
+ * Loads navigation + service subpages from DB and exposes them as res.locals.* for EJS.
  */
 export function navbarMiddleware(pool) {
   return async (req, res, next) => {
@@ -8,29 +8,53 @@ export function navbarMiddleware(pool) {
       const path = req.path || '';
       const isEnglish = path.startsWith('/en') || path.endsWith('-en');
       const locale = isEnglish ? 'en-US' : 'de-DE';
-      const [{ rows: pages }, { rows: industries }] = await Promise.all([
-        pool.query(`
-          SELECT title, slug, canonical_path, locale, show_in_nav, nav_order
-          FROM pages
-          WHERE display = true
-          AND show_in_nav = true
-          AND locale = $1
-          ORDER BY nav_order, title
-          `, [locale]),
-        pool.query(`
-          SELECT slug, name
-          FROM industries
-          ORDER BY name
-          `)
-      ]);
 
-      res.locals.navPages = pages;
-      res.locals.navIndustries = industries.map((i) => ({ name: i.name, slug: i.slug }));
+      const { rows: navPagesRaw } = await pool.query(
+        `SELECT title, nav_label, canonical_path, locale, show_in_nav, nav_order
+         FROM pages
+         WHERE display = true
+           AND show_in_nav = true
+           AND locale = $1
+         ORDER BY nav_order NULLS LAST, title`,
+        [locale]
+      );
+
+      const navPages = navPagesRaw.map((page) => ({
+        ...page,
+        label: page.nav_label || page.title
+      }));
+
+      const leistungenRoot = navPages.find((page) => (
+        page.canonical_path === '/leistungen'
+        || /^\/leistungen(?:-[a-z]{2})?$/.test(page.canonical_path || '')
+      ));
+
+      const leistungenRootPath = leistungenRoot?.canonical_path || '/leistungen';
+      const { rows: navLeistungenRaw } = await pool.query(
+        `SELECT title, nav_label, canonical_path, nav_order
+         FROM pages
+         WHERE display = true
+           AND show_in_nav = true
+           AND locale = $1
+           AND canonical_path LIKE $2
+           AND canonical_path <> $3
+         ORDER BY nav_order NULLS LAST, title`,
+        [locale, `${leistungenRootPath}/%`, leistungenRootPath]
+      );
+
+      res.locals.navPages = navPages;
+      res.locals.navLeistungenSubpages = navLeistungenRaw.map((page) => ({
+        ...page,
+        label: page.nav_label || page.title
+      }));
+      res.locals.navLeistungenRootPath = leistungenRootPath;
     } catch (err) {
-      console.error('⚠️ Fehler beim Laden der Navbar-Seiten:', err);
+      console.error('⚠️ Fehler beim Laden der Navigation:', err);
       res.locals.navPages = [];
-      res.locals.navIndustries = [];
+      res.locals.navLeistungenSubpages = [];
+      res.locals.navLeistungenRootPath = '/leistungen';
     }
+
     next();
   };
 }

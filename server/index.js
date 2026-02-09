@@ -20,6 +20,7 @@ import consentRoutes from './routes/consent.js';
 import * as errorController from './controllers/errorController.js';
 import { renderTextWithLinks } from './helpers/textRenderer.js';
 import { loadCookieBannerCopy } from './helpers/cookieBannerData.js';
+import { navbarMiddleware } from './helpers/navHelper.js';
 
 dotenv.config();
 
@@ -72,6 +73,8 @@ app.use(session({
 app.set('db', pool);
 app.locals.renderTextWithLinks = renderTextWithLinks;
 const bannerCopy = loadCookieBannerCopy();
+
+app.use(navbarMiddleware(pool));
 
 app.use((req, res, next) => {
   if (typeof res.locals.meta === 'undefined') res.locals.meta = {};

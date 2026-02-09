@@ -1,13 +1,74 @@
-<link rel="stylesheet" href="/cookie_banner/css/cookie-banner.css<%= assetSuffix || '' %>">
-
 <div id="cookie-banner" class="hidden" aria-live="polite" aria-label="Cookie Banner">
-  <p><%= bannerCopy.text %> <a href="<%= bannerCopy.privacyLink %>"><%= bannerCopy.privacyLabel %></a></p>
-  <button id="accept-all" class="cookie-banner__button cookie-banner__button--accept">
-    <%= bannerCopy.acceptAllLabel %>
-  </button>
-  <button id="accept-necessary" class="cookie-banner__button cookie-banner__button--necessary">
-    <%= bannerCopy.acceptNecessaryLabel %>
-  </button>
+  <div class="cookie-banner__inner">
+    <button id="cookie-banner-close" class="cookie-banner__close" type="button" aria-label="Schließen">×</button>
+    <h2 class="cookie-banner__title"><%= bannerCopy?.banner?.title || 'Cookie-Einstellungen' %></h2>
+    <p class="cookie-banner__text"><%= bannerCopy?.banner?.text || '' %></p>
+    <div class="cookie-banner__actions">
+      <button id="accept-all" class="cookie-banner__button cookie-banner__button--accept" type="button">
+        <%= bannerCopy?.banner?.acceptAllLabel || 'Alle akzeptieren' %>
+      </button>
+      <button id="accept-necessary" class="cookie-banner__button cookie-banner__button--necessary" type="button">
+        <%= bannerCopy?.banner?.acceptNecessaryLabel || 'Nur notwendige' %>
+      </button>
+      <button id="open-cookie-settings" class="cookie-banner__button cookie-banner__button--settings" type="button">
+        <%= bannerCopy?.banner?.openSettingsLabel || 'Einstellungen' %>
+      </button>
+    </div>
+    <p class="cookie-banner__legal-links">
+      <a href="<%= bannerCopy?.banner?.privacyLink || '/datenschutz' %>"><%= bannerCopy?.banner?.privacyLabel || 'Datenschutzerklärung' %></a>
+      <span aria-hidden="true">·</span>
+      <a href="<%= bannerCopy?.banner?.imprintLink || '/impressum' %>"><%= bannerCopy?.banner?.imprintLabel || 'Impressum' %></a>
+      <span aria-hidden="true">·</span>
+      <a href="#" class="js-cookie-settings">Cookie-Einstellungen</a>
+    </p>
+  </div>
+</div>
+
+<div id="cookie-settings-modal" class="cookie-modal hidden" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cookie-settings-title">
+  <div class="cookie-modal__panel" role="document">
+    <button id="cookie-settings-close" class="cookie-modal__close" type="button" aria-label="<%= bannerCopy?.settings?.closeLabel || 'Schließen' %>">×</button>
+    <h2 id="cookie-settings-title"><%= bannerCopy?.settings?.title || 'Cookie-Einstellungen' %></h2>
+    <p class="cookie-modal__description"><%= bannerCopy?.settings?.description || '' %></p>
+
+    <div class="cookie-modal__categories">
+      <% (bannerCopy?.settings?.categories || []).forEach((category) => { %>
+        <div class="cookie-category">
+          <div class="cookie-category__head">
+            <h3><%= category.title %></h3>
+            <% if (category.alwaysOn) { %>
+              <span class="cookie-category__badge">Immer aktiv</span>
+            <% } else { %>
+              <label class="cookie-switch">
+                <input type="checkbox" id="consent-<%= category.key %>">
+                <span>Aktivieren</span>
+              </label>
+            <% } %>
+          </div>
+          <p><%= category.description %></p>
+        </div>
+      <% }) %>
+    </div>
+
+    <h3 class="cookie-modal__services-title"><%= bannerCopy?.settings?.servicesTitle || 'Dienste im Detail' %></h3>
+    <div class="cookie-modal__services">
+      <% (bannerCopy?.settings?.services || []).forEach((service) => { %>
+        <details>
+          <summary><%= service.name %> (<%= service.category %>)</summary>
+          <p><strong>Anbieter:</strong> <%= service.provider %></p>
+          <p><strong>Zweck:</strong> <%= service.purpose %></p>
+          <p><strong>Daten:</strong> <%= service.data %></p>
+          <p><strong>Rechtsgrundlage:</strong> <%= service.legal %></p>
+        </details>
+      <% }) %>
+    </div>
+
+    <div class="cookie-modal__actions">
+      <button id="cookie-reject-all" class="cookie-banner__button cookie-banner__button--necessary" type="button"><%= bannerCopy?.settings?.rejectAllLabel || 'Alle ablehnen' %></button>
+      <button id="cookie-save-selection" class="cookie-banner__button cookie-banner__button--settings" type="button"><%= bannerCopy?.settings?.saveLabel || 'Auswahl speichern' %></button>
+      <button id="cookie-accept-all" class="cookie-banner__button cookie-banner__button--accept" type="button"><%= bannerCopy?.settings?.acceptAllLabel || 'Alle akzeptieren' %></button>
+    </div>
+    <p id="cookie-settings-feedback" class="cookie-modal__feedback" data-saved-message="<%= bannerCopy?.settings?.savedMessage || 'Deine Auswahl wurde gespeichert.' %>" aria-live="polite"></p>
+  </div>
 </div>
 
 <script src="/cookie_banner/js/cookie-consent.js<%= assetSuffix || '' %>" defer></script>

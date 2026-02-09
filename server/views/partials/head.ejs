@@ -71,12 +71,18 @@
 <% } %>
 
 <!-- Performance hints (nur wenn du es wirklich nutzt) -->
-<link rel="dns-prefetch" href="//www.googletagmanager.com">
-<link rel="dns-prefetch" href="//www.clarity.ms">
+<% if (typeof stripeEnabled !== 'undefined' ? stripeEnabled : false) { %>
 <link rel="dns-prefetch" href="//js.stripe.com">
-<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-<link rel="preconnect" href="https://www.clarity.ms" crossorigin>
 <link rel="preconnect" href="https://js.stripe.com" crossorigin>
+<% } %>
+<% if (gaEnabled) { %>
+<link rel="dns-prefetch" href="//www.googletagmanager.com">
+<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+<% } %>
+<% if (clarityEnabled) { %>
+<link rel="dns-prefetch" href="//www.clarity.ms">
+<link rel="preconnect" href="https://www.clarity.ms" crossorigin>
+<% } %>
 <!-- Theme bootstrap: so früh wie möglich, vor CSS, verhindert Flash -->
 <script>
   (function() {

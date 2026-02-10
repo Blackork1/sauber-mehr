@@ -287,17 +287,80 @@ a {
   outline-offset: 2px;
 }
 
-/* a:hover,
-button:hover,
-input[type="button"]:hover,
-input[type="submit"]:hover,
-input[type="reset"]:hover,
-[role="button"]:hover,
-[role="link"]:hover,
-[data-link]:hover,
-[data-clickable]:hover {
-  cursor: var(--cursor-interactive);
-} */
+:where(
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  a[class*="button"],
+  .btn-primary,
+  .admin-button
+) {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+:where(
+  [data-clickable],
+  .news-card[data-link],
+  .media-showcase__card,
+  .ticket-card,
+  .video-card,
+  [data-video-card],
+  .cookie-modal__services details,
+  .team-card,
+  .leistungen-card
+) {
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(
+    button,
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"],
+    a[class*="button"],
+    .btn-primary,
+    .admin-button
+  ):not(:disabled):hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03);
+  }
+
+  :where(
+    [data-clickable],
+    .news-card[data-link],
+    .media-showcase__card,
+    .ticket-card,
+    .video-card,
+    [data-video-card],
+    .cookie-modal__services details,
+    .team-card,
+    .leistungen-card
+  ):hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.14);
+  }
+
+  /* Keep hover lift for anchor-buttons that also use scroll animation classes. */
+  a[class*="button"].animate-on-scroll.visible:hover {
+    transform: translateY(-1px);
+  }
+
+  a[class*="button"].animate-on-scroll-right.visible:hover {
+    transform: translateX(0) translateY(-1px);
+  }
+
+  a[class*="button"].animate-on-scroll-left.visible:hover {
+    transform: translateX(0) translateY(-1px);
+  }
+}
 
 .page {
   overflow-x: hidden;

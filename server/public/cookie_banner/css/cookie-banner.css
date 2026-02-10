@@ -54,6 +54,10 @@
   padding: 0.55rem 1rem;
   font-weight: 600;
   cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
 }
 
 .cookie-banner__button--accept {
@@ -116,6 +120,9 @@
   font-size: 1.8rem;
   line-height: 1;
   cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
 }
 
 .cookie-modal__description {
@@ -167,6 +174,9 @@
   border-radius: 12px;
   padding: 0.65rem 0.75rem;
   margin-bottom: 0.5rem;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .cookie-modal__services summary {
@@ -190,6 +200,20 @@
   margin: 0.75rem 0 0;
   color: #0d7e46;
   font-size: 0.9rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cookie-banner__button:not(:disabled):hover,
+  .cookie-banner__close:hover,
+  .cookie-modal__close:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03);
+  }
+
+  .cookie-modal__services details:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.1);
+  }
 }
 
 @media (max-width: 700px) {

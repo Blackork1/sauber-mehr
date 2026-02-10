@@ -1,104 +1,108 @@
-# Cookie Banner (Drag & Drop)
+# cokkie_banner (portable)
 
-Dieser Ordner enthält ein sofort einsetzbares Cookie-Banner (EJS + CSS + JS + Controller), das sich leicht in andere Projekte kopieren lässt.
+Wiederverwendbares Cookie-Banner-Setup (Express + EJS) mit:
+- Consent-Banner + Einstellungs-Modal
+- Consent API (`GET/POST/DELETE /api/consent`)
+- GTM/GA + Clarity Consent-Handling
+- lokaler Fallback im Browser, falls API kurz ausfällt
 
-## Inhalt
+## Struktur
 
-```
-cookie_banner/
-├─ css/
-│  ├─ cookie-banner.css
-│  └─ hero.css
-├─ js/
-│  └─ cookie-consent.js
-├─ ejs/
-│  ├─ cookie-banner.ejs
-│  ├─ head-consent.ejs
-│  └─ hero.ejs
-├─ controller/
-│  └─ consentController.js
-├─ helper/
-│  └─ cookieBannerData.js
-├─ routes/
-│  └─ consentRoutes.js
-├─ content/
-│  ├─ banner-copy.json
-│  └─ hero-copy.json
-└─ docs/
-   └─ session-store.sql
+```txt
+cokkie_banner/
+  content/banner-copy.json
+  css/cookie-banner.css
+  js/cookie-consent.js
+  ejs/cookie-banner.ejs
+  ejs/head-consent.ejs
+  helper/cookieBannerData.js
+  controller/consentController.js
+  routes/consentRoutes.js
+  docs/session.store.sql
 ```
 
-## Drag & Drop Integration (Express + EJS)
+## Schnellstart (Express + EJS)
 
-### 1) Assets verfügbar machen
-
-Option A (empfohlen): Ordner `cookie_banner` als statische Assets bereitstellen.
+1. Statische Auslieferung einbinden
 
 ```js
-app.use('/cookie_banner', express.static(path.join(process.cwd(), 'cookie_banner')));
+import path from 'path';
+app.use('/cookie_banner', express.static(path.join(process.cwd(), 'cokkie_banner')));
 ```
 
-Option B: CSS/JS manuell in deinen `public/`-Ordner kopieren.
-
-### 2) Header anpassen (Consent Mode + Loader)
-
-Füge in den `<head>` deiner EJS-Templates das Snippet aus `ejs/head-consent.ejs` ein, **bevor** Google/Clarity geladen wird.
-
-```ejs
-<%- include('path/to/cookie_banner/ejs/head-consent') %>
-```
-
-Benötigte ENV-Variablen (optional):
-
-- `GA_MEASUREMENT_ID`
-- `CLARITY_ID`
-
-Wenn du GA/Clarity nicht nutzt, kannst du die ENV-Variablen leer lassen oder das Snippet anpassen.
-
-### 3) Banner im Body einfügen
-
-```ejs
-<%- include('path/to/cookie_banner/ejs/cookie-banner', { bannerCopy }) %>
-```
-
-### 4) Daten/Copy laden (Helper)
+2. Banner-Copy laden
 
 ```js
-import { loadCookieBannerCopy, loadCookieBannerHeroCopy } from './cookie_banner/helper/cookieBannerData.js';
+import { loadCookieBannerCopy } from './cokkie_banner/helper/cookieBannerData.js';
 
-app.get('/', (req, res) => {
-  res.render('index', {
-    bannerCopy: loadCookieBannerCopy(),
-    heroCopy: loadCookieBannerHeroCopy()
-  });
+const bannerCopy = loadCookieBannerCopy();
+app.use((req, res, next) => {
+  if (typeof res.locals.bannerCopy === 'undefined') res.locals.bannerCopy = bannerCopy;
+  if (typeof res.locals.assetSuffix === 'undefined') res.locals.assetSuffix = '';
+  next();
 });
 ```
 
-### 5) API-Routen für Consent
+3. Consent-Routen registrieren
 
 ```js
-import consentRoutes from './cookie_banner/routes/consentRoutes.js';
-
+import consentRoutes from './cokkie_banner/routes/consentRoutes.js';
 app.use('/api', consentRoutes);
 ```
 
-### 6) Sessions (Datenbank)
+4. Session-Store aktivieren (Pflicht)
 
-Das Banner speichert die Consent-Entscheidung in der Session (`req.session.cookieConsent`).
+Das Banner speichert Consent in `req.session.cookieConsent`.
 
-- **Ohne DB**: Session-Memory-Store (nur für lokale Tests).
-- **Mit DB (empfohlen)**: z. B. Postgres + `connect-pg-simple`. Das Schema findest du in `docs/session-store.sql`.
+Beispiel mit Postgres:
 
-## Anpassungen für andere Projekte
+```js
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
+import pool from './util/db.js';
 
-- **Texte/Labels**: `content/banner-copy.json`
-- **Datenschutz-Link**: `content/banner-copy.json`
-- **Hero-Block (optional)**: `content/hero-copy.json` + `ejs/hero.ejs` + `css/hero.css`
+const PgSession = connectPgSimple(session);
+app.use(session({
+  store: new PgSession({
+    pool,
+    createTableIfMissing: true
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production' }
+}));
+```
 
-## Welche weiteren JS/Helper werden benötigt?
+Alternative SQL für Session-Tabelle liegt in `docs/session.store.sql`.
 
-- `js/cookie-consent.js` (Frontend-Logik)
-- `controller/consentController.js` + `routes/consentRoutes.js` (Backend-API)
-- `helper/cookieBannerData.js` (Copy-Loader für EJS)
+5. Head-Snippet einbinden
 
-Damit ist der Cookie Banner komplett in sich geschlossen und per Drag & Drop in andere Projekte integrierbar.
+In `<head>`:
+
+```ejs
+<%- include('../../cokkie_banner/ejs/head-consent') %>
+```
+
+Umgebungsvariablen:
+- `GA_MEASUREMENT_ID` (optional)
+- `CLARITY_ID` (optional)
+
+6. Banner im Layout einbinden
+
+Vor `</body>`:
+
+```ejs
+<%- include('../../cokkie_banner/ejs/cookie-banner', { bannerCopy, assetSuffix }) %>
+```
+
+## Anpassung
+
+- Texte/Kategorien/Anbieter: `content/banner-copy.json`
+- Styling: `css/cookie-banner.css`
+- Logik: `js/cookie-consent.js`
+
+## Wichtig
+
+- Für rechtssicheren Betrieb müssen Banner-Inhalt, eingesetzte Dienste und Datenschutzerklärung immer konsistent sein.
+- Falls du Dienste änderst (z. B. neue Tracking-Tools), aktualisiere `banner-copy.json` und die Datenschutzerklärung gemeinsam.

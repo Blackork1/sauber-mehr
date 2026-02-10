@@ -1,8 +1,11 @@
+<link rel="stylesheet" href="/cookie_banner/css/cookie-banner.css<%= assetSuffix || '' %>">
+
 <div id="cookie-banner" class="hidden" aria-live="polite" aria-label="Cookie Banner">
   <div class="cookie-banner__inner">
     <button id="cookie-banner-close" class="cookie-banner__close" type="button" aria-label="Schließen">×</button>
     <h2 class="cookie-banner__title"><%= bannerCopy?.banner?.title || 'Cookie-Einstellungen' %></h2>
     <p class="cookie-banner__text"><%= bannerCopy?.banner?.text || '' %></p>
+
     <div class="cookie-banner__actions">
       <button id="accept-all" class="cookie-banner__button cookie-banner__button--accept" type="button">
         <%= bannerCopy?.banner?.acceptAllLabel || 'Alle akzeptieren' %>
@@ -14,6 +17,7 @@
         <%= bannerCopy?.banner?.openSettingsLabel || 'Einstellungen' %>
       </button>
     </div>
+
     <p class="cookie-banner__legal-links">
       <a href="<%= bannerCopy?.banner?.privacyLink || '/datenschutz' %>"><%= bannerCopy?.banner?.privacyLabel || 'Datenschutzerklärung' %></a>
       <span aria-hidden="true">·</span>
@@ -67,6 +71,7 @@
       <button id="cookie-save-selection" class="cookie-banner__button cookie-banner__button--settings" type="button"><%= bannerCopy?.settings?.saveLabel || 'Auswahl speichern' %></button>
       <button id="cookie-accept-all" class="cookie-banner__button cookie-banner__button--accept" type="button"><%= bannerCopy?.settings?.acceptAllLabel || 'Alle akzeptieren' %></button>
     </div>
+
     <p id="cookie-settings-feedback" class="cookie-modal__feedback" data-saved-message="<%= bannerCopy?.settings?.savedMessage || 'Deine Auswahl wurde gespeichert.' %>" aria-live="polite"></p>
   </div>
 </div>

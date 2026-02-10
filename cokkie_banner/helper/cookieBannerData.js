@@ -14,7 +14,3 @@ function readJson(relativePath) {
 export function loadCookieBannerCopy() {
   return readJson('content/banner-copy.json');
 }
-
-export function loadCookieBannerHeroCopy() {
-  return readJson('content/hero-copy.json');
-}

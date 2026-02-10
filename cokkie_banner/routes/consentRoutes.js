@@ -1,7 +1,7 @@
-import express from 'express';
+import { Router } from 'express';
 import { getConsent, postConsent, withdrawConsent } from '../controller/consentController.js';
 
-const router = express.Router();
+const router = Router();
 
 router.get('/consent', getConsent);
 router.post('/consent', postConsent);

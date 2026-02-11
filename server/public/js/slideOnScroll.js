@@ -44,6 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 5) Jedes Ziel-Element initialisieren und beobachten
   els.forEach(el => {
+    // Bereiche-Slider-Thumbnails liegen absichtlich teilweise ausserhalb des Viewports.
+    // Ohne Sonderfall erreicht der Observer oft nicht den Show-Threshold.
+    if (el.matches('.image-slider--bereiche [data-image-thumbnails]')) {
+      el.classList.add('visible');
+      el.classList.remove('out');
+      isVisibleMap.set(el, true);
+      return;
+    }
+
     isVisibleMap.set(el, false);
     observer.observe(el);
   });

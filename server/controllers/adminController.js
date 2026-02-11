@@ -54,6 +54,11 @@ const normalizeAltValue = (value) => {
   return trimmed;
 };
 
+const isLeistungenSubpagePath = (value) => {
+  const pathValue = normalizeString(value);
+  return pathValue.startsWith('/leistungen/') && pathValue !== '/leistungen';
+};
+
 const stripFileExtension = (value) => {
   if (!value) return '';
   return String(value).replace(/\.[^/.]+$/, '');
@@ -794,7 +799,31 @@ export async function updatePage(req, res, next) {
       ]
     );
 
-    return res.redirect(`/adminbackend?nav=pages&tab=page-${pageId}&saved=1`);
+    const returnNav = normalizeString(req.body.return_nav) || 'pages';
+    const returnTab = normalizeString(req.body.return_tab);
+    const returnSubpageId = Number(req.body.return_subpage_id);
+    const shouldUseLeistungenSubpagesTab =
+      returnTab === 'leistungen-subpages'
+      || isLeistungenSubpagePath(canonicalPath)
+      || isLeistungenSubpagePath(page?.canonical_path);
+
+    const params = new URLSearchParams();
+    params.set('nav', returnNav);
+    params.set('saved', '1');
+
+    if (shouldUseLeistungenSubpagesTab) {
+      params.set('tab', 'leistungen-subpages');
+      params.set(
+        'subpageId',
+        String(Number.isFinite(returnSubpageId) && returnSubpageId > 0 ? returnSubpageId : pageId)
+      );
+    } else if (/^page-\d+$/.test(returnTab)) {
+      params.set('tab', returnTab);
+    } else {
+      params.set('tab', `page-${pageId}`);
+    }
+
+    return res.redirect(`/adminbackend?${params.toString()}`);
   } catch (err) {
     return next(err);
   }

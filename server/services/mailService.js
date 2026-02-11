@@ -87,7 +87,7 @@ export async function sendContactConfirmationMail({ to, name, service }) {
     <p><strong>Gewünschte Reinigungsleistung:</strong> ${escapeHtml(service)}</p>
   `;
   const mail = {
-    from: process.env.SMTP_FROM || '"Sauber Mehr" <info@sauber-mehr.de>',
+    from: process.env.SMTP_FROM || '"TM Sauber & Mehr" <info@sauber-mehr.de>',
     to,
     subject,
     html

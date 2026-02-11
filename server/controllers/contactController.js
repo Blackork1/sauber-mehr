@@ -16,11 +16,18 @@ export async function postContact(req, res, next) {
     const area = normalizeInput(req.body?.area);
     const industry = normalizeInput(req.body?.industry);
     const otherDetails = normalizeInput(req.body?.other_details);
-    const contactMethod = normalizeInput(req.body?.contact_method);
-    const contactValue = normalizeInput(req.body?.contact_value);
+    const directEmail = normalizeInput(req.body?.email).toLowerCase();
+    let contactMethod = normalizeInput(req.body?.contact_method);
+    let contactValue = normalizeInput(req.body?.contact_value);
+    if (!contactMethod && directEmail) {
+      contactMethod = 'E-Mail';
+    }
+    if (!contactValue && directEmail) {
+      contactValue = directEmail;
+    }
     const contactMethodLower = contactMethod.toLowerCase();
     const usesMail = contactMethodLower.includes('mail');
-    const email = usesMail ? contactValue.toLowerCase() : normalizeInput(req.body?.email).toLowerCase();
+    const email = usesMail ? contactValue.toLowerCase() : directEmail;
     const phone = usesMail ? '' : contactValue;
     const uploads = Array.isArray(req.files?.attachments)
       ? req.files.attachments

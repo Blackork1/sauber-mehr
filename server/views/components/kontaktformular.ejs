@@ -22,7 +22,49 @@
       };
     })
     .filter((service) => service?.label);
+  const isHomePage = page?.canonical_path === '/' || page?.slug === 'de' || page?.slug === 'home';
+  const isLeistungenOverviewPage =
+    page?.canonical_path === '/leistungen'
+    || page?.canonical_path === '/leistungen-de'
+    || page?.canonical_path === '/leistungen-en'
+    || ['leistungen', 'leistungen-de', 'leistungen-en'].includes(page?.slug);
+  const dynamicServices = (Array.isArray(servicePages) ? servicePages : [])
+    .map((servicePage) => {
+      const label = String(servicePage?.title || '').trim();
+      if (!label) return null;
+      return {
+        label,
+        href: servicePage?.canonical_path || ''
+      };
+    })
+    .filter((service) => service?.label);
+  const withOtherService = [...dynamicServices, { label: 'Sonstige Reinigung', href: '' }];
+  const dedupeServices = (items) => {
+    const seen = new Set();
+    return items.filter((item) => {
+      const key = String(item?.label || '').trim().toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  };
+  const startPageServices = dedupeServices(withOtherService);
+  const selectServices = (isHomePage || isLeistungenOverviewPage) ? startPageServices : normalizedServices;
   const contactItems = block?.contactItems || [];
+  const resolveContactHref = (item) => {
+    const explicitHref = String(item?.href || item?.link || '').trim();
+    if (explicitHref) return explicitHref;
+    const text = String(item?.text || '').trim();
+    if (!text) return '';
+    const emailMatch = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+    if (emailMatch) return `mailto:${emailMatch[0]}`;
+    const normalizedPhone = text.replace(/[^+\d]/g, '');
+    if (normalizedPhone.length >= 7) {
+      const telValue = normalizedPhone.startsWith('+') ? normalizedPhone : `+${normalizedPhone}`;
+      return `tel:${telValue}`;
+    }
+    return '';
+  };
     const isLeistungenSubpage =
       page?.canonical_path?.startsWith('/leistungen/')
     && page?.canonical_path !== '/leistungen';
@@ -56,7 +98,12 @@
           <span class="sauber-kontakt__item-icon" aria-hidden="true">
             <%- item.icon %>
           </span>
+          <% const contactHref = resolveContactHref(item); %>
+          <% if (contactHref) { %>
+          <a class="sauber-kontakt__item-text" href="<%= contactHref %>"><%= item.text %></a>
+          <% } else { %>
           <span class="sauber-kontakt__item-text"><%= item.text %></span>
+          <% } %>
         </div>
         <% }) %>
       </div>
@@ -84,7 +131,7 @@
           <span>Leistung auswählen</span>
           <select name="service" required>
             <option value="" disabled selected>Leistungen</option>
-            <% normalizedServices.forEach(service => { %>
+            <% selectServices.forEach(service => { %>
             <option value="<%= service.label %>"><%= service.label %></option>
             <% }) %>
           </select>

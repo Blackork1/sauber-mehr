@@ -13,11 +13,14 @@
 
 <form class="admin-panel <%= isActivePanel ? '' : 'is-hidden' %>" method="post" action="/adminbackend/pages/<%= page.id %>" enctype="multipart/form-data" data-panel="<%= panelId %>" data-panel-group="<%= panelGroup %>">
   <input type="hidden" name="page_mode" value="blocks">
+  <input type="hidden" name="return_nav" value="pages">
+  <input type="hidden" name="return_tab" value="<%= panelId %>">
   <% if (panelKindValue === 'leistungen-subpages') { %>
   <%
            const subpagesList = Array.isArray(leistungenSubpagesListValue) ? leistungenSubpagesListValue : [];
            const selectedSubpageId = selectedLeistungenSubpageValue?.id || page?.id;
          %>
+  <input type="hidden" name="return_subpage_id" value="<%= selectedSubpageId %>">
   <div class="admin-panel__section">
     <div class="admin-subpages__toolbar">
       <div class="admin-field">

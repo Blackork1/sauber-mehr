@@ -1952,7 +1952,7 @@ a {
   bottom: clamp(24px, 10vh, 100px);
   max-width: min(520px, 80%);
   padding: 20px 24px;
-  background: rgba(232, 243, 248, 0.5);
+  background: rgba(232, 243, 248, 0.8);
   border-radius: 12px;
   color: #0b1a21;
 }

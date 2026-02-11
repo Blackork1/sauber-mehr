@@ -2,6 +2,26 @@
   display: none;
 }
 
+#cookie-banner h1,
+#cookie-banner h2,
+#cookie-banner h3,
+#cookie-banner h4,
+#cookie-banner h5,
+#cookie-banner h6,
+.cookie-modal h1,
+.cookie-modal h2,
+.cookie-modal h3,
+.cookie-modal h4,
+.cookie-modal h5,
+.cookie-modal h6 {
+  font-family: "Poppins", "Inter", system-ui, sans-serif;
+}
+
+#cookie-banner p,
+.cookie-modal p {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
 #cookie-banner {
   position: fixed;
   inset: auto 0 0;

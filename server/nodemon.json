@@ -11,9 +11,19 @@
   ],
   "ext": "js,ejs,json,css",
   "ignore": [
+    "**/.DS_Store",
+    "**/._*",
+    "**/.fseventsd/**",
+    "**/.Spotlight-V100/**",
+    "**/.TemporaryItems/**",
+    "**/.Trashes/**",
+    "**/.DocumentRevisions-V100/**",
+    "**/*.icloud",
+    "**/*.tmp",
+    "**/~$*",
+    "node_modules/**",
     "public/uploads/*",
     "public/images/uploads/*",
     "public/video/uploads/*"
-  ],
-  "exec": "node index.js"
+  ]
 }

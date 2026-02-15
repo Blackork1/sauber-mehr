@@ -4,7 +4,17 @@
   const buttonLabel = block?.buttonLabel || 'Mehr Infos';
   const emptyText = block?.emptyText || 'Aktuell sind keine weiteren Leistungen vorhanden.';
   const servicePagesList = Array.isArray(servicePages) ? servicePages : [];
-  const cardItems = servicePagesList.map((servicePage) => {
+  const normalizePath = (value) => {
+    const pathValue = String(value || '').trim();
+    if (!pathValue) return '';
+    if (pathValue === '/') return '/';
+    return pathValue.replace(/\/+$/, '');
+  };
+  const currentPath = normalizePath(page?.canonical_path);
+  const filteredServicePages = servicePagesList.filter((servicePage) => (
+    normalizePath(servicePage?.canonical_path) !== currentPath
+  ));
+  const cardItems = filteredServicePages.map((servicePage) => {
     const blocks = Array.isArray(servicePage?.content) ? servicePage.content : [];
     const heroBlock = blocks.find((entry) => entry?.type === 'hero') || {};
     const heroGallery = Array.isArray(heroBlock.gallery) ? heroBlock.gallery : [];

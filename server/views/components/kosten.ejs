@@ -24,8 +24,7 @@
     || 'Ab 01.26 sind wir in der Unterhaltsreinigung bei 15 Euro Mindestlohn, dazu kommen Nacht-, Sonn- und Feiertagszuschläge. In der Glasreinigung liegen wir bei 18,40 Euro Mindestlohn.';
   const detailText = block?.detailText
     || 'Wir unterliegen dem allgemein gültigen Rahmentarifvertrag (RTV), Lohntarifvertrag (LTV) verpflichtend für alle, die Reinigungsdienstleistungen anbieten.';
-  const primaryButton = block?.primaryButton || { label: 'zum Buchungsformular', href: '#Kontakt' };
-  const secondaryButton = block?.secondaryButton || { label: 'Whats App', href: 'https://wa.me/491795163864' };
+  const primaryButtonHref = block?.primaryButton?.href || '#Kontakt';
   const descriptionParts = String(description || '')
     .split(/\r?\n+/)
     .map((paragraph) => paragraph.trim())
@@ -65,12 +64,12 @@
       <% }) %>
     </div>
 
-    <p class="sauber-kosten__lead animate-on-scroll"><%- renderTextWithLinks(leadText) %><%- renderTextWithLinks(detailText) %></p>
-    <p class="sauber-kosten__detail"></p>
+    <p class="sauber-kosten__lead animate-on-scroll">
+      <%- renderTextWithLinks(leadText) %><% if (leadText && detailText) { %><br><% } %><%- renderTextWithLinks(detailText) %>
+    </p>
 
     <div class="sauber-kosten__buttons">
-      <a class="sauber-kosten__button sauber-kosten__button--primary animate-on-scroll" href="<%= primaryButton.href %>"><%= primaryButton.label %></a>
-      <a class="sauber-kosten__button sauber-kosten__button--secondary animate-on-scroll" href="<%= secondaryButton.href %>" target="_blank" rel="noopener noreferrer"><%= secondaryButton.label %></a>
+      <a class="sauber-kosten__button sauber-kosten__button--primary animate-on-scroll" href="<%= primaryButtonHref %>">Zum Buchungsformular</a>
     </div>
 
   </div>

@@ -1,0 +1,47 @@
+<%
+  const headline = block?.headline || 'Fotoshooting Eventlocation vom 24.02.26';
+  const description = block?.description || '';
+  const images = Array.isArray(block?.images)
+    ? block.images.filter((item) => item?.src)
+    : [];
+%>
+
+<section class="shooting-gallery section" data-shooting-gallery>
+  <div class="section__inner">
+    <h1 class="shooting-gallery__title animate-on-scroll"><%- renderTextWithLinks(headline) %></h1>
+    <% if (description) { %>
+    <p class="shooting-gallery__description animate-on-scroll"><%- renderTextWithLinks(description) %></p>
+    <% } %>
+
+    <% if (images.length) { %>
+    <div class="shooting-gallery__grid">
+      <% images.forEach((image, index) => { %>
+      <figure
+        class="shooting-gallery__item animate-on-scroll"
+        data-shooting-item
+        data-image-src="<%= image.src %>"
+        data-image-alt="<%= image.alt || `Bild ${index + 1}` %>"
+      >
+        <button class="shooting-gallery__trigger" type="button" aria-label="Bild <%= index + 1 %> vergrößern">
+          <img src="<%= image.src %>" alt="<%= image.alt || `Bild ${index + 1}` %>" loading="lazy">
+        </button>
+        <figcaption class="shooting-gallery__caption">Bild <%= index + 1 %></figcaption>
+      </figure>
+      <% }) %>
+    </div>
+
+    <div class="shooting-gallery__lightbox" data-shooting-lightbox hidden>
+      <div class="shooting-gallery__overlay" data-shooting-overlay>
+        <div class="shooting-gallery__dialog" role="dialog" aria-modal="true" aria-label="Bildansicht">
+          <button class="shooting-gallery__close" type="button" data-shooting-close aria-label="Schließen">×</button>
+          <button class="shooting-gallery__arrow shooting-gallery__arrow--left" type="button" data-shooting-prev aria-label="Vorheriges Bild">‹</button>
+          <div class="shooting-gallery__media" data-shooting-media></div>
+          <button class="shooting-gallery__arrow shooting-gallery__arrow--right" type="button" data-shooting-next aria-label="Nächstes Bild">›</button>
+        </div>
+      </div>
+    </div>
+    <% } else { %>
+    <p class="shooting-gallery__empty animate-on-scroll">Noch keine Bilder vorhanden.</p>
+    <% } %>
+  </div>
+</section>

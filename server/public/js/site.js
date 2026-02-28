@@ -2147,6 +2147,151 @@ function initKontaktFlow() {
   showStep('start', { pushHistory: false });
 }
 
+function initShootingGalleries() {
+  const galleries = Array.from(document.querySelectorAll('[data-shooting-gallery]'));
+  if (!galleries.length) return;
+
+  galleries.forEach((gallery) => {
+    const items = Array.from(gallery.querySelectorAll('[data-shooting-item]'));
+    const grid = gallery.querySelector('.shooting-gallery__grid');
+    const lightbox = gallery.querySelector('[data-shooting-lightbox]');
+    const overlay = gallery.querySelector('[data-shooting-overlay]');
+    const media = gallery.querySelector('[data-shooting-media]');
+    const prevButton = gallery.querySelector('[data-shooting-prev]');
+    const nextButton = gallery.querySelector('[data-shooting-next]');
+    const closeButton = gallery.querySelector('[data-shooting-close]');
+
+    if (!items.length || !lightbox || !overlay || !media) return;
+
+    const images = items
+      .map((item) => ({
+        src: item.dataset.imageSrc || '',
+        alt: item.dataset.imageAlt || ''
+      }))
+      .filter((item) => item.src);
+
+    if (!images.length) return;
+
+    let activeIndex = 0;
+    let masonryRafId = null;
+
+    const applyMasonryLayout = () => {
+      if (!grid || !items.length) return;
+      const styles = window.getComputedStyle(grid);
+      const autoRows = Number.parseFloat(styles.getPropertyValue('grid-auto-rows')) || 0;
+      const rowGap = Number.parseFloat(styles.getPropertyValue('row-gap')) || 0;
+      if (!autoRows) return;
+
+      items.forEach((item) => {
+        item.style.gridRowEnd = 'span 1';
+      });
+
+      items.forEach((item) => {
+        const itemHeight = item.getBoundingClientRect().height;
+        const span = Math.max(1, Math.ceil((itemHeight + rowGap) / (autoRows + rowGap)));
+        item.style.gridRowEnd = `span ${span}`;
+      });
+    };
+
+    const scheduleMasonryLayout = () => {
+      if (!grid || !items.length) return;
+      if (masonryRafId) {
+        window.cancelAnimationFrame(masonryRafId);
+      }
+      masonryRafId = window.requestAnimationFrame(() => {
+        applyMasonryLayout();
+        masonryRafId = null;
+      });
+    };
+
+    if (grid) {
+      window.addEventListener('resize', scheduleMasonryLayout, { passive: true });
+      items.forEach((item) => {
+        const image = item.querySelector('img');
+        if (!image) return;
+        if (!image.complete) {
+          image.addEventListener('load', scheduleMasonryLayout);
+          image.addEventListener('error', scheduleMasonryLayout);
+        }
+      });
+      scheduleMasonryLayout();
+      window.setTimeout(scheduleMasonryLayout, 120);
+    }
+
+    const normalizeIndex = (index) => {
+      if (!images.length) return 0;
+      return (index + images.length) % images.length;
+    };
+
+    const setImage = (index) => {
+      activeIndex = normalizeIndex(index);
+      const activeImage = images[activeIndex];
+      media.innerHTML = '';
+      const image = document.createElement('img');
+      image.src = activeImage.src;
+      image.alt = activeImage.alt || `Bild ${activeIndex + 1}`;
+      image.loading = 'eager';
+      media.appendChild(image);
+
+      if (images.length <= 1) {
+        prevButton?.setAttribute('hidden', 'true');
+        nextButton?.setAttribute('hidden', 'true');
+      } else {
+        prevButton?.removeAttribute('hidden');
+        nextButton?.removeAttribute('hidden');
+      }
+    };
+
+    const openLightbox = (index) => {
+      setImage(index);
+      lightbox.removeAttribute('hidden');
+      document.body.classList.add('is-shooting-gallery-open');
+      window.requestAnimationFrame(() => {
+        lightbox.classList.add('is-active');
+      });
+    };
+
+    const closeLightbox = () => {
+      lightbox.classList.remove('is-active');
+      document.body.classList.remove('is-shooting-gallery-open');
+      window.setTimeout(() => {
+        if (!lightbox.classList.contains('is-active')) {
+          lightbox.setAttribute('hidden', 'true');
+        }
+      }, 220);
+    };
+
+    items.forEach((item, index) => {
+      const trigger = item.querySelector('.shooting-gallery__trigger');
+      if (!trigger) return;
+      trigger.addEventListener('click', () => {
+        openLightbox(index);
+      });
+    });
+
+    prevButton?.addEventListener('click', () => {
+      setImage(activeIndex - 1);
+    });
+
+    nextButton?.addEventListener('click', () => {
+      setImage(activeIndex + 1);
+    });
+
+    closeButton?.addEventListener('click', closeLightbox);
+
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) closeLightbox();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (!lightbox.classList.contains('is-active')) return;
+      if (event.key === 'Escape') closeLightbox();
+      if (event.key === 'ArrowRight') setImage(activeIndex + 1);
+      if (event.key === 'ArrowLeft') setImage(activeIndex - 1);
+    });
+  });
+}
+
 
 initImageSliders();
 initMediaShowcases();
@@ -2163,4 +2308,5 @@ initVideoScenesGallery();
 initTicketsHero();
 // initTeamSliders();
 initDonationForms();
+initShootingGalleries();
 initKontaktFlow();

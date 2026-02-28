@@ -4,6 +4,8 @@
   const panelKindValue = typeof panelKind !== 'undefined' ? panelKind : '';
   const leistungenSubpagesListValue = typeof leistungenSubpagesList !== 'undefined' ? leistungenSubpagesList : [];
   const selectedLeistungenSubpageValue = typeof selectedLeistungenSubpage !== 'undefined' ? selectedLeistungenSubpage : null;
+  const gallerySubpagesListValue = typeof gallerySubpagesList !== 'undefined' ? gallerySubpagesList : [];
+  const selectedGallerySubpageValue = typeof selectedGallerySubpage !== 'undefined' ? selectedGallerySubpage : null;
   const activeTabValue = typeof activeTab !== 'undefined' ? activeTab : '';
   const panelId = pagePanelIdValue || `page-${page.id}`;
   const panelGroup = pagePanelGroupValue || 'pages';
@@ -32,6 +34,25 @@
         </select>
       </div>
       <button type="button" class="admin-button" data-create-leistungen-subpage>Neue Unterseite</button>
+    </div>
+  </div>
+  <% } else if (panelKindValue === 'gallery-subpages') { %>
+  <%
+           const subpagesList = Array.isArray(gallerySubpagesListValue) ? gallerySubpagesListValue : [];
+           const selectedSubpageId = selectedGallerySubpageValue?.id || page?.id;
+         %>
+  <input type="hidden" name="return_gallery_subpage_id" value="<%= selectedSubpageId %>">
+  <div class="admin-panel__section">
+    <div class="admin-subpages__toolbar">
+      <div class="admin-field">
+        <label>Unterseite auswählen</label>
+        <select data-gallery-subpage-select>
+          <% subpagesList.forEach((subpage) => { %>
+          <option value="<%= subpage.id %>" <%= subpage.id === selectedSubpageId ? 'selected' : '' %>><%= subpage.title || subpage.slug || subpage.canonical_path %></option>
+          <% }) %>
+        </select>
+      </div>
+      <button type="button" class="admin-button" data-create-gallery-subpage>Neue Unterseite</button>
     </div>
   </div>
   <% } %>
@@ -110,6 +131,7 @@
             faq: 'FAQ',
             bereiche: 'Bereiche',
             leistungenCards: 'Leistungen Unterseiten',
+            shootingGallery: 'Shooting Gallery',
             kontaktseite: 'Kontaktseite',
             teamAbout: 'Team Übersicht',
             specialCards: 'Special Cards'
@@ -143,6 +165,7 @@
             { type: 'faq', label: contentTypeLabels.faq },
             { type: 'bereiche', label: contentTypeLabels.bereiche },
             { type: 'leistungenCards', label: contentTypeLabels.leistungenCards },
+            { type: 'shootingGallery', label: contentTypeLabels.shootingGallery },
             { type: 'kontaktseite', label: contentTypeLabels.kontaktseite },
             { type: 'teamAbout', label: contentTypeLabels.teamAbout },
             { type: 'specialCards', label: contentTypeLabels.specialCards }
@@ -289,12 +312,7 @@
                      leadText: 'Ab 01.26 sind wir in der Unterhaltsreinigung bei 15 Euro Mindestlohn, dazu kommen Nacht-, Sonn- und Feiertagszuschläge. In der Glasreinigung liegen wir bei 18,40 Euro Mindestlohn.',
                      detailText: 'Wir unterliegen dem allgemein gültigen Rahmentarifvertrag (RTV), Lohntarifvertrag (LTV) verpflichtend für alle, die Reinigungsdienstleistungen anbieten.',
                      primaryButton: {
-                       label: 'zum Buchungsformular',
                        href: '#Kontakt'
-                     },
-                     secondaryButton: {
-                       label: 'Whats App',
-                       href: 'https://wa.me/491795163864'
                      }
                    };                 %>
           <div class="admin-grid">
@@ -319,20 +337,8 @@
           </div>
           <div class="admin-grid">
             <div class="admin-field">
-              <label>Primary Button Label</label>
-              <input type="text" name="content_block_<%= block._adminId %>__primaryButton.label" value="<%= safeValue(fallbackValue(block.primaryButton?.label, kostenDefaults.primaryButton.label)) %>">
-            </div>
-            <div class="admin-field">
-              <label>Primary Button Link</label>
+              <label>Button Link (Zum Buchungsformular)</label>
               <input type="text" name="content_block_<%= block._adminId %>__primaryButton.href" value="<%= safeValue(fallbackValue(block.primaryButton?.href, kostenDefaults.primaryButton.href)) %>">
-            </div>
-            <div class="admin-field">
-              <label>Secondary Button Label</label>
-              <input type="text" name="content_block_<%= block._adminId %>__secondaryButton.label" value="<%= safeValue(fallbackValue(block.secondaryButton?.label, kostenDefaults.secondaryButton.label)) %>">
-            </div>
-            <div class="admin-field">
-              <label>Secondary Button Link</label>
-              <input type="text" name="content_block_<%= block._adminId %>__secondaryButton.href" value="<%= safeValue(fallbackValue(block.secondaryButton?.href, kostenDefaults.secondaryButton.href)) %>">
             </div>
           </div>
           <div class="admin-grid admin-grid--steps">
@@ -1121,6 +1127,73 @@
               </div>
             </div>
           </div>
+          <% } else if (block.type === 'shootingGallery') { %>
+          <%
+                   const galleryImages = Array.isArray(block.images) && block.images.length ? block.images : [{}];
+                 %>
+          <div class="admin-grid">
+            <div class="admin-field">
+              <label>Überschrift</label>
+              <input type="text" name="content_block_<%= block._adminId %>__headline" value="<%= safeValue(block.headline) %>">
+            </div>
+          </div>
+          <div class="admin-grid">
+            <div class="admin-field">
+              <label>Beschreibung (optional)</label>
+              <textarea name="content_block_<%= block._adminId %>__description" rows="3"><%= safeValue(block.description) %></textarea>
+            </div>
+          </div>
+          <div class="admin-grid">
+            <div class="admin-field">
+              <label>Bilder gesammelt hochladen (mehrere auf einmal)</label>
+              <input type="file" name="content_block_<%= block._adminId %>__bulk_upload" accept="image/*" multiple data-bulk-upload-input>
+              <small data-bulk-upload-preview>Keine Dateien ausgewählt.</small>
+              <small>Alle Dateien werden beim Speichern automatisch komprimiert und unten angehängt.</small>
+            </div>
+          </div>
+          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-dynamic-sortable data-max="500">
+            <div data-dynamic-rows-items>
+              <% galleryImages.forEach((item, index) => { %>
+              <div class="admin-step-card" data-dynamic-row draggable="true">
+                <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Bild entfernen">×</button>
+                <button type="button" class="admin-step-card__handle" data-dynamic-drag-handle aria-label="Bild sortieren">↕</button>
+                <div class="admin-field">
+                  <label data-dynamic-label-template="Bild __INDEX__">Bild <%= index + 1 %></label>
+                </div>
+                <div class="admin-field">
+                  <label>Bilddatei</label>
+                  <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                    <div class="admin-media-picker__controls">
+                      <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                      <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                    </div>
+                    <input type="file" name="content_block_<%= block._adminId %>__images.<%= index %>.src_upload" accept="image/*" data-upload-input hidden data-dynamic-name-template="content_block_<%= block._adminId %>__images.__INDEX__.src_upload">
+                    <input type="hidden" name="content_block_<%= block._adminId %>__images.<%= index %>.src_gallery_id" data-gallery-input="image" value="" data-dynamic-name-template="content_block_<%= block._adminId %>__images.__INDEX__.src_gallery_id">
+                    <input type="hidden" name="content_block_<%= block._adminId %>__images.<%= index %>.src" value="<%= safeValue(item?.src) %>" data-gallery-current data-dynamic-name-template="content_block_<%= block._adminId %>__images.__INDEX__.src">
+                    <figure class="admin-media-picker__thumb" data-gallery-thumb-wrap <%= item?.src ? '' : 'hidden' %>>
+                      <img src="<%= safeValue(item?.src) %>" alt="Bildvorschau" loading="lazy" data-gallery-thumb>
+                    </figure>
+                    <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                      <div class="admin-field">
+                        <label>Alt-Text</label>
+                        <input type="text" name="content_block_<%= block._adminId %>__images.<%= index %>.alt" data-gallery-alt-input="de" value="<%= safeValue(item?.alt) %>" data-dynamic-name-template="content_block_<%= block._adminId %>__images.__INDEX__.alt">
+                      </div>
+                    </div>
+                    <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                    <% if (item?.src) { %>
+                    <a class="admin-media-picker__preview-link" href="<%= item.src %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= item.src %>" data-media-preview-type="image">
+                      Aktuelles Bild anzeigen
+                    </a>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </div>
+            <div class="admin-dynamic-actions">
+              <button type="button" class="admin-button" data-dynamic-add>+ Bild hinzufügen</button>
+            </div>
+          </div>
           <% } else if (block.type === 'faq') { %>
           <%
                    const faqItems = Array.isArray(block.items) && block.items.length ? block.items : [{}];
@@ -1451,20 +1524,8 @@
         </div>
         <div class="admin-grid">
           <div class="admin-field">
-            <label>Primary Button Label</label>
-            <input type="text" name="content_block___BLOCK_ID___primaryButton.label" value="">
-          </div>
-          <div class="admin-field">
-            <label>Primary Button Link</label>
+            <label>Button Link (Zum Buchungsformular)</label>
             <input type="text" name="content_block___BLOCK_ID___primaryButton.href" value="">
-          </div>
-          <div class="admin-field">
-            <label>Secondary Button Label</label>
-            <input type="text" name="content_block___BLOCK_ID___secondaryButton.label" value="">
-          </div>
-          <div class="admin-field">
-            <label>Secondary Button Link</label>
-            <input type="text" name="content_block___BLOCK_ID___secondaryButton.href" value="">
           </div>
         </div>
         <div class="admin-grid admin-grid--steps">
@@ -2129,6 +2190,75 @@
               </div>
               <small data-gallery-preview>Keine Datei ausgewählt.</small>
             </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template data-content-template="shootingGallery">
+      <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+        <input type="hidden" name="content_block___BLOCK_ID___type" value="shootingGallery" data-block-type>
+        <div class="admin-content-block__header">
+          <div>
+            <h4 class="admin-content-block__title">Shooting Gallery</h4>
+            <p class="admin-content-block__meta">Typ: shootingGallery</p>
+          </div>
+          <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+        </div>
+        <div class="admin-grid">
+          <div class="admin-field">
+            <label>Überschrift</label>
+            <input type="text" name="content_block___BLOCK_ID___headline" value="">
+          </div>
+        </div>
+        <div class="admin-grid">
+          <div class="admin-field">
+            <label>Beschreibung (optional)</label>
+            <textarea name="content_block___BLOCK_ID___description" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="admin-grid">
+          <div class="admin-field">
+            <label>Bilder gesammelt hochladen (mehrere auf einmal)</label>
+            <input type="file" name="content_block___BLOCK_ID___bulk_upload" accept="image/*" multiple data-bulk-upload-input>
+            <small data-bulk-upload-preview>Keine Dateien ausgewählt.</small>
+            <small>Alle Dateien werden beim Speichern automatisch komprimiert und unten angehängt.</small>
+          </div>
+        </div>
+        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-dynamic-sortable data-max="500">
+          <div data-dynamic-rows-items>
+            <div class="admin-step-card" data-dynamic-row draggable="true">
+              <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Bild entfernen">×</button>
+              <button type="button" class="admin-step-card__handle" data-dynamic-drag-handle aria-label="Bild sortieren">↕</button>
+              <div class="admin-field">
+                <label data-dynamic-label-template="Bild __INDEX__">Bild 1</label>
+              </div>
+              <div class="admin-field">
+                <label>Bilddatei</label>
+                <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                  <div class="admin-media-picker__controls">
+                    <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                    <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                  </div>
+                  <input type="file" name="content_block___BLOCK_ID___images.0.src_upload" accept="image/*" data-upload-input hidden data-dynamic-name-template="content_block___BLOCK_ID___images.__INDEX__.src_upload">
+                  <input type="hidden" name="content_block___BLOCK_ID___images.0.src_gallery_id" data-gallery-input="image" value="" data-dynamic-name-template="content_block___BLOCK_ID___images.__INDEX__.src_gallery_id">
+                  <input type="hidden" name="content_block___BLOCK_ID___images.0.src" value="" data-gallery-current data-dynamic-name-template="content_block___BLOCK_ID___images.__INDEX__.src">
+                  <figure class="admin-media-picker__thumb" data-gallery-thumb-wrap hidden>
+                    <img src="" alt="Bildvorschau" loading="lazy" data-gallery-thumb>
+                  </figure>
+                  <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                    <div class="admin-field">
+                      <label>Alt-Text</label>
+                      <input type="text" name="content_block___BLOCK_ID___images.0.alt" data-gallery-alt-input="de" value="" data-dynamic-name-template="content_block___BLOCK_ID___images.__INDEX__.alt">
+                    </div>
+                  </div>
+                  <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="admin-dynamic-actions">
+            <button type="button" class="admin-button" data-dynamic-add>+ Bild hinzufügen</button>
           </div>
         </div>
       </div>

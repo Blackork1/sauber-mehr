@@ -23,12 +23,8 @@ VALUES
     "leadText": "Ab 01.26 sind wir in der Unterhaltsreinigung bei 15 Euro Mindestlohn, dazu kommen Nacht-, Sonn- und Feiertagszuschläge. In der Glasreinigung liegen wir bei 18,40 Euro Mindestlohn.",
     "detailText": "Wir unterliegen dem allgemein gültigen Rahmentarifvertrag (RTV), Lohntarifvertrag (LTV) verpflichtend für alle, die Reinigungsdienstleistungen anbieten.",
     "primaryButton": {
-      "label": "zum Buchungsformular",
+      "label": "Zum Buchungsformular",
       "href": "#Kontakt"
-    },
-    "secondaryButton": {
-      "label": "Whats App",
-      "href": "https://wa.me/491795163864"
     },
     "steps": [
       {
@@ -205,10 +201,6 @@ VALUES
       "label": "Zum Buchungsformular",
       "href": "#kontakt"
     },
-    "secondaryButton": {
-      "label": "Whats App",
-      "href": "https://wa.me/491795163864"
-    },
     "steps": [
       {
         "title": "Anruf oder Buchungsformular",
@@ -357,10 +349,6 @@ VALUES
     "primaryButton": {
       "label": "Zum Buchungsformular",
       "href": "#kontakt"
-    },
-    "secondaryButton": {
-      "label": "Whats App",
-      "href": "https://wa.me/491795163864"
     },
     "steps": [
       {
@@ -511,10 +499,6 @@ VALUES
       "label": "Go to booking form",
       "href": "#kontakt"
     },
-    "secondaryButton": {
-      "label": "Whats App",
-      "href": "https://wa.me/491795163864"
-    },
     "steps": [
       {
         "title": "Call or booking form",
@@ -657,7 +641,7 @@ VALUES
     },
     "secondaryCta": {
       "label": "WhatsApp Nachricht",
-      "href": "https://wa.me/493028641263"
+      "href": "https://wa.me/491795163864"
     },
     "startCard": {
       "title": "Was benötigst du?",

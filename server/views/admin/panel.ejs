@@ -3,9 +3,13 @@
   const isChecked = (value) => (value ? 'checked' : '');
   const pagesList = Array.isArray(pages) ? pages : [];
   const leistungenSubpagesList = Array.isArray(leistungenSubpages) ? leistungenSubpages : [];
+  const gallerySubpagesList = Array.isArray(gallerySubpages) ? gallerySubpages : [];
   const selectedLeistungenSubpageValue =
   typeof selectedLeistungenSubpage !== 'undefined' ? selectedLeistungenSubpage : null;
   const selectedLeistungenSubpageEntry = selectedLeistungenSubpageValue || leistungenSubpagesList[0] || null;
+  const selectedGallerySubpageValue =
+  typeof selectedGallerySubpage !== 'undefined' ? selectedGallerySubpage : null;
+  const selectedGallerySubpageEntry = selectedGallerySubpageValue || gallerySubpagesList[0] || null;
   const adminQuery = query || {};
   const adminSaved = adminQuery.saved === '1';
   const galleryError = adminQuery.error || '';
@@ -112,6 +116,9 @@
          <button class="admin-tab <%= activeTab === 'leistungen-subpages' ? 'is-active' : '' %>" type="button" data-tab="leistungen-subpages">
            Leistungen Unterseiten
          </button>
+         <button class="admin-tab <%= activeTab === 'gallery-subpages' ? 'is-active' : '' %>" type="button" data-tab="gallery-subpages">
+           Gallery Unterseiten
+         </button>
        </div>
        <% pagesList.forEach((page) => { %>
        <%- include('./partials/page-form', {
@@ -152,6 +159,33 @@
        </div>
        <% } %>
        <form id="leistungen-subpage-create" method="post" action="/adminbackend/leistungen-subpages/new"></form>
+       <% if (selectedGallerySubpageEntry) { %>
+       <%- include('./partials/page-form', {
+         page: selectedGallerySubpageEntry,
+         activeTab,
+         safeValue,
+         isChecked,
+         getHeroCtaLabel,
+         getHeroCtaHref,
+         getHeroImage,
+         getHeroAlt,
+         pagePanelId: 'gallery-subpages',
+         pagePanelGroup: 'pages',
+         panelKind: 'gallery-subpages',
+         gallerySubpagesList,
+         selectedGallerySubpage: selectedGallerySubpageEntry
+       }) %>
+       <% } else { %>
+       <div class="admin-panel <%= activeTab === 'gallery-subpages' ? '' : 'is-hidden' %>" data-panel="gallery-subpages" data-panel-group="pages">
+         <div class="admin-panel__section">
+           <div class="admin-subpages__toolbar">
+             <p class="admin-panel__hint">Noch keine Gallery-Unterseiten vorhanden.</p>
+             <button type="button" class="admin-button" data-create-gallery-subpage>Neue Unterseite</button>
+           </div>
+         </div>
+       </div>
+       <% } %>
+       <form id="gallery-subpage-create" method="post" action="/adminbackend/gallery-subpages/new"></form>
      </div>
 
 

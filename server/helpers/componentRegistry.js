@@ -11,6 +11,7 @@ export const COMPONENT_REGISTRY = {
   imageSlider: 'imageSlider',
   bereiche: 'bereiche',
   leistungenCards: 'leistungenCards',
+  shootingGallery: 'shootingGallery',
   faq: 'faq',
   angebote: 'angebote',
   kontaktformular: 'kontaktformular',

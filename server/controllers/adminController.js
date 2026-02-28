@@ -59,6 +59,11 @@ const isLeistungenSubpagePath = (value) => {
   return pathValue.startsWith('/leistungen/') && pathValue !== '/leistungen';
 };
 
+const isGallerySubpagePath = (value) => {
+  const pathValue = normalizeString(value);
+  return pathValue.startsWith('/gallery/') && pathValue !== '/gallery';
+};
+
 const stripFileExtension = (value) => {
   if (!value) return '';
   return String(value).replace(/\.[^/.]+$/, '');
@@ -266,12 +271,7 @@ const buildHomeContent = (body) => {
     leadText: normalizeString(body.home_kosten_lead),
     detailText: normalizeString(body.home_kosten_detail),
     primaryButton: {
-      label: normalizeString(body.home_kosten_primary_label),
       href: normalizeString(body.home_kosten_primary_href)
-    },
-    secondaryButton: {
-      label: normalizeString(body.home_kosten_secondary_label),
-      href: normalizeString(body.home_kosten_secondary_href)
     },
     steps
   };
@@ -386,12 +386,7 @@ const buildLeistungenContent = (body) => {
     leadText: normalizeString(body.leistungen_kosten_lead),
     detailText: normalizeString(body.leistungen_kosten_detail),
     primaryButton: {
-      label: normalizeString(body.leistungen_kosten_primary_label),
       href: normalizeString(body.leistungen_kosten_primary_href)
-    },
-    secondaryButton: {
-      label: normalizeString(body.leistungen_kosten_secondary_label),
-      href: normalizeString(body.leistungen_kosten_secondary_href)
     },
     steps: kostenSteps
   };
@@ -506,12 +501,24 @@ export async function getAdminPanel(req, res, next) {
     const isLeistungenSubpage = (page) =>
       page?.canonical_path?.startsWith('/leistungen/')
       && page?.canonical_path !== '/leistungen';
+    const isGallerySubpage = (page) =>
+      page?.canonical_path?.startsWith('/gallery/')
+      && page?.canonical_path !== '/gallery';
+
     const leistungenSubpages = pagesOrdered.filter(isLeistungenSubpage);
-    const pageTabs = pagesOrdered.filter((page) => !isLeistungenSubpage(page));
+    const gallerySubpages = pagesOrdered.filter(isGallerySubpage);
+    const pageTabs = pagesOrdered.filter((page) => (
+      !isLeistungenSubpage(page) && !isGallerySubpage(page)
+    ));
     const requestedSubpageId = Number(req.query.subpageId);
+    const requestedGallerySubpageId = Number(req.query.gallerySubpageId);
     const selectedLeistungenSubpage =
       leistungenSubpages.find((page) => page.id === requestedSubpageId)
       || leistungenSubpages[0]
+      || null;
+    const selectedGallerySubpage =
+      gallerySubpages.find((page) => page.id === requestedGallerySubpageId)
+      || gallerySubpages[0]
       || null;
 
     const [galleryImages, galleryVideos, newsletterSubscriptions] = await Promise.all([
@@ -530,6 +537,8 @@ export async function getAdminPanel(req, res, next) {
       pages: pageTabs,
       leistungenSubpages,
       selectedLeistungenSubpage,
+      gallerySubpages,
+      selectedGallerySubpage,
       galleryImages,
       galleryVideos,
       newsletterSubscriptions,
@@ -724,6 +733,47 @@ export async function updatePage(req, res, next) {
           block.slider.slides = slides;
         }
 
+        if (block.type === 'shootingGallery') {
+          const images = Array.isArray(block.images) ? block.images : [];
+          for (let index = 0; index < images.length; index += 1) {
+            const fieldBase = `content_block_${blockId}__images.${index}.src`;
+            const resolved = await resolveImageFieldSimple({
+              upload: req.files?.[`${fieldBase}_upload`],
+              galleryId: req.body[`${fieldBase}_gallery_id`],
+              currentUrl: images[index]?.src,
+              alt: images[index]?.alt,
+              pool
+            });
+            images[index] = images[index] || {};
+            if (resolved.src) images[index].src = resolved.src;
+            if (resolved.alt) images[index].alt = resolved.alt;
+          }
+
+          const bulkField = `content_block_${blockId}__bulk_upload`;
+          const bulkUploadsRaw = req.files?.[bulkField];
+          const bulkUploads = Array.isArray(bulkUploadsRaw)
+            ? bulkUploadsRaw
+            : (bulkUploadsRaw ? [bulkUploadsRaw] : []);
+          for (const uploadEntry of bulkUploads) {
+            const resolved = await resolveImageFieldSimple({
+              upload: uploadEntry,
+              galleryId: '',
+              currentUrl: '',
+              alt: '',
+              pool
+            });
+            if (resolved.src) {
+              const fallbackAlt = stripFileExtension(uploadEntry?.originalname || uploadEntry?.filename || '');
+              images.push({
+                src: resolved.src,
+                alt: resolved.alt || fallbackAlt
+              });
+            }
+          }
+
+          block.images = images;
+        }
+
 
         if (block.type === 'kontaktseite') {
           const resolveOptionImages = async (cardKey) => {
@@ -802,10 +852,15 @@ export async function updatePage(req, res, next) {
     const returnNav = normalizeString(req.body.return_nav) || 'pages';
     const returnTab = normalizeString(req.body.return_tab);
     const returnSubpageId = Number(req.body.return_subpage_id);
+    const returnGallerySubpageId = Number(req.body.return_gallery_subpage_id);
     const shouldUseLeistungenSubpagesTab =
       returnTab === 'leistungen-subpages'
       || isLeistungenSubpagePath(canonicalPath)
       || isLeistungenSubpagePath(page?.canonical_path);
+    const shouldUseGallerySubpagesTab =
+      returnTab === 'gallery-subpages'
+      || isGallerySubpagePath(canonicalPath)
+      || isGallerySubpagePath(page?.canonical_path);
 
     const params = new URLSearchParams();
     params.set('nav', returnNav);
@@ -816,6 +871,12 @@ export async function updatePage(req, res, next) {
       params.set(
         'subpageId',
         String(Number.isFinite(returnSubpageId) && returnSubpageId > 0 ? returnSubpageId : pageId)
+      );
+    } else if (shouldUseGallerySubpagesTab) {
+      params.set('tab', 'gallery-subpages');
+      params.set(
+        'gallerySubpageId',
+        String(Number.isFinite(returnGallerySubpageId) && returnGallerySubpageId > 0 ? returnGallerySubpageId : pageId)
       );
     } else if (/^page-\d+$/.test(returnTab)) {
       params.set('tab', returnTab);
@@ -883,6 +944,45 @@ export async function createLeistungenSubpage(req, res, next) {
     );
     const pageId = rows[0]?.id;
     return res.redirect(`/adminbackend?nav=pages&tab=leistungen-subpages&subpageId=${pageId}`);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function createGallerySubpage(req, res, next) {
+  try {
+    const pool = req.app.get('db');
+    const timestamp = Date.now();
+    const slug = `fotoshooting-${timestamp}`;
+    const canonicalPath = `/gallery/${slug}`;
+    const content = [
+      {
+        type: 'shootingGallery',
+        headline: 'Fotoshooting Eventlocation vom 24.02.26',
+        description: '',
+        images: [{}]
+      }
+    ];
+
+    const { rows } = await pool.query(
+      `INSERT INTO pages (slug, canonical_path, title, meta_title, meta_description, content, nav, show_in_nav, display, locale)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       RETURNING id`,
+      [
+        slug,
+        canonicalPath,
+        'Neue Gallery',
+        null,
+        null,
+        JSON.stringify(content),
+        false,
+        false,
+        false,
+        'de-DE'
+      ]
+    );
+    const pageId = rows[0]?.id;
+    return res.redirect(`/adminbackend?nav=pages&tab=gallery-subpages&gallerySubpageId=${pageId}`);
   } catch (err) {
     return next(err);
   }

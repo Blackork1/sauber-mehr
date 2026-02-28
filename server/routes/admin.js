@@ -6,6 +6,7 @@ import {
   getAdminPanel,
   updatePage,
   createLeistungenSubpage,
+  createGallerySubpage,
   createGalleryImageAdmin,
   createGalleryVideoAdmin,
   deleteGalleryImageAdmin,
@@ -129,6 +130,7 @@ router.post(
   updatePage
 );
 router.post('/adminbackend/leistungen-subpages/new', requireAdmin, createLeistungenSubpage);
+router.post('/adminbackend/gallery-subpages/new', requireAdmin, createGallerySubpage);
 router.post(
   '/adminbackend/gallery/images',
   requireAdmin,

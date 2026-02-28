@@ -3,6 +3,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
+import sharp from 'sharp';
 
 import cloudinary from '../util/cloudinary.js';
 
@@ -77,25 +78,25 @@ const uploadToCloudinary = async (filePath, { resourceType, folder, publicId }) 
   });
 };
 
-const transcodeImageToWebp = async (inputPath, outputPath) => new Promise((resolve, reject) => {
-  const scaleFilter = `scale='min(${MAX_IMAGE_WIDTH},iw)':-2:force_original_aspect_ratio=decrease`;
-  const args = [
-    '-y',
-    '-i', inputPath,
-    '-vf', scaleFilter,
-    '-vcodec', 'libwebp',
-    '-q:v', String(IMAGE_WEBP_QUALITY),
-    outputPath
-  ];
-  const ff = spawn('ffmpeg', args, { stdio: ['ignore', 'pipe', 'pipe'] });
-  let stderr = '';
-  ff.stderr.on('data', (d) => { stderr += d.toString(); });
-  ff.on('error', (err) => reject(new Error(`ffmpeg nicht verfügbar: ${err.message}`)));
-  ff.on('close', (code) => {
-    if (code === 0) return resolve();
-    return reject(new Error(`ffmpeg exit ${code}. ${stderr.slice(-1500)}`));
-  });
-});
+const transcodeImageToWebp = async (inputPath, outputPath) => {
+  try {
+    const info = await sharp(inputPath)
+      .rotate()
+      .resize({
+        width: MAX_IMAGE_WIDTH,
+        fit: 'inside',
+        withoutEnlargement: true
+      })
+      .webp({
+        quality: IMAGE_WEBP_QUALITY,
+        effort: 4
+      })
+      .toFile(outputPath);
+    return info;
+  } catch (err) {
+    throw new Error(`Bildkonvertierung mit sharp fehlgeschlagen: ${err.message}`);
+  }
+};
 
 const transcodeVideoToMp4 = async (inputPath, outputPath) => new Promise((resolve, reject) => {
   const scaleFilter =
@@ -178,7 +179,7 @@ export const processGalleryImageUpload = async (file, { baseName } = {}) => {
   const filename = await ensureUniqueFilename({ dir: outDir, baseName: derivedBaseName, ext: '.webp' });
   const outAbs = path.join(outDir, filename);
 
-  await transcodeImageToWebp(file.path, outAbs);
+  const info = await transcodeImageToWebp(file.path, outAbs);
   await rmQuiet(file.path);
 
   const relPath = path.join(relDir, filename);
@@ -194,9 +195,9 @@ export const processGalleryImageUpload = async (file, { baseName } = {}) => {
     filename,
     originalName: file.originalname,
     localPath: buildLocalPath('images', relPath),
-    sizeBytes: stat.size,
-    width: null,
-    height: null,
+    sizeBytes: Number.isFinite(info?.size) ? info.size : stat.size,
+    width: Number.isFinite(info?.width) ? info.width : null,
+    height: Number.isFinite(info?.height) ? info.height : null,
     cloudinaryUrl: cloud.secure_url,
     cloudinaryPublicId: cloud.public_id
   };

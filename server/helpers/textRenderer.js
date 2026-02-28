@@ -1,6 +1,6 @@
 import escapeHtml from 'escape-html';
 
-const inlinePattern = /<(a|strong|em|h2|h3)\b([^>]*)>([\s\S]*?)<\/\1>/gi;
+const inlinePattern = /<(a|strong|em|h2|h3)\b([^>]*)>([\s\S]*?)<\/\1>|<br\s*\/?>/gi;
 const attributePattern = (name) => new RegExp(`${name}\\s*=\\s*("([^"]*)"|'([^']*)')`, 'i');
 const classTokenPattern = /^[A-Za-z0-9_-]+$/;
 
@@ -44,7 +44,11 @@ export function renderTextWithLinks(value = '') {
   while (match) {
     const [fullMatch, tagName, attributes, text] = match;
     result += escapeHtml(raw.slice(lastIndex, match.index));
-    result += renderAllowedTag(tagName, attributes, text);
+    if (/^<br\s*\/?>$/i.test(fullMatch)) {
+      result += '<br>';
+    } else {
+      result += renderAllowedTag(tagName, attributes, text);
+    }
     lastIndex = match.index + fullMatch.length;
     match = inlinePattern.exec(raw);
   }

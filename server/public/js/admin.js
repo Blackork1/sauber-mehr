@@ -703,52 +703,349 @@ document.addEventListener('DOMContentLoaded', () => {
   const uploadOverlay = document.querySelector('[data-upload-overlay]');
   const uploadPercent = uploadOverlay?.querySelector('[data-upload-percent]');
   const uploadBar = uploadOverlay?.querySelector('[data-upload-bar]');
+  const uploadTitle = uploadOverlay?.querySelector('[data-upload-title]');
+  const uploadStatus = uploadOverlay?.querySelector('[data-upload-status]');
   const uploadForms = Array.from(document.querySelectorAll('form[enctype="multipart/form-data"]'));
+  const formatBytes = (value) => {
+    const bytes = Number(value);
+    if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let unitIndex = 0;
+    let size = bytes;
+    while (size >= 1024 && unitIndex < units.length - 1) {
+      size /= 1024;
+      unitIndex += 1;
+    }
+    return `${size.toFixed(unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+  };
   const formatPercent = (value) => `${Math.min(100, Math.max(0, Math.round(value)))}%`;
-  const updateProgress = (value) => {
+  const CLIENT_IMAGE_MAX_DIMENSION = 2000;
+  const CLIENT_IMAGE_QUALITY = 0.82;
+  const CLIENT_COMPRESSION_CONCURRENCY = 3;
+
+  const buildUploadStatsFromFiles = (files) => {
+    const items = Array.isArray(files) ? files : [];
+    const totalBytes = items.reduce((sum, file) => sum + (Number(file?.size) || 0), 0);
+    return {
+      count: items.length,
+      totalBytes
+    };
+  };
+  const collectFilesFromInputs = (fileInputs) => fileInputs
+    .flatMap((input) => Array.from(input.files || []));
+  const isClientCompressibleImage = (file) => {
+    const type = String(file?.type || '').toLowerCase();
+    if (!type.startsWith('image/')) return false;
+    if (type === 'image/gif' || type === 'image/svg+xml') return false;
+    return true;
+  };
+  const compressedFileName = (name) => {
+    const raw = String(name || 'upload').trim();
+    const base = raw.replace(/\.[^/.]+$/, '') || 'upload';
+    return `${base}.webp`;
+  };
+  const compressImageInBrowser = async (file) => {
+    const objectUrl = URL.createObjectURL(file);
+    try {
+      const image = await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('Bild konnte nicht geladen werden.'));
+        img.src = objectUrl;
+      });
+      const width = Number(image.naturalWidth || image.width || 0);
+      const height = Number(image.naturalHeight || image.height || 0);
+      if (!width || !height) return file;
+      const ratio = Math.min(
+        1,
+        CLIENT_IMAGE_MAX_DIMENSION / width,
+        CLIENT_IMAGE_MAX_DIMENSION / height
+      );
+      const targetWidth = Math.max(1, Math.round(width * ratio));
+      const targetHeight = Math.max(1, Math.round(height * ratio));
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const context = canvas.getContext('2d', { alpha: false });
+      if (!context) return file;
+      context.drawImage(image, 0, 0, targetWidth, targetHeight);
+      const blob = await new Promise((resolve) => {
+        canvas.toBlob(resolve, 'image/webp', CLIENT_IMAGE_QUALITY);
+      });
+      if (!blob) return file;
+      if (blob.size >= file.size * 0.98 && file.type === 'image/webp') {
+        return file;
+      }
+      return new File([blob], compressedFileName(file.name), {
+        type: 'image/webp',
+        lastModified: Date.now()
+      });
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  };
+  const compressFileIfNeeded = async (file) => {
+    if (!isClientCompressibleImage(file)) return file;
+    try {
+      return await compressImageInBrowser(file);
+    } catch (_) {
+      return file;
+    }
+  };
+  const mapWithConcurrency = async (items, concurrency, worker, onDone) => {
+    const list = Array.isArray(items) ? items : [];
+    if (!list.length) return [];
+    const results = new Array(list.length);
+    let cursor = 0;
+    const workers = Array.from(
+      { length: Math.max(1, Math.min(concurrency, list.length)) },
+      async () => {
+        while (true) {
+          const index = cursor;
+          cursor += 1;
+          if (index >= list.length) return;
+          const item = list[index];
+          const result = await worker(item, index);
+          results[index] = result;
+          if (onDone) onDone(item, index, result);
+        }
+      }
+    );
+    await Promise.all(workers);
+    return results;
+  };
+  const buildPreparedFormData = async ({ form, fileInputs, onCompressionProgress }) => {
+    const originalFormData = new FormData(form);
+    const tasks = [];
+    fileInputs.forEach((input) => {
+      const inputName = String(input.name || '');
+      if (!inputName) return;
+      Array.from(input.files || []).forEach((file, fileIndex) => {
+        tasks.push({
+          inputName,
+          file,
+          fileIndex
+        });
+      });
+    });
+    if (!tasks.length) {
+      return {
+        formData: originalFormData,
+        stats: buildUploadStatsFromFiles([]),
+        compressionTotal: 0
+      };
+    }
+
+    const compressionTotal = tasks.filter((entry) => isClientCompressibleImage(entry.file)).length;
+    let compressionDone = 0;
+
+    const processedTasks = await mapWithConcurrency(
+      tasks,
+      CLIENT_COMPRESSION_CONCURRENCY,
+      async (entry) => ({
+        ...entry,
+        preparedFile: await compressFileIfNeeded(entry.file)
+      }),
+      (entry) => {
+        if (!isClientCompressibleImage(entry.file)) return;
+        compressionDone += 1;
+        if (onCompressionProgress) {
+          onCompressionProgress({
+            done: compressionDone,
+            total: compressionTotal
+          });
+        }
+      }
+    );
+
+    const byField = new Map();
+    processedTasks.forEach((entry) => {
+      if (!byField.has(entry.inputName)) byField.set(entry.inputName, []);
+      byField.get(entry.inputName).push(entry.preparedFile);
+    });
+    byField.forEach((files, inputName) => {
+      originalFormData.delete(inputName);
+      files.forEach((file) => {
+        originalFormData.append(inputName, file, file.name);
+      });
+    });
+
+    return {
+      formData: originalFormData,
+      stats: buildUploadStatsFromFiles(processedTasks.map((entry) => entry.preparedFile)),
+      compressionTotal
+    };
+  };
+  const buildUploadStatusText = ({ stats, loadedBytes }) => {
+    if (!stats?.count) return '0 Dateien';
+    const label = stats.count === 1 ? 'Datei' : 'Dateien';
+    if (stats.totalBytes > 0 && Number.isFinite(loadedBytes)) {
+      const currentLoaded = Math.min(stats.totalBytes, Math.max(0, loadedBytes));
+      const ratio = stats.totalBytes > 0 ? (currentLoaded / stats.totalBytes) : 0;
+      const approxFiles = Math.min(stats.count, Math.floor(ratio * stats.count));
+      return `${approxFiles}/${stats.count} ${label} • ${formatBytes(currentLoaded)} / ${formatBytes(stats.totalBytes)}`;
+    }
+    if (stats.totalBytes > 0) {
+      return `${stats.count} ${label} • ${formatBytes(stats.totalBytes)}`;
+    }
+    return `${stats.count} ${label}`;
+  };
+  const updateProgress = (value, { stats = null, loadedBytes = null } = {}) => {
     if (uploadPercent) uploadPercent.textContent = formatPercent(value);
     if (uploadBar) uploadBar.style.width = `${Math.min(100, Math.max(0, value))}%`;
+    if (uploadStatus && stats) {
+      uploadStatus.textContent = buildUploadStatusText({ stats, loadedBytes });
+    }
   };
-  const showOverlay = () => {
+  const showOverlay = (stats) => {
     if (!uploadOverlay) return;
-    updateProgress(0);
+    if (uploadTitle) {
+      uploadTitle.textContent = stats?.count === 1
+        ? 'Datei wird hochgeladen...'
+        : `${stats?.count || 0} Dateien werden hochgeladen...`;
+    }
+    updateProgress(0, { stats, loadedBytes: 0 });
     uploadOverlay.classList.remove('is-hidden');
   };
   const hideOverlay = () => {
     if (!uploadOverlay) return;
     uploadOverlay.classList.add('is-hidden');
   };
+  const initBulkUploadInput = (input) => {
+    if (!input || input.dataset.bulkUploadBound === 'true') return;
+    input.dataset.bulkUploadBound = 'true';
+    const field = input.closest('.admin-field');
+    const preview = field?.querySelector('[data-bulk-upload-preview]');
+    const updatePreview = () => {
+      if (!preview) return;
+      const files = Array.from(input.files || []);
+      if (!files.length) {
+        preview.textContent = 'Keine Dateien ausgewählt.';
+        return;
+      }
+      const totalBytes = files.reduce((sum, file) => sum + (Number(file.size) || 0), 0);
+      preview.textContent = `${files.length} Datei(en) ausgewählt • ${formatBytes(totalBytes)}`;
+    };
+    input.addEventListener('change', updatePreview);
+    updatePreview();
+  };
+  document.querySelectorAll('[data-bulk-upload-input]').forEach(initBulkUploadInput);
 
   uploadForms.forEach((form) => {
-    form.addEventListener('submit', (event) => {
+    form.addEventListener('submit', async (event) => {
       if (!uploadOverlay) return;
       const fileInputs = Array.from(form.querySelectorAll('input[type="file"]'));
-      const hasFile = fileInputs.some((input) => input.files && input.files.length > 0);
-      if (!hasFile) return;
+      const initialFiles = collectFilesFromInputs(fileInputs);
+      const initialStats = buildUploadStatsFromFiles(initialFiles);
+      if (!initialStats.count) return;
       if (form.dataset.uploadSubmitting === 'true') {
         event.preventDefault();
         return;
       }
       event.preventDefault();
       form.dataset.uploadSubmitting = 'true';
-      showOverlay();
-      const formData = new FormData(form);
+      showOverlay(initialStats);
+      const compressibleCount = initialFiles.filter((file) => isClientCompressibleImage(file)).length;
+      if (compressibleCount > 0) {
+        if (uploadTitle) {
+          uploadTitle.textContent = compressibleCount === 1
+            ? 'Bild wird lokal komprimiert...'
+            : `${compressibleCount} Bilder werden lokal komprimiert...`;
+        }
+        if (uploadStatus) {
+          uploadStatus.textContent = `0/${compressibleCount} Bilder komprimiert`;
+        }
+      }
+
+      let formData = null;
+      let uploadStats = initialStats;
+      let uploadStartPercent = 0;
+
+      try {
+        const prepared = await buildPreparedFormData({
+          form,
+          fileInputs,
+          onCompressionProgress: ({ done, total }) => {
+            if (!total) return;
+            const progress = (done / total) * 35;
+            updateProgress(progress);
+            if (uploadStatus) uploadStatus.textContent = `${done}/${total} Bilder komprimiert`;
+          }
+        });
+        formData = prepared.formData;
+        uploadStats = prepared.stats.count ? prepared.stats : initialStats;
+        if (prepared.compressionTotal > 0) {
+          uploadStartPercent = 35;
+          updateProgress(uploadStartPercent);
+          if (uploadTitle) {
+            uploadTitle.textContent = prepared.compressionTotal === 1
+              ? 'Bild wird hochgeladen...'
+              : `${uploadStats.count} Dateien werden hochgeladen...`;
+          }
+          if (uploadStatus) {
+            const label = prepared.compressionTotal === 1 ? 'Bild' : 'Bilder';
+            uploadStatus.textContent = `${prepared.compressionTotal}/${prepared.compressionTotal} ${label} komprimiert`;
+          }
+        }
+      } catch (_) {
+        form.dataset.uploadSubmitting = 'false';
+        if (uploadTitle) uploadTitle.textContent = 'Komprimierung fehlgeschlagen';
+        hideOverlay();
+        window.alert('Die lokale Komprimierung konnte nicht abgeschlossen werden. Bitte erneut versuchen.');
+        return;
+      }
+
       const xhr = new XMLHttpRequest();
       xhr.open(form.method || 'POST', form.action);
+      let processingInterval = null;
+      const stopProcessingIndicator = () => {
+        if (processingInterval) {
+          window.clearInterval(processingInterval);
+          processingInterval = null;
+        }
+      };
+      const startProcessingIndicator = () => {
+        stopProcessingIndicator();
+        let value = 92;
+        processingInterval = window.setInterval(() => {
+          value = Math.min(98, value + 0.5);
+          const loaded = uploadStats.totalBytes > 0 ? Math.round((value / 100) * uploadStats.totalBytes) : null;
+          updateProgress(value, { stats: uploadStats, loadedBytes: loaded });
+        }, 350);
+      };
       xhr.upload.addEventListener('progress', (eventProgress) => {
         if (eventProgress.lengthComputable) {
-          const percent = (eventProgress.loaded / eventProgress.total) * 90;
-          updateProgress(percent);
+          const uploadRange = 90 - uploadStartPercent;
+          const percent = uploadStartPercent + ((eventProgress.loaded / eventProgress.total) * uploadRange);
+          const loadedBytes = uploadStats.totalBytes > 0
+            ? Math.round((eventProgress.loaded / eventProgress.total) * uploadStats.totalBytes)
+            : null;
+          updateProgress(percent, { stats: uploadStats, loadedBytes });
         }
       });
+      xhr.upload.addEventListener('load', () => {
+        if (uploadTitle) {
+          uploadTitle.textContent = uploadStats.count === 1
+            ? 'Datei wird verarbeitet...'
+            : 'Dateien werden verarbeitet...';
+        }
+        if (uploadStatus) {
+          uploadStatus.textContent = 'Komprimierung und Speicherung läuft...';
+        }
+        startProcessingIndicator();
+      });
       const handleFailure = () => {
+        stopProcessingIndicator();
         form.dataset.uploadSubmitting = 'false';
+        if (uploadTitle) uploadTitle.textContent = 'Upload fehlgeschlagen';
         hideOverlay();
         window.alert('Der Upload konnte nicht abgeschlossen werden. Bitte erneut versuchen.');
       };
       xhr.addEventListener('load', () => {
+        stopProcessingIndicator();
         if (xhr.status >= 200 && xhr.status < 400) {
-          updateProgress(100);
+          if (uploadTitle) uploadTitle.textContent = 'Upload abgeschlossen';
+          updateProgress(100, { stats: uploadStats, loadedBytes: uploadStats.totalBytes || null });
           const targetUrl = xhr.responseURL || form.action;
           window.location.assign(targetUrl);
         } else {
@@ -875,6 +1172,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <button type="button" class="admin-link-helper__option" data-inline-type="em">Em</button>
       <button type="button" class="admin-link-helper__option" data-inline-type="h2">H2</button>
       <button type="button" class="admin-link-helper__option" data-inline-type="h3">H3</button>
+      <button type="button" class="admin-link-helper__option" data-inline-type="br">Zeilenumbruch</button>
     </div>
     <div class="admin-link-helper__submenu is-hidden" data-inline-submenu>
       <div class="admin-link-helper__subheader" data-inline-title>Link hinzufügen</div>
@@ -940,6 +1238,19 @@ document.addEventListener('DOMContentLoaded', () => {
       ? activeLinkField.selectionEnd
       : start;
     activeSelection = { start, end };
+  };
+
+  const insertMarkupAtSelection = (markup) => {
+    if (!activeLinkField || !markup) return false;
+    updateSelection();
+    const before = activeLinkField.value.slice(0, activeSelection.start);
+    const after = activeLinkField.value.slice(activeSelection.end);
+    activeLinkField.value = `${before}${markup}${after}`;
+    const nextCursor = activeSelection.start + markup.length;
+    activeLinkField.setSelectionRange(nextCursor, nextCursor);
+    activeLinkField.dispatchEvent(new Event('input', { bubbles: true }));
+    activeLinkField.focus();
+    return true;
   };
 
   const updateInsertState = () => {
@@ -1053,6 +1364,11 @@ document.addEventListener('DOMContentLoaded', () => {
     button.addEventListener('click', () => {
       const { inlineType } = button.dataset;
       if (!inlineType) return;
+      if (inlineType === 'br') {
+        insertMarkupAtSelection('<br>');
+        showInlineMenu();
+        return;
+      }
       showInlineSubmenu(inlineType);
       updateSelection();
     });
@@ -1070,18 +1386,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const inlineUrl = inlineUrlInput?.value.trim() || '';
     const inlineClass = inlineClassInput?.value.trim() || '';
     if (!inlineText || (typeConfig.requiresUrl && !inlineUrl)) return;
-    updateSelection();
-    const before = activeLinkField.value.slice(0, activeSelection.start);
-    const after = activeLinkField.value.slice(activeSelection.end);
     const classAttribute = inlineClass ? ` class="${inlineClass}"` : '';
     const markup = typeConfig.requiresUrl
       ? `<a class="admin-inline-link" href="${inlineUrl}">${inlineText}</a>`
       : `<${typeConfig.tag}${classAttribute}>${inlineText}</${typeConfig.tag}>`;
-    activeLinkField.value = `${before}${markup}${after}`;
-    const nextCursor = activeSelection.start + markup.length;
-    activeLinkField.setSelectionRange(nextCursor, nextCursor);
-    activeLinkField.dispatchEvent(new Event('input', { bubbles: true }));
-    activeLinkField.focus();
+    if (!insertMarkupAtSelection(markup)) return;
     showInlineMenu();
     updateInsertState();
   });
@@ -1151,6 +1460,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const text = String(value);
     if (text.length <= maxLength) return text;
     return `${text.slice(0, maxLength)}…`;
+  };
+  const setPickerThumbnail = (picker, url, { objectUrl = false } = {}) => {
+    if (!picker) return;
+    const thumbWrap = picker.querySelector('[data-gallery-thumb-wrap]');
+    const thumbImage = picker.querySelector('[data-gallery-thumb]');
+    if (!thumbWrap || !thumbImage) return;
+    const previousObjectUrl = thumbImage.dataset.objectUrl || '';
+    if (previousObjectUrl && (!objectUrl || previousObjectUrl !== url)) {
+      URL.revokeObjectURL(previousObjectUrl);
+      delete thumbImage.dataset.objectUrl;
+    }
+    const normalizedUrl = String(url || '').trim();
+    if (!normalizedUrl) {
+      thumbImage.removeAttribute('src');
+      thumbWrap.setAttribute('hidden', 'true');
+      return;
+    }
+    thumbImage.src = normalizedUrl;
+    if (objectUrl) {
+      thumbImage.dataset.objectUrl = normalizedUrl;
+    } else {
+      delete thumbImage.dataset.objectUrl;
+    }
+    thumbWrap.removeAttribute('hidden');
   };
 
   let mediaPreview = null;
@@ -1249,8 +1582,12 @@ document.addEventListener('DOMContentLoaded', () => {
           preview.textContent = file ? `Ausgewählt: ${file.name}` : 'Keine Datei ausgewählt.';
         }
         if (file) {
+          const objectUrl = URL.createObjectURL(file);
+          setPickerThumbnail(picker, objectUrl, { objectUrl: true });
           const fallbackAlt = stripExtension(file.name);
           setAltInputs(picker, fallbackAlt, fallbackAlt);
+        } else {
+          setPickerThumbnail(picker, picker.querySelector('[data-gallery-current]')?.value || '');
         }
         updateAltVisibility(picker);
       });
@@ -1276,6 +1613,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const previewLinks = Array.from(picker.querySelectorAll('[data-media-preview-url]'));
     previewLinks.forEach((link) => bindPreviewHandlers(link));
+    setPickerThumbnail(picker, picker.querySelector('[data-gallery-current]')?.value || '');
     updateAltVisibility(picker);
   };
 
@@ -1449,6 +1787,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const label = item.dataset.galleryItemLabel || id;
         preview.textContent = label ? `Ausgewählt: ${label}` : 'Keine Datei ausgewählt.';
       }
+      const selectedUrl = item.dataset.galleryItemUrl || '';
+      const currentInput = activePicker.querySelector('[data-gallery-current]');
+      if (currentInput && selectedUrl) {
+        currentInput.value = selectedUrl;
+      }
+      setPickerThumbnail(activePicker, selectedUrl || currentInput?.value || '');
       if (type === 'image') {
         const altDe = item.dataset.galleryItemAltDe || '';
         const altEn = item.dataset.galleryItemAltEn || '';
@@ -1491,11 +1835,15 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const initDynamicRows = (container) => {
+    if (container.dataset.dynamicRowsInitialized === 'true') return;
+    container.dataset.dynamicRowsInitialized = 'true';
     const itemsContainer = container.querySelector('[data-dynamic-rows-items]');
     if (!itemsContainer) return;
     const max = Number(container.dataset.max || 8);
     const manualMode = container.hasAttribute('data-dynamic-manual');
+    const sortableMode = container.hasAttribute('data-dynamic-sortable');
     const addButton = container.querySelector('[data-dynamic-add]');
+    let draggingRow = null;
 
     const getRows = () => Array.from(itemsContainer.querySelectorAll('[data-dynamic-row]'));
 
@@ -1541,6 +1889,9 @@ document.addEventListener('DOMContentLoaded', () => {
       row.querySelectorAll('.admin-media-picker__preview-link').forEach((link) => {
         link.remove();
       });
+      row.querySelectorAll('[data-gallery-picker]').forEach((picker) => {
+        setPickerThumbnail(picker, '');
+      });
     };
 
     const attachRowListeners = (row) => {
@@ -1567,11 +1918,47 @@ document.addEventListener('DOMContentLoaded', () => {
       itemsContainer.appendChild(newRow);
       attachRowListeners(newRow);
       attachRemoveListener(newRow);
+      attachSortListeners(newRow);
     };
 
     const reindexRows = () => {
       getRows().forEach((row, index) => {
         updateRowIndex(row, index);
+      });
+    };
+
+    const attachSortListeners = (row) => {
+      if (!sortableMode) return;
+      if (row.dataset.dynamicSortBound === 'true') return;
+      row.dataset.dynamicSortBound = 'true';
+      row.draggable = true;
+
+      row.addEventListener('mousedown', (event) => {
+        const hasHandle = Boolean(row.querySelector('[data-dynamic-drag-handle]'));
+        const dragAllowed = !hasHandle || Boolean(event.target.closest('[data-dynamic-drag-handle]'));
+        row.dataset.dynamicDragAllowed = dragAllowed ? 'true' : 'false';
+      });
+
+      row.addEventListener('dragstart', (event) => {
+        if (row.dataset.dynamicDragAllowed === 'false') {
+          event.preventDefault();
+          return;
+        }
+        draggingRow = row;
+        row.classList.add('is-dragging');
+        if (event.dataTransfer) {
+          event.dataTransfer.effectAllowed = 'move';
+          event.dataTransfer.setData('text/plain', row.dataset.dynamicRowIndex || '');
+        }
+      });
+
+      row.addEventListener('dragend', () => {
+        row.classList.remove('is-dragging');
+        row.dataset.dynamicDragAllowed = 'false';
+        if (draggingRow === row) {
+          draggingRow = null;
+          reindexRows();
+        }
       });
     };
 
@@ -1584,6 +1971,9 @@ document.addEventListener('DOMContentLoaded', () => {
           resetRowValues(row);
           return;
         }
+        row.querySelectorAll('[data-gallery-picker]').forEach((picker) => {
+          setPickerThumbnail(picker, '');
+        });
         row.remove();
         reindexRows();
       });
@@ -1605,6 +1995,7 @@ document.addEventListener('DOMContentLoaded', () => {
         attachRowListeners(newRow);
       }
       attachRemoveListener(newRow);
+      attachSortListeners(newRow);
     };
 
     getRows().forEach((row, index) => {
@@ -1613,7 +2004,29 @@ document.addEventListener('DOMContentLoaded', () => {
         attachRowListeners(row);
       }
       attachRemoveListener(row);
+      attachSortListeners(row);
     });
+
+    if (sortableMode) {
+      itemsContainer.addEventListener('dragover', (event) => {
+        if (!draggingRow) return;
+        event.preventDefault();
+        const siblingRows = getRows().filter((row) => row !== draggingRow);
+        const afterElement = siblingRows.find((row) => {
+          const box = row.getBoundingClientRect();
+          return event.clientY < box.top + box.height / 2;
+        });
+        if (afterElement) {
+          itemsContainer.insertBefore(draggingRow, afterElement);
+        } else {
+          itemsContainer.appendChild(draggingRow);
+        }
+      });
+      itemsContainer.addEventListener('drop', (event) => {
+        event.preventDefault();
+      });
+    }
+
     if (manualMode) {
       if (addButton) {
         addButton.addEventListener('click', addRow);
@@ -1816,6 +2229,10 @@ document.addEventListener('DOMContentLoaded', () => {
         Array.from(newBlock.querySelectorAll('[data-gallery-picker]')).forEach((picker) => {
           bindMediaPicker(picker);
         });
+        newBlock.querySelectorAll('[data-bulk-upload-input]').forEach(initBulkUploadInput);
+        newBlock.querySelectorAll('[data-dynamic-list]').forEach(initDynamicList);
+        newBlock.querySelectorAll('[data-dynamic-rows]').forEach(initDynamicRows);
+        newBlock.querySelectorAll('[data-dynamic-faq]').forEach(initDynamicFaq);
         initKontaktLayout(newBlock);
         initHeroLayout(newBlock);
         initBereicheLayout(newBlock);
@@ -1889,11 +2306,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const gallerySubpageSelect = document.querySelector('[data-gallery-subpage-select]');
+  if (gallerySubpageSelect) {
+    gallerySubpageSelect.addEventListener('change', () => {
+      const value = gallerySubpageSelect.value;
+      if (!value) return;
+      const params = new URLSearchParams(window.location.search);
+      params.set('nav', 'pages');
+      params.set('tab', 'gallery-subpages');
+      params.set('gallerySubpageId', value);
+      window.location.search = params.toString();
+    });
+  }
+
   const createSubpageButton = document.querySelector('[data-create-leistungen-subpage]');
   const createSubpageForm = document.getElementById('leistungen-subpage-create');
   if (createSubpageButton && createSubpageForm) {
     createSubpageButton.addEventListener('click', () => {
       createSubpageForm.submit();
+    });
+  }
+
+  const createGallerySubpageButton = document.querySelector('[data-create-gallery-subpage]');
+  const createGallerySubpageForm = document.getElementById('gallery-subpage-create');
+  if (createGallerySubpageButton && createGallerySubpageForm) {
+    createGallerySubpageButton.addEventListener('click', () => {
+      createGallerySubpageForm.submit();
     });
   }
 

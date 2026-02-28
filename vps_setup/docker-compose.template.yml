@@ -1,0 +1,103 @@
+name: TODO_PROJECT_NAME
+
+services:
+  app:
+    # TODO: Kontext auf App-Ordner anpassen, z. B. ./server oder .
+    build:
+      context: TODO_APP_BUILD_CONTEXT
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - default
+      - proxy
+    expose:
+      - "TODO_APP_PORT_INTERNAL" # z. B. 3000
+    environment:
+      - CANONICAL_HOST=${CANONICAL_HOST}
+    volumes:
+      # TODO: Persistente Projektpfade anpassen
+      - /home/webadmin/apps/TODO_PROJECT_NAME/data/uploads:/app/public/uploads
+      - /home/webadmin/apps/TODO_PROJECT_NAME/data/downloads:/app/downloads
+    labels:
+      # TODO: Labels/Router auf dein Projekt und Domain anpassen
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.services.TODO_PROJECT_NAME-app.loadbalancer.server.port=TODO_APP_PORT_INTERNAL"
+      - "traefik.http.routers.TODO_PROJECT_NAME-www.rule=Host(`${SITE_HOST_WWW}`)"
+      - "traefik.http.routers.TODO_PROJECT_NAME-www.entrypoints=websecure"
+      - "traefik.http.routers.TODO_PROJECT_NAME-www.tls.certresolver=le"
+      - "traefik.http.routers.TODO_PROJECT_NAME-www.service=TODO_PROJECT_NAME-app"
+      - "traefik.http.routers.TODO_PROJECT_NAME-root.rule=Host(`${SITE_HOST_ROOT}`)"
+      - "traefik.http.routers.TODO_PROJECT_NAME-root.entrypoints=websecure"
+      - "traefik.http.routers.TODO_PROJECT_NAME-root.tls.certresolver=le"
+      - "traefik.http.routers.TODO_PROJECT_NAME-root.middlewares=TODO_PROJECT_NAME-to-www"
+      - "traefik.http.routers.TODO_PROJECT_NAME-root.service=TODO_PROJECT_NAME-app"
+      - "traefik.http.middlewares.TODO_PROJECT_NAME-to-www.redirectregex.regex=^https?://${SITE_DOMAIN}/(.*)"
+      - "traefik.http.middlewares.TODO_PROJECT_NAME-to-www.redirectregex.replacement=https://${SITE_HOST_WWW}/$$1"
+      - "traefik.http.middlewares.TODO_PROJECT_NAME-to-www.redirectregex.permanent=true"
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    env_file:
+      - .env
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      # TODO: Persistenten PG-Ordner anpassen
+      - /home/webadmin/apps/TODO_PROJECT_NAME/data/postgres:/var/lib/postgresql/data
+    networks:
+      default: {}
+      dbadmin:
+        aliases:
+          - TODO_PROJECT_NAME-postgres
+    # Optional: nur VPN-intern veröffentlichen
+    ports:
+      - "10.10.0.1:5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  webhook:
+    build:
+      context: ./deploy/webhook
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - proxy
+    expose:
+      - "4000"
+    volumes:
+      # TODO: App-Basisordner anpassen
+      - /home/webadmin/apps:/apps:rw
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      # TODO: SSH-Key Pfad für GitHub Deploy Key anpassen
+      - /home/webadmin/.ssh/github_ionos_ed25519:/root/.ssh/id_ed25519:ro
+    environment:
+      - WEBHOOK_PORT=4000
+      - DEPLOY_SCRIPT=/apps/TODO_PROJECT_NAME/deploy/deploy.sh
+      - DEPLOY_BRANCH=${DEPLOY_BRANCH}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.TODO_PROJECT_NAME-deploy.rule=Host(`${HOOKS_HOST}`) && PathPrefix(`/TODO_PROJECT_NAME`)"
+      - "traefik.http.routers.TODO_PROJECT_NAME-deploy.entrypoints=websecure"
+      - "traefik.http.routers.TODO_PROJECT_NAME-deploy.tls.certresolver=le"
+      - "traefik.http.routers.TODO_PROJECT_NAME-deploy.middlewares=TODO_PROJECT_NAME-deploy-strip"
+      - "traefik.http.middlewares.TODO_PROJECT_NAME-deploy-strip.stripprefix.prefixes=/TODO_PROJECT_NAME"
+      - "traefik.http.services.TODO_PROJECT_NAME-deploy.loadbalancer.server.port=4000"
+
+networks:
+  proxy:
+    external: true # TODO: auf false setzen/entfernen, wenn kein externes Traefik-Netz
+  dbadmin:
+    external: true # TODO: optional entfernen, wenn nicht benötigt

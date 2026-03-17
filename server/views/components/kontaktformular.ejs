@@ -65,9 +65,19 @@
     }
     return '';
   };
-    const isLeistungenSubpage =
-      page?.canonical_path?.startsWith('/leistungen/')
-    && page?.canonical_path !== '/leistungen';
+  const isLeistungenSubpage =
+      (page?.canonical_path?.startsWith('/leistungen/')
+      || page?.canonical_path?.startsWith('/leistungen-de/')
+      || page?.canonical_path?.startsWith('/leistungen-en/'))
+    && !['/leistungen', '/leistungen-de', '/leistungen-en'].includes(page?.canonical_path);
+  const shouldShowAreaSelect = isLeistungenOverviewPage || isLeistungenSubpage;
+  const areaOptions = Array.isArray(block?.areaOptions) && block.areaOptions.length
+    ? block.areaOptions
+    : [
+      '< 200 m²',
+      '200 - 1000 m²',
+      '> 1000 m²'
+    ];
   const autoServiceName = block?.serviceName || page?.title || '';
   const shouldAutoService = layout === 'services' && isLeistungenSubpage && autoServiceName;
 %>
@@ -133,6 +143,17 @@
             <option value="" disabled selected>Leistungen</option>
             <% selectServices.forEach(service => { %>
             <option value="<%= service.label %>"><%= service.label %></option>
+            <% }) %>
+          </select>
+        </label>
+        <% } %>
+        <% if (shouldShowAreaSelect) { %>
+        <label class="sauber-kontakt__field">
+          <span>Fläche auswählen</span>
+          <select name="area" required>
+            <option value="" disabled selected>Fläche</option>
+            <% areaOptions.forEach((option) => { %>
+            <option value="<%= option %>"><%= option %></option>
             <% }) %>
           </select>
         </label>

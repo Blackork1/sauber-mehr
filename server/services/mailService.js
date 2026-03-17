@@ -77,20 +77,41 @@ export async function sendRequestMail({ to, name }) {
   return transporter.sendMail(mail);
 }
 
-export async function sendContactConfirmationMail({ to, name, service }) {
+export async function sendContactConfirmationMail({ to, name, service, area, attachments = [] }) {
   const subject = 'Vielen Dank für Ihre Kontaktaufnahme';
+  const hasAttachments = Array.isArray(attachments) && attachments.length > 0;
+  const attachmentList = hasAttachments
+    ? `<ul>${attachments.map((item) => `<li>${escapeHtml(item.originalName || item.filename || 'Bild')}</li>`).join('')}</ul>`
+    : '<p>Keine Bilder mitgesendet.</p>';
   const html = `
     <p>Hallo ${escapeHtml(name || 'liebe Kundin, lieber Kunde')}</p>
     <p>Vielen Dank für Ihre Kontaktaufnahme bei Sauber &amp; Mehr.</p>
     <p>Ihre Anfrage ist eingegangen und wir melden uns in Kürze bei Ihnen.</p>
     <p>Haben Sie noch weitere Fragen, dann rufen Sie uns gerne unter +49 30 28641-263 an oder schreiben Sie eine Mail an info@sauber-mehr.de.</p>
     <p><strong>Gewünschte Reinigungsleistung:</strong> ${escapeHtml(service)}</p>
+    <p><strong>Bereich/Fläche:</strong> ${escapeHtml(area || '—')}</p>
+    <p><strong>Diese Bilder haben Sie mit übersandt:</strong></p>
+    ${attachmentList}
   `;
   const mail = {
     from: process.env.SMTP_FROM || '"TM Sauber & Mehr" <info@sauber-mehr.de>',
     to,
     subject,
-    html
+    html,
+    attachments: hasAttachments
+      ? attachments.map((item) => {
+        const mapped = {
+          filename: item.filename || item.originalName || 'bild.webp',
+          contentType: item.mimetype || 'image/webp'
+        };
+        if (item.content) {
+          mapped.content = item.content;
+        } else if (item.absolutePath) {
+          mapped.path = item.absolutePath;
+        }
+        return mapped;
+      })
+      : []
   };
   return transporter.sendMail(mail);
 }
@@ -103,9 +124,14 @@ export async function sendContactAdminMail({
   industry,
   otherDetails,
   contactMethod,
-  contactValue
+  contactValue,
+  attachments = []
 }) {
   const subject = 'Neue Kontaktanfrage – Sauber & Mehr';
+  const hasAttachments = Array.isArray(attachments) && attachments.length > 0;
+  const attachmentList = hasAttachments
+    ? `<ul>${attachments.map((item) => `<li>${escapeHtml(item.originalName || item.filename || 'Bild')}</li>`).join('')}</ul>`
+    : '<p>Keine Bilder hochgeladen.</p>';
   const html = `
     <p>Es liegt eine neue Kontaktanfrage vor.</p>
     <p><strong>Name:</strong> ${escapeHtml(name || '—')}</p>
@@ -115,12 +141,28 @@ export async function sendContactAdminMail({
     <p><strong>Weitere Details:</strong> ${escapeHtml(otherDetails || '—')}</p>
     <p><strong>Kontaktweg:</strong> ${escapeHtml(contactMethod || '—')}</p>
     <p><strong>Kontaktdaten:</strong> ${escapeHtml(contactValue || '—')}</p>
+    <p><strong>Diese Bilder wurden durch den Kunden hochgeladen:</strong></p>
+    ${attachmentList}
   `;
   const mail = {
     from: process.env.SMTP_FROM || '"Sauber Mehr" <info@sauber-mehr.de>',
     to,
     subject,
-    html
+    html,
+    attachments: hasAttachments
+      ? attachments.map((item) => {
+        const mapped = {
+          filename: item.filename || item.originalName || 'bild.webp',
+          contentType: item.mimetype || 'image/webp'
+        };
+        if (item.content) {
+          mapped.content = item.content;
+        } else if (item.absolutePath) {
+          mapped.path = item.absolutePath;
+        }
+        return mapped;
+      })
+      : []
   };
   return transporter.sendMail(mail);
 }

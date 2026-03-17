@@ -1,16 +1,9 @@
 import { Router } from 'express';
-import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { getContact, postContact } from '../controllers/contactController.js';
 
 const router = Router();
 router.get('/', getContact);
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const imageUploadDir = path.join(__dirname, '..', 'public', 'images', 'uploads');
-fs.mkdirSync(imageUploadDir, { recursive: true });
 
 function splitMultipart(buffer, boundary) {
   const boundaryBuffer = Buffer.from(`--${boundary}`);
@@ -29,7 +22,7 @@ function splitMultipart(buffer, boundary) {
   return parts;
 }
 
-function parseMultipart({ targetDir } = {}) {
+function parseMultipart() {
   return (req, _res, next) => {
     const contentType = req.headers['content-type'] || '';
     if (!contentType.startsWith('multipart/form-data')) return next();
@@ -65,16 +58,20 @@ function parseMultipart({ targetDir } = {}) {
           const storedName = `${safeName}-${Date.now()}${ext}`;
           const mimeMatch = header.match(/Content-Type:\s*([^\r\n]+)/i);
           const mimetype = mimeMatch ? mimeMatch[1] : '';
-          const resolvedDir = targetDir || imageUploadDir;
-          const filePath = path.join(resolvedDir, storedName);
-          fs.writeFileSync(filePath, body);
+          if (!String(mimetype).toLowerCase().startsWith('image/')) {
+            req.fileValidationErrors = req.fileValidationErrors || [];
+            req.fileValidationErrors.push({
+              field,
+              originalName
+            });
+            continue;
+          }
           const fileEntry = {
             filename: storedName,
             mimetype,
             originalname: originalName,
-            path: filePath,
             size: body.length,
-            localPath: `/images/uploads/${storedName}`
+            buffer: body
           };
           if (req.files[field]) {
             if (Array.isArray(req.files[field])) {
@@ -102,5 +99,5 @@ function parseMultipart({ targetDir } = {}) {
   };
 }
 
-router.post('/', parseMultipart({ targetDir: imageUploadDir }), postContact);
+router.post('/', parseMultipart(), postContact);
 export default router;

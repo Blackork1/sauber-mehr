@@ -203,11 +203,27 @@ function initSocialRailScrollState() {
   const rail = document.querySelector('.social-rail');
   if (!rail) return;
 
+  const END_SCROLL_THRESHOLD = 12;
   let lastScrollY = window.scrollY;
+  const getDocumentHeight = () => Math.max(
+    document.body.scrollHeight,
+    document.documentElement.scrollHeight
+  );
 
   const updateRailState = () => {
     const currentScrollY = window.scrollY;
     const isScrollingDown = currentScrollY > lastScrollY && currentScrollY > 40;
+    const viewportBottom = currentScrollY + window.innerHeight;
+    const isAtPageEnd = viewportBottom >= getDocumentHeight() - END_SCROLL_THRESHOLD;
+
+    if (isAtPageEnd) {
+      rail.classList.remove('is-dimmed');
+      rail.classList.add('is-at-end');
+      lastScrollY = currentScrollY;
+      return;
+    }
+
+    rail.classList.remove('is-at-end');
 
     if (currentScrollY === 0) {
       rail.classList.remove('is-dimmed');
@@ -220,6 +236,7 @@ function initSocialRailScrollState() {
 
   updateRailState();
   window.addEventListener('scroll', updateRailState, { passive: true });
+  window.addEventListener('resize', updateRailState);
 }
 
 initSocialRailScrollState();

@@ -938,8 +938,28 @@ a {
 }
 
 @media (max-width: 768px) {
+  .site-footer__brand {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .site-footer__brand-text {
+    align-items: center;
+  }
+
   .site-footer__columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-footer__column--company,
+  .site-footer__column--services {
+    text-align: center;
+  }
+
+  .site-footer__column--company ul,
+  .site-footer__column--services ul {
+    justify-items: center;
   }
 
   .site-footer__column--contact {

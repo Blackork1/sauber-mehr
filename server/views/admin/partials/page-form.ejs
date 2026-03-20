@@ -232,15 +232,15 @@
           </div>
           <div class="admin-grid">
             <div class="admin-field">
-              <label>Hero-Bild</label>
+              <label>Hero Hintergrund (Desktop/Tablet)</label>
               <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
                 <div class="admin-media-picker__controls">
                   <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
                   <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
                 </div>
-                <input type="file" name="content_block_<%= block._adminId %>__image_upload" accept="image/*" data-upload-input hidden>
-                <input type="hidden" name="content_block_<%= block._adminId %>__image_gallery_id" data-gallery-input="image" value="">
-                <input type="hidden" name="content_block_<%= block._adminId %>__image" value="<%= safeValue(getHeroImage(block)) %>" data-gallery-current>
+                <input type="file" name="content_block_<%= block._adminId %>__imageDesktop_upload" accept="image/*" data-upload-input hidden>
+                <input type="hidden" name="content_block_<%= block._adminId %>__imageDesktop_gallery_id" data-gallery-input="image" value="">
+                <input type="hidden" name="content_block_<%= block._adminId %>__imageDesktop" value="<%= safeValue(getHeroDesktopImage(block)) %>" data-gallery-current>
                 <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
                   <div class="admin-field">
                     <label>Alt-Text</label>
@@ -248,8 +248,26 @@
                   </div>
                 </div>
                 <small data-gallery-preview>Keine Datei ausgewählt.</small>
-                <% if (getHeroImage(block)) { %>
-                <a class="admin-media-picker__preview-link" href="<%= getHeroImage(block) %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= getHeroImage(block) %>" data-media-preview-type="image">
+                <% if (getHeroDesktopImage(block)) { %>
+                <a class="admin-media-picker__preview-link" href="<%= getHeroDesktopImage(block) %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= getHeroDesktopImage(block) %>" data-media-preview-type="image">
+                  Aktuelles Bild anzeigen
+                </a>
+                <% } %>
+              </div>
+            </div>
+            <div class="admin-field">
+              <label>Hero Hintergrund (Mobile Hochkant)</label>
+              <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                <div class="admin-media-picker__controls">
+                  <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                  <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                </div>
+                <input type="file" name="content_block_<%= block._adminId %>__imageMobile_upload" accept="image/*" data-upload-input hidden>
+                <input type="hidden" name="content_block_<%= block._adminId %>__imageMobile_gallery_id" data-gallery-input="image" value="">
+                <input type="hidden" name="content_block_<%= block._adminId %>__imageMobile" value="<%= safeValue(getHeroMobileImage(block)) %>" data-gallery-current>
+                <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                <% if (getHeroMobileImage(block)) { %>
+                <a class="admin-media-picker__preview-link" href="<%= getHeroMobileImage(block) %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= getHeroMobileImage(block) %>" data-media-preview-type="image">
                   Aktuelles Bild anzeigen
                 </a>
                 <% } %>
@@ -1445,21 +1463,34 @@
         </div>
         <div class="admin-grid">
           <div class="admin-field">
-            <label>Hero-Bild</label>
+            <label>Hero Hintergrund (Desktop/Tablet)</label>
             <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
               <div class="admin-media-picker__controls">
                 <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
                 <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
               </div>
-              <input type="file" name="content_block___BLOCK_ID___image_upload" accept="image/*" data-upload-input hidden>
-              <input type="hidden" name="content_block___BLOCK_ID___image_gallery_id" data-gallery-input="image" value="">
-              <input type="hidden" name="content_block___BLOCK_ID___image" value="" data-gallery-current>
+              <input type="file" name="content_block___BLOCK_ID___imageDesktop_upload" accept="image/*" data-upload-input hidden>
+              <input type="hidden" name="content_block___BLOCK_ID___imageDesktop_gallery_id" data-gallery-input="image" value="">
+              <input type="hidden" name="content_block___BLOCK_ID___imageDesktop" value="" data-gallery-current>
               <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
                 <div class="admin-field">
                   <label>Alt-Text</label>
                   <input type="text" name="content_block___BLOCK_ID___imageAlt" data-gallery-alt-input="de" value="">
                 </div>
               </div>
+              <small data-gallery-preview>Keine Datei ausgewählt.</small>
+            </div>
+          </div>
+          <div class="admin-field">
+            <label>Hero Hintergrund (Mobile Hochkant)</label>
+            <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+              <div class="admin-media-picker__controls">
+                <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
+                <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+              </div>
+              <input type="file" name="content_block___BLOCK_ID___imageMobile_upload" accept="image/*" data-upload-input hidden>
+              <input type="hidden" name="content_block___BLOCK_ID___imageMobile_gallery_id" data-gallery-input="image" value="">
+              <input type="hidden" name="content_block___BLOCK_ID___imageMobile" value="" data-gallery-current>
               <small data-gallery-preview>Keine Datei ausgewählt.</small>
             </div>
           </div>

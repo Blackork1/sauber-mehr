@@ -22,7 +22,9 @@
   const getBlock = (blocks, type) => (Array.isArray(blocks) ? blocks.find((block) => block?.type === type) : null) || {};
   const getHeroCtaLabel = (block) => block?.ctaLabel || block?.cta?.label || '';
   const getHeroCtaHref = (block) => block?.ctaHref || block?.cta?.href || '';
-  const getHeroImage = (block) => block?.image || block?.imageUrl || block?.img?.src || '';
+  const getHeroDesktopImage = (block) => block?.imageDesktop || block?.image || block?.imageUrl || block?.img?.src || '';
+  const getHeroMobileImage = (block) => block?.imageMobile || '';
+  const getHeroImage = (block) => getHeroDesktopImage(block);
   const getCtaTitle = (block) => block?.title || block?.headline || '';
   const getCtaText = (block) => block?.text || block?.subline || '';
   const getCtaButtonLabel = (block) => block?.button?.label || block?.cta?.label || '';
@@ -36,7 +38,7 @@
   };
   const getAltDe = (value) => getAltValue(value, 'de');
   const getAltEn = (value) => getAltValue(value, 'en');
-  const getHeroAlt = (block) => block?.imageAlt || block?.alt || '';
+  const getHeroAlt = (block) => getAltDe(block?.imageAlt || block?.alt || '');
   const getImageTextAlt = (block) => block?.img?.alt || block?.imageAlt || '';
   const getRichText = (block) => block?.html || block?.text || '';
   const formatDateTime = (value) => {
@@ -128,6 +130,8 @@
          isChecked,
          getHeroCtaLabel,
          getHeroCtaHref,
+         getHeroDesktopImage,
+         getHeroMobileImage,
          getHeroImage,
          getHeroAlt
        }) %>
@@ -140,6 +144,8 @@
          isChecked,
          getHeroCtaLabel,
          getHeroCtaHref,
+         getHeroDesktopImage,
+         getHeroMobileImage,
          getHeroImage,
          getHeroAlt,
          pagePanelId: 'leistungen-subpages',
@@ -167,6 +173,8 @@
          isChecked,
          getHeroCtaLabel,
          getHeroCtaHref,
+         getHeroDesktopImage,
+         getHeroMobileImage,
          getHeroImage,
          getHeroAlt,
          pagePanelId: 'gallery-subpages',

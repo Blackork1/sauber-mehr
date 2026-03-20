@@ -574,16 +574,43 @@ export async function updatePage(req, res, next) {
         const block = blockMap[blockId];
         if (!block) continue;
         if (block.type === 'hero') {
-          const fieldBase = `content_block_${blockId}__image`;
-          const resolved = await resolveImageFieldSimple({
-            upload: req.files?.[`${fieldBase}_upload`],
-            galleryId: req.body[`${fieldBase}_gallery_id`],
-            currentUrl: block.image,
+          const legacyFieldBase = `content_block_${blockId}__image`;
+          const desktopFieldBase = `content_block_${blockId}__imageDesktop`;
+          const mobileFieldBase = `content_block_${blockId}__imageMobile`;
+
+          const resolvedDesktop = await resolveImageFieldSimple({
+            upload: req.files?.[`${desktopFieldBase}_upload`] || req.files?.[`${legacyFieldBase}_upload`],
+            galleryId: req.body[`${desktopFieldBase}_gallery_id`] || req.body[`${legacyFieldBase}_gallery_id`],
+            currentUrl: block.imageDesktop || block.image,
             alt: block.imageAlt,
             pool
           });
-          if (resolved.src) block.image = resolved.src;
-          if (resolved.alt) block.imageAlt = resolved.alt;
+          if (resolvedDesktop.src) {
+            block.imageDesktop = resolvedDesktop.src;
+            block.image = resolvedDesktop.src;
+          }
+          if (resolvedDesktop.alt) block.imageAlt = resolvedDesktop.alt;
+
+          const resolvedMobile = await resolveImageFieldSimple({
+            upload: req.files?.[`${mobileFieldBase}_upload`],
+            galleryId: req.body[`${mobileFieldBase}_gallery_id`],
+            currentUrl: block.imageMobile,
+            alt: block.imageAlt,
+            pool
+          });
+          if (resolvedMobile.src) block.imageMobile = resolvedMobile.src;
+          if (resolvedMobile.alt) block.imageAlt = resolvedMobile.alt;
+
+          if (!normalizeString(block.imageDesktop) && normalizeString(block.image)) {
+            block.imageDesktop = block.image;
+          }
+          if (!normalizeString(block.imageDesktop) && normalizeString(block.imageMobile)) {
+            block.imageDesktop = block.imageMobile;
+          }
+          if (!normalizeString(block.image) && normalizeString(block.imageDesktop)) {
+            block.image = block.imageDesktop;
+          }
+
           const galleryItems = Array.isArray(block.gallery) ? block.gallery : [];
           for (let index = 0; index < galleryItems.length; index += 1) {
             const galleryFieldBase = `content_block_${blockId}__gallery.${index}.src`;

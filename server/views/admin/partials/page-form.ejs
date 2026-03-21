@@ -11,6 +11,7 @@
   const panelGroup = pagePanelGroupValue || 'pages';
   const isActivePanel = activeTabValue === panelId;
   const blocks = Array.isArray(page.content) ? page.content : [];
+  const hasNonEmptyText = (value) => String(value ?? '').trim().length > 0;
 %>
 
 <form class="admin-panel <%= isActivePanel ? '' : 'is-hidden' %>" method="post" action="/adminbackend/pages/<%= page.id %>" enctype="multipart/form-data" data-panel="<%= panelId %>" data-panel-group="<%= panelGroup %>">
@@ -40,6 +41,11 @@
   <%
            const subpagesList = Array.isArray(gallerySubpagesListValue) ? gallerySubpagesListValue : [];
            const selectedSubpageId = selectedGallerySubpageValue?.id || page?.id;
+           const gallerySubpageImageCount = blocks.reduce((count, block) => {
+             if (block?.type !== 'shootingGallery') return count;
+             const images = Array.isArray(block?.images) ? block.images : [];
+             return count + images.filter((item) => hasNonEmptyText(item?.src)).length;
+           }, 0);
          %>
   <input type="hidden" name="return_gallery_subpage_id" value="<%= selectedSubpageId %>">
   <div class="admin-panel__section">
@@ -53,7 +59,30 @@
         </select>
       </div>
       <button type="button" class="admin-button" data-create-gallery-subpage>Neue Unterseite</button>
+      <button
+        type="submit"
+        class="admin-button admin-button--secondary"
+        formaction="/adminbackend/gallery-subpages/<%= selectedSubpageId %>/images/delete-all"
+        formmethod="post"
+        formnovalidate
+        data-confirm-message="Sollen wirklich alle Bilder gelöscht werden?"
+        <%= gallerySubpageImageCount > 0 ? '' : 'disabled' %>>
+        Alle Bilder löschen
+      </button>
+      <button
+        type="submit"
+        class="admin-button admin-button--secondary"
+        formaction="/adminbackend/gallery-subpages/<%= selectedSubpageId %>/delete"
+        formmethod="post"
+        formnovalidate
+        data-confirm-message="Sollen wirklich diese Unterseite gelöscht werden?"
+        <%= gallerySubpageImageCount === 0 ? '' : 'disabled' %>>
+        Unterseite löschen
+      </button>
     </div>
+    <% if (gallerySubpageImageCount > 0) { %>
+    <small class="admin-panel__hint">Bitte zuerst alle Bilder löschen, danach kann die Unterseite gelöscht werden.</small>
+    <% } %>
   </div>
   <% } %>
   <div class="admin-panel__section">

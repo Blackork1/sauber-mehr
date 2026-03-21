@@ -7,8 +7,11 @@ import {
   updatePage,
   createLeistungenSubpage,
   createGallerySubpage,
+  clearGallerySubpageImagesAdmin,
+  deleteGallerySubpageAdmin,
   createGalleryImageAdmin,
   createGalleryVideoAdmin,
+  deleteSelectedGalleryImagesAdmin,
   deleteGalleryImageAdmin,
   deleteGalleryVideoAdmin,
   updateGalleryVisibilityAdmin,
@@ -132,10 +135,25 @@ router.post(
 router.post('/adminbackend/leistungen-subpages/new', requireAdmin, createLeistungenSubpage);
 router.post('/adminbackend/gallery-subpages/new', requireAdmin, createGallerySubpage);
 router.post(
+  '/adminbackend/gallery-subpages/:id/images/delete-all',
+  requireAdmin,
+  clearGallerySubpageImagesAdmin
+);
+router.post(
+  '/adminbackend/gallery-subpages/:id/delete',
+  requireAdmin,
+  deleteGallerySubpageAdmin
+);
+router.post(
   '/adminbackend/gallery/images',
   requireAdmin,
   parseMultipart({ targetDir: tmpUploadDir }),
   createGalleryImageAdmin
+);
+router.post(
+  '/adminbackend/gallery/images/delete-selected',
+  requireAdmin,
+  deleteSelectedGalleryImagesAdmin
 );
 router.post(
   '/adminbackend/gallery/videos',

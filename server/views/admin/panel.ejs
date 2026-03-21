@@ -13,11 +13,16 @@
   const adminQuery = query || {};
   const adminSaved = adminQuery.saved === '1';
   const galleryError = adminQuery.error || '';
+  const pageErrorMessage = galleryError === 'gallery-subpage-has-images'
+    ? 'Bitte zuerst alle Bilder der Gallery-Unterseite löschen.'
+    : '';
   const galleryErrorMessage = galleryError === 'gallery-duplicate-image'
     ? 'Bild liegt bereits in der Gallery vor.'
+    : (galleryError === 'gallery-no-selection'
+      ? 'Bitte mindestens ein Bild für die Löschung auswählen.'
     : (galleryError === 'gallery-duplicate-video'
       ? 'Video liegt bereits in der Gallery vor.'
-      : '');
+      : ''));
   const activeTab = adminQuery.tab || (pagesList[0] ? `page-${pagesList[0].id}` : '');
   const getBlock = (blocks, type) => (Array.isArray(blocks) ? blocks.find((block) => block?.type === type) : null) || {};
   const getHeroCtaLabel = (block) => block?.ctaLabel || block?.cta?.label || '';
@@ -107,6 +112,9 @@
          </div>
          <% if (adminSaved) { %>
          <div class="admin-panel__alert admin-panel__alert--success">Änderungen wurden gespeichert.</div>
+         <% } %>
+         <% if (pageErrorMessage) { %>
+         <div class="admin-panel__alert admin-panel__alert--warning"><%= pageErrorMessage %></div>
          <% } %>
        </header>
        <div class="admin-tabs" data-admin-tabs="pages">
@@ -224,16 +232,18 @@
              <form class="admin-gallery-form" method="post" action="/adminbackend/gallery/images" enctype="multipart/form-data">
                <div class="admin-grid">
                  <div class="admin-field">
-                   <label>Bilddatei:</label>
-                   <input type="file" name="gallery_image_file" accept="image/*" required>
+                   <label>Bilddatei(en):</label>
+                   <input type="file" name="gallery_image_file" accept="image/*" multiple required data-bulk-upload-input>
+                   <small data-bulk-upload-preview>Keine Dateien ausgewählt.</small>
+                   <small>Mehrfach-Upload wie bei Gallery-Unterseiten: alle ausgewählten Bilder werden auf einmal hochgeladen.</small>
                  </div>
                  <div class="admin-field">
                    <label>Alt-Text Deutsch:</label>
-                   <input type="text" name="gallery_image_alt_de" placeholder="Alt-Text Deutsch" required>
+                   <input type="text" name="gallery_image_alt_de" placeholder="Optional für alle Bilder">
                  </div>
                  <div class="admin-field">
                    <label>Alt-Text Englisch:</label>
-                   <input type="text" name="gallery_image_alt_en" placeholder="Alt-Text Englisch" required>
+                   <input type="text" name="gallery_image_alt_en" placeholder="Optional für alle Bilder">
                  </div>
                </div>
                <div class="admin-grid">
@@ -254,10 +264,22 @@
 
            <div class="admin-panel__section">
              <h3 class="admin-panel__title">Alle Bilder</h3>
-             <form class="admin-panel__actions admin-panel__actions--inline" method="post" action="/adminbackend/gallery/images/sort" data-gallery-sort-form>
-               <input type="hidden" name="order" value="[]" data-gallery-sort-input>
-               <button type="submit" class="admin-button">Sortierung speichern</button>
-             </form>
+             <div class="admin-panel__actions admin-panel__actions--inline">
+               <form method="post" action="/adminbackend/gallery/images/delete-selected" id="admin-gallery-delete-selection-form">
+                 <button
+                   type="submit"
+                   class="admin-button admin-button--secondary"
+                   data-gallery-delete-submit
+                   data-confirm-message="Sollen wirklich alle ausgewählten Bilder gelöscht werden?"
+                   disabled>
+                   Auswahl löschen
+                 </button>
+               </form>
+               <form method="post" action="/adminbackend/gallery/images/sort" data-gallery-sort-form>
+                 <input type="hidden" name="order" value="[]" data-gallery-sort-input>
+                 <button type="submit" class="admin-button">Sortierung speichern</button>
+               </form>
+             </div>
              <% if (galleryImages?.length) { %>
              <div class="admin-gallery-grid" data-gallery-sortable>
                <% galleryImages.forEach((image) => { %>
@@ -268,6 +290,11 @@
                    <label>
                      <input type="checkbox" name="images[id_<%= image.id %>]" value="1" form="admin-gallery-visibility-form" data-gallery-visibility <%= image.show_in_gallery ? 'checked' : '' %>>
                      <span>showInGallery</span>
+                   </label>
+                   <input type="hidden" name="selected_images[id_<%= image.id %>]" value="0" form="admin-gallery-delete-selection-form">
+                   <label>
+                     <input type="checkbox" name="selected_images[id_<%= image.id %>]" value="1" form="admin-gallery-delete-selection-form" data-gallery-delete-select>
+                     <span>Auswahl</span>
                    </label>
                  </div>
                  <div class="admin-field admin-field-gallery-category">

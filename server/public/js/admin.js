@@ -1162,6 +1162,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  const deleteSelectionForm = document.getElementById('admin-gallery-delete-selection-form');
+  if (deleteSelectionForm) {
+    const selectionInputs = Array.from(document.querySelectorAll('[data-gallery-delete-select]'));
+    const deleteSelectionButton = deleteSelectionForm.querySelector('[data-gallery-delete-submit]');
+    const updateDeleteSelectionState = () => {
+      if (!deleteSelectionButton) return;
+      const hasSelection = selectionInputs.some((input) => input.checked);
+      deleteSelectionButton.disabled = !hasSelection;
+    };
+    selectionInputs.forEach((input) => {
+      input.addEventListener('change', updateDeleteSelectionState);
+    });
+    updateDeleteSelectionState();
+  }
+
   const linkHelper = document.createElement('div');
   linkHelper.className = 'admin-link-helper is-hidden';
   linkHelper.innerHTML = `
@@ -2334,6 +2349,18 @@ document.addEventListener('DOMContentLoaded', () => {
       createGallerySubpageForm.submit();
     });
   }
+
+  const confirmButtons = Array.from(document.querySelectorAll('button[data-confirm-message]'));
+  confirmButtons.forEach((button) => {
+    button.addEventListener('click', (event) => {
+      if (button.disabled) return;
+      const message = button.dataset.confirmMessage || '';
+      if (!message) return;
+      if (!window.confirm(message)) {
+        event.preventDefault();
+      }
+    });
+  });
 
   const downloadGroups = Array.from(document.querySelectorAll('[data-rahmenplan-downloads]'));
   downloadGroups.forEach((group) => {

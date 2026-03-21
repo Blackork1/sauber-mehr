@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cloudinary from '../util/cloudinary.js';
 import {
   createGalleryImage,
   createGalleryVideo,
@@ -76,6 +77,68 @@ const safeJsonParse = (value, fallback) => {
   } catch {
     return fallback;
   }
+};
+
+const parsePageContent = (value) => {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') return safeJsonParse(value, []);
+  return [];
+};
+
+const getShootingGalleryImageSources = (content) => {
+  if (!Array.isArray(content)) return [];
+  const urls = [];
+  content.forEach((block) => {
+    if (block?.type !== 'shootingGallery') return;
+    const images = Array.isArray(block?.images) ? block.images : [];
+    images.forEach((item) => {
+      const src = normalizeString(item?.src);
+      if (src) urls.push(src);
+    });
+  });
+  return urls;
+};
+
+const clearShootingGalleryImages = (content) => {
+  if (!Array.isArray(content)) return [];
+  return content.map((block) => {
+    if (block?.type !== 'shootingGallery') return block;
+    return {
+      ...block,
+      images: []
+    };
+  });
+};
+
+const resolveGalleryImageLocalPath = (localPath) => {
+  const normalized = normalizeString(localPath);
+  if (!normalized) return '';
+  if (normalized.startsWith(`${imagePublicPrefix}/`)) {
+    return path.join(imageUploadDir, normalized.replace(`${imagePublicPrefix}/`, ''));
+  }
+  if (normalized.startsWith('/')) {
+    return path.join(__dirname, '..', 'public', normalized.replace(/^\//, ''));
+  }
+  return normalized;
+};
+
+const removeGalleryImageAsset = async (pool, image) => {
+  if (!image?.id) return;
+  if (image.cloudinary_public_id) {
+    try {
+      await cloudinary.uploader.destroy(image.cloudinary_public_id, {
+        resource_type: 'image',
+        invalidate: true
+      });
+    } catch (_) {
+      // ignore
+    }
+  }
+  const localPath = resolveGalleryImageLocalPath(image.local_path);
+  if (localPath && fs.existsSync(localPath)) {
+    fs.unlinkSync(localPath);
+  }
+  await deleteGalleryImage(pool, image.id);
 };
 
 const setNestedValue = (target, path, value) => {
@@ -1015,34 +1078,159 @@ export async function createGallerySubpage(req, res, next) {
   }
 }
 
+export async function clearGallerySubpageImagesAdmin(req, res, next) {
+  try {
+    const pool = req.app.get('db');
+    const pageId = Number(req.params.id);
+    if (!Number.isFinite(pageId) || pageId <= 0) {
+      return res.redirect('/adminbackend?nav=pages&tab=gallery-subpages');
+    }
+
+    const { rows } = await pool.query(
+      'SELECT id, canonical_path, content FROM pages WHERE id = $1',
+      [pageId]
+    );
+    const page = rows[0];
+    if (!page || !isGallerySubpagePath(page.canonical_path)) {
+      return res.redirect('/adminbackend?nav=pages&tab=gallery-subpages');
+    }
+
+    const content = parsePageContent(page.content);
+    const imageSources = Array.from(new Set(getShootingGalleryImageSources(content)));
+
+    if (imageSources.length > 0) {
+      const { rows: galleryImages } = await pool.query(
+        `SELECT id, local_path, cloudinary_public_id
+         FROM gallery_images
+         WHERE show_in_gallery = false
+           AND (
+             cloudinary_url = ANY($1::text[])
+             OR local_path = ANY($1::text[])
+           )`,
+        [imageSources]
+      );
+      for (const image of galleryImages) {
+        await removeGalleryImageAsset(pool, image);
+      }
+    }
+
+    const cleanedContent = clearShootingGalleryImages(content);
+    await pool.query(
+      `UPDATE pages
+       SET content = $1
+       WHERE id = $2`,
+      [JSON.stringify(cleanedContent), pageId]
+    );
+
+    return res.redirect(`/adminbackend?nav=pages&tab=gallery-subpages&gallerySubpageId=${pageId}&saved=1`);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+export async function deleteGallerySubpageAdmin(req, res, next) {
+  try {
+    const pool = req.app.get('db');
+    const pageId = Number(req.params.id);
+    if (!Number.isFinite(pageId) || pageId <= 0) {
+      return res.redirect('/adminbackend?nav=pages&tab=gallery-subpages');
+    }
+
+    const { rows } = await pool.query(
+      'SELECT id, canonical_path, content FROM pages WHERE id = $1',
+      [pageId]
+    );
+    const page = rows[0];
+    if (!page || !isGallerySubpagePath(page.canonical_path)) {
+      return res.redirect('/adminbackend?nav=pages&tab=gallery-subpages');
+    }
+
+    const content = parsePageContent(page.content);
+    const imageSources = getShootingGalleryImageSources(content);
+    if (imageSources.length > 0) {
+      return res.redirect(`/adminbackend?nav=pages&tab=gallery-subpages&gallerySubpageId=${pageId}&error=gallery-subpage-has-images`);
+    }
+
+    await pool.query('DELETE FROM pages WHERE id = $1', [pageId]);
+    const { rows: remainingRows } = await pool.query(
+      `SELECT id
+       FROM pages
+       WHERE canonical_path LIKE '/gallery/%'
+         AND canonical_path <> '/gallery'
+       ORDER BY id ASC
+       LIMIT 1`
+    );
+
+    const params = new URLSearchParams();
+    params.set('nav', 'pages');
+    params.set('tab', 'gallery-subpages');
+    params.set('saved', '1');
+    if (remainingRows[0]?.id) {
+      params.set('gallerySubpageId', String(remainingRows[0].id));
+    }
+
+    return res.redirect(`/adminbackend?${params.toString()}`);
+  } catch (err) {
+    return next(err);
+  }
+}
+
 export async function createGalleryImageAdmin(req, res, next) {
   try {
     const pool = req.app.get('db');
-    const file = req.files?.gallery_image_file;
-    if (!file) {
+    const filesRaw = req.files?.gallery_image_file;
+    const files = Array.isArray(filesRaw) ? filesRaw : (filesRaw ? [filesRaw] : []);
+    if (!files.length) {
       return res.redirect('/adminbackend?nav=gallery&error=gallery-missing-image');
     }
-    const duplicate = await findGalleryImageByName(pool, file.originalname);
-    if (duplicate) {
+
+    const manualAltDe = normalizeAltValue(req.body.gallery_image_alt_de);
+    const manualAltEn = normalizeAltValue(req.body.gallery_image_alt_en);
+    const galleryCategory = normalizeString(req.body.gallery_image_category) || null;
+
+    let createdCount = 0;
+    for (const file of files) {
+      const originalName = file?.originalname || file?.filename || '';
+      if (!originalName) continue;
+      const duplicate = await findGalleryImageByName(pool, originalName);
+      if (duplicate) {
+        try {
+          if (file.path) {
+            await fs.promises.unlink(file.path);
+          }
+        } catch (_) {
+          // ignore
+        }
+        continue;
+      }
+
+      const fallbackAlt = stripFileExtension(originalName);
+      const baseName = manualAltDe || fallbackAlt;
+      const stored = await processGalleryImageUpload(file, { baseName });
+      const altDe = manualAltDe || fallbackAlt;
+      const altEn = manualAltEn || manualAltDe || fallbackAlt;
+
+      await createGalleryImage(pool, {
+        filename: stored.filename,
+        originalName,
+        localPath: stored.localPath,
+        cloudinaryUrl: stored.cloudinaryUrl,
+        cloudinaryPublicId: stored.cloudinaryPublicId,
+        sizeBytes: stored.sizeBytes,
+        width: stored.width,
+        height: stored.height,
+        altDe,
+        altEn,
+        showInGallery: false,
+        galleryCategory
+      });
+      createdCount += 1;
+    }
+
+    if (createdCount === 0) {
       return res.redirect('/adminbackend?nav=gallery&error=gallery-duplicate-image');
     }
-    const fallbackAlt = stripFileExtension(file.originalname || file.filename);
-    const baseName = normalizeAltValue(req.body.gallery_image_alt_de) || fallbackAlt;
-    const stored = await processGalleryImageUpload(file, { baseName });
-    await createGalleryImage(pool, {
-      filename: stored.filename,
-      originalName: file.originalname,
-      localPath: stored.localPath,
-      cloudinaryUrl: stored.cloudinaryUrl,
-      cloudinaryPublicId: stored.cloudinaryPublicId,
-      sizeBytes: stored.sizeBytes,
-      width: stored.width,
-      height: stored.height,
-      altDe: normalizeAltValue(req.body.gallery_image_alt_de) || fallbackAlt,
-      altEn: normalizeAltValue(req.body.gallery_image_alt_en) || fallbackAlt,
-      showInGallery: false,
-      galleryCategory: normalizeString(req.body.gallery_image_category) || null
-    });
+
     return res.redirect('/adminbackend?nav=gallery');
   } catch (err) {
     return next(err);
@@ -1081,22 +1269,45 @@ export async function createGalleryVideoAdmin(req, res, next) {
   }
 }
 
+export async function deleteSelectedGalleryImagesAdmin(req, res, next) {
+  try {
+    const pool = req.app.get('db');
+    const selectedImages = req.body?.selected_images || {};
+    const selectedIds = Object.entries(selectedImages)
+      .filter(([, value]) => {
+        if (Array.isArray(value)) {
+          return value.some((entry) => String(entry).trim() === '1');
+        }
+        return String(value).trim() === '1';
+      })
+      .map(([key]) => Number(String(key).replace('id_', '')))
+      .filter((id) => Number.isFinite(id) && id > 0);
+
+    const uniqueIds = Array.from(new Set(selectedIds));
+    if (!uniqueIds.length) {
+      return res.redirect('/adminbackend?nav=gallery&error=gallery-no-selection');
+    }
+
+    for (const id of uniqueIds) {
+      const image = await getGalleryImageById(pool, id);
+      if (!image) continue;
+      await removeGalleryImageAsset(pool, image);
+    }
+
+    return res.redirect('/adminbackend?nav=gallery&saved=1');
+  } catch (err) {
+    return next(err);
+  }
+}
+
 export async function deleteGalleryImageAdmin(req, res, next) {
   try {
     const pool = req.app.get('db');
     const id = Number(req.params.id);
     const image = await getGalleryImageById(pool, id);
-    if (image?.local_path) {
-      const localPath = image.local_path.startsWith(`${imagePublicPrefix}/`)
-        ? path.join(imageUploadDir, image.local_path.replace(`${imagePublicPrefix}/`, ''))
-        : (image.local_path.startsWith('/')
-          ? path.join(__dirname, '..', 'public', image.local_path.replace(/^\//, ''))
-          : image.local_path);
-      if (fs.existsSync(localPath)) {
-        fs.unlinkSync(localPath);
-      }
+    if (image) {
+      await removeGalleryImageAsset(pool, image);
     }
-    await deleteGalleryImage(pool, id);
     return res.redirect('/adminbackend?nav=gallery');
   } catch (err) {
     return next(err);

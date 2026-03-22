@@ -3,10 +3,11 @@
   const buttonLabel = block?.button?.label || 'Mehr erfahren';
   const variant = block?.variant || 'default';
   const isLeistungenBereicheSlider = variant === 'bereiche' && page?.canonical_path === '/leistungen';
+  const isStartPageFullscreenSlider = variant !== 'bereiche' && page?.canonical_path === '/';
 %>
 
 <% if (slides.length) { %>
-<section class="image-slider <%= variant === 'bereiche' ? 'image-slider--bereiche' : '' %> <%= isLeistungenBereicheSlider ? 'image-slider--leistungen-bereiche-cover' : '' %>" data-component="image-slider">
+<section class="image-slider <%= variant === 'bereiche' ? 'image-slider--bereiche' : '' %> <%= isLeistungenBereicheSlider ? 'image-slider--leistungen-bereiche-cover' : '' %> <%= isStartPageFullscreenSlider ? 'image-slider--start-fullscreen' : '' %>" data-component="image-slider">
   <div class="image-slider__carousel" data-image-carousel>
     <div class="image-slider__list" data-image-list>
       <% slides.forEach((slide) => { %>

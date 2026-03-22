@@ -241,6 +241,61 @@ function initSocialRailScrollState() {
 
 initSocialRailScrollState();
 
+function initMobileSocialRailImageSliderGuard() {
+  const rail = document.querySelector('.social-rail');
+  const slider = document.querySelector('.image-slider--start-fullscreen');
+  if (!rail || !slider || !window.matchMedia || !('IntersectionObserver' in window)) return;
+
+  const mobileQuery = window.matchMedia('(max-width: 700px)');
+  let observer = null;
+
+  const setHidden = (hidden) => {
+    rail.classList.toggle('is-hidden-by-slider', Boolean(hidden) && mobileQuery.matches);
+  };
+
+  const isSliderInViewport = () => {
+    const rect = slider.getBoundingClientRect();
+    return rect.bottom > 0 && rect.top < window.innerHeight;
+  };
+
+  const enableObserver = () => {
+    if (observer) return;
+    observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        setHidden(Boolean(entry?.isIntersecting));
+      },
+      { threshold: [0, 0.01, 0.1] }
+    );
+    observer.observe(slider);
+    setHidden(isSliderInViewport());
+  };
+
+  const disableObserver = () => {
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+    }
+    setHidden(false);
+  };
+
+  const handleBreakpointChange = () => {
+    if (mobileQuery.matches) {
+      enableObserver();
+    } else {
+      disableObserver();
+    }
+  };
+
+  handleBreakpointChange();
+
+  if (mobileQuery.addEventListener) {
+    mobileQuery.addEventListener('change', handleBreakpointChange);
+  } else if (mobileQuery.addListener) {
+    mobileQuery.addListener(handleBreakpointChange);
+  }
+}
+
 function initUniversalSliders() {
   const sliders = document.querySelectorAll('[data-component="universal-slider"]');
   if (!sliders.length) return;
@@ -2049,6 +2104,71 @@ function initImageSliders() {
     updateThumbnails();
   });
 }
+
+function initStartFullscreenSliderSnap() {
+  const slider = document.querySelector('.image-slider--start-fullscreen');
+  if (!slider || !('IntersectionObserver' in window)) return;
+
+  let hasSnapped = false;
+  let isSnapping = false;
+  let hasUserScrolled = false;
+  let lastScrollY = window.scrollY;
+  let scrollDirection = 0;
+
+  const handleScrollDirection = () => {
+    const currentScrollY = window.scrollY;
+    if (currentScrollY > lastScrollY) {
+      scrollDirection = 1;
+      hasUserScrolled = true;
+    } else if (currentScrollY < lastScrollY) {
+      scrollDirection = -1;
+      hasUserScrolled = true;
+    }
+    lastScrollY = currentScrollY;
+  };
+
+  const cleanup = () => {
+    window.removeEventListener('scroll', handleScrollDirection);
+  };
+
+  const snapToSlider = () => {
+    if (hasSnapped || isSnapping) return;
+    hasSnapped = true;
+    isSnapping = true;
+
+    const targetTop = window.scrollY + slider.getBoundingClientRect().top;
+    window.scrollTo({
+      top: targetTop,
+      behavior: 'smooth'
+    });
+
+    window.setTimeout(() => {
+      isSnapping = false;
+    }, 700);
+  };
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (hasSnapped || isSnapping) return;
+        if (!entry.isIntersecting) return;
+        if (!hasUserScrolled || scrollDirection < 0) return;
+        if (entry.intersectionRatio < 0.9) return;
+
+        snapToSlider();
+        observer.disconnect();
+        cleanup();
+      });
+    },
+    {
+      threshold: [0, 0.9, 1]
+    }
+  );
+
+  window.addEventListener('scroll', handleScrollDirection, { passive: true });
+  observer.observe(slider);
+}
+
 function initKontaktFlow() {
   const flow = document.querySelector('[data-contact-flow]');
   if (!flow) return;
@@ -2311,6 +2431,8 @@ function initShootingGalleries() {
 
 
 initImageSliders();
+initStartFullscreenSliderSnap();
+initMobileSocialRailImageSliderGuard();
 initMediaShowcases();
 initNewsSections();
 initNewsHero();

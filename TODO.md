@@ -15,6 +15,7 @@ export const SITE = {
     alt: "Kurdisches Filmfestival"
   },
 
+
   // Organization (Schema + teilweise auch im Meta-Kontext nützlich)
   organization: {
     id: "https://kurdisches-filmfestival.de/#organization",

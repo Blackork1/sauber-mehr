@@ -85,7 +85,7 @@ export async function sendContactConfirmationMail({ to, name, service, area, att
     : '<p>Keine Bilder mitgesendet.</p>';
   const html = `
     <p>Hallo ${escapeHtml(name || 'liebe Kundin, lieber Kunde')}</p>
-    <p>Vielen Dank für Ihre Kontaktaufnahme bei Sauber &amp; Mehr.</p>
+    <p>Vielen Dank für Ihre Kontaktaufnahme bei TM Sauber & Mehr.</p>
     <p>Ihre Anfrage ist eingegangen und wir melden uns in Kürze bei Ihnen.</p>
     <p>Haben Sie noch weitere Fragen, dann rufen Sie uns gerne unter +49 30 28641-263 an oder schreiben Sie eine Mail an info@sauber-mehr.de.</p>
     <p><strong>Gewünschte Reinigungsleistung:</strong> ${escapeHtml(service)}</p>
@@ -127,7 +127,7 @@ export async function sendContactAdminMail({
   contactValue,
   attachments = []
 }) {
-  const subject = 'Neue Kontaktanfrage – Sauber & Mehr';
+  const subject = 'Neue Kontaktanfrage – TM Sauber & Mehr';
   const hasAttachments = Array.isArray(attachments) && attachments.length > 0;
   const attachmentList = hasAttachments
     ? `<ul>${attachments.map((item) => `<li>${escapeHtml(item.originalName || item.filename || 'Bild')}</li>`).join('')}</ul>`
@@ -145,7 +145,7 @@ export async function sendContactAdminMail({
     ${attachmentList}
   `;
   const mail = {
-    from: process.env.SMTP_FROM || '"Sauber Mehr" <info@sauber-mehr.de>',
+    from: process.env.SMTP_FROM || '"TM Sauber & Mehr" <info@sauber-mehr.de>',
     to,
     subject,
     html,
@@ -263,7 +263,7 @@ export async function sendNewsletterMail({
 }) {
   const fromAddress = process.env.NEWSLETTER_FROM
     || process.env.SMTP_FROM
-    || '"TM Sauber & Mehr UG" <info@sauber-mehr.de>';
+    || '"TM Sauber & Mehr" <info@sauber-mehr.de>';
   const html = buildNewsletterHtml({ title, content, footerHtml, footerLogoUrl, footerLogoAlt });
   const mail = {
     from: fromAddress,
@@ -340,7 +340,7 @@ export async function sendNewsletterConfirmationMail({
 }) {
   const fromAddress = process.env.NEWSLETTER_FROM
     || process.env.SMTP_FROM
-    || '"TM Sauber & Mehr UG" <info@sauber-mehr.de>';
+    || '"TM Sauber & Mehr" <info@sauber-mehr.de>';
   const subject = 'Newsletter-Anmeldung bestätigt';
   const html = buildNewsletterConfirmationHtml({
     wantsNews,
@@ -364,7 +364,7 @@ export async function sendTicketPurchaseMail({
   cinemaTickets = []
 }) {
   const fromAddress = process.env.SMTP_FROM
-    || '"TM Sauber & Mehr UG" <info@sauber-mehr.de>';
+    || '"TM Sauber & Mehr" <info@sauber-mehr.de>';
   const intro = buyerName ? `Hallo ${buyerName},` : 'Hallo,';
   const onlineSection = onlineCode
     ? `<p><strong>Online-Zugangscode:</strong> ${onlineCode}</p>
@@ -391,7 +391,7 @@ export async function sendTicketPurchaseMail({
   return transporter.sendMail({
     from: fromAddress,
     to,
-    subject: 'Deine Anfrage – TM Sauber & Mehr UG',
+    subject: 'Deine Anfrage – TM Sauber & Mehr',
     html,
     attachments
   });
@@ -404,7 +404,7 @@ export async function sendDonationMail({
   receiptPdf
 }) {
   const fromAddress = process.env.SMTP_FROM
-    || '"TM Sauber & Mehr UG" <info@sauber-mehr.de>';
+    || '"TM Sauber & Mehr" <info@sauber-mehr.de>';
 
   const copyByLocale = {
     de: {

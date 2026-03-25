@@ -63,6 +63,7 @@ SET
 <h3>17. Speicherdauer</h3>
 <p>Wir speichern personenbezogene Daten nur so lange, wie es für die jeweiligen Zwecke erforderlich ist oder gesetzliche Pflichten dies verlangen. Danach werden die Daten gelöscht oder anonymisiert.</p>
 
+
 <h3>18. Ihre Rechte</h3>
 <p>Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16 DSGVO), Löschung (Art. 17 DSGVO), Einschränkung (Art. 18 DSGVO), Datenübertragbarkeit (Art. 20 DSGVO), Widerspruch (Art. 21 DSGVO) sowie Widerruf erteilter Einwilligungen (Art. 7 DSGVO) mit Wirkung für die Zukunft.</p>
 

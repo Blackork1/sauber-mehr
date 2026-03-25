@@ -164,8 +164,28 @@ const stripFileExtension = (value) => {
   return String(value).replace(/\.[^/.]+$/, '');
 };
 
+const isSvgUpload = (file) => {
+  const mime = String(file?.mimetype || '').toLowerCase();
+  if (mime === 'image/svg+xml') return true;
+  const filename = String(file?.originalname || file?.filename || '');
+  return path.extname(filename).toLowerCase() === '.svg';
+};
+
+const readImageMetadata = async (inputPath) => {
+  try {
+    const metadata = await sharp(inputPath).metadata();
+    return {
+      width: Number.isFinite(metadata?.width) ? metadata.width : null,
+      height: Number.isFinite(metadata?.height) ? metadata.height : null
+    };
+  } catch (_) {
+    return { width: null, height: null };
+  }
+};
+
 export const processGalleryImageUpload = async (file, { baseName } = {}) => {
-  if (!file?.mimetype?.startsWith('image/')) {
+  const svgUpload = isSvgUpload(file);
+  if (!file?.mimetype?.startsWith('image/') && !svgUpload) {
     throw new Error('Nur Bilder erlaubt.');
   }
   if (file.mimetype === 'image/gif') {
@@ -176,14 +196,29 @@ export const processGalleryImageUpload = async (file, { baseName } = {}) => {
   const outDir = path.join(uploadDirs.images, relDir);
   ensureDir(outDir);
   const derivedBaseName = baseName || stripFileExtension(file.originalname || '');
-  const filename = await ensureUniqueFilename({ dir: outDir, baseName: derivedBaseName, ext: '.webp' });
+  const outputExtension = svgUpload ? '.svg' : '.webp';
+  const filename = await ensureUniqueFilename({ dir: outDir, baseName: derivedBaseName, ext: outputExtension });
   const outAbs = path.join(outDir, filename);
 
-  const info = await transcodeImageToWebp(file.path, outAbs);
-  await rmQuiet(file.path);
+  let width = null;
+  let height = null;
+  let sizeBytes = null;
+
+  if (svgUpload) {
+    await fs.promises.rename(file.path, outAbs);
+    const metadata = await readImageMetadata(outAbs);
+    width = metadata.width;
+    height = metadata.height;
+  } else {
+    const info = await transcodeImageToWebp(file.path, outAbs);
+    await rmQuiet(file.path);
+    width = Number.isFinite(info?.width) ? info.width : null;
+    height = Number.isFinite(info?.height) ? info.height : null;
+    sizeBytes = Number.isFinite(info?.size) ? info.size : null;
+  }
 
   const relPath = path.join(relDir, filename);
-  const id = path.basename(filename, '.webp');
+  const id = path.basename(filename, outputExtension);
   const cloud = await uploadToCloudinary(outAbs, {
     resourceType: 'image',
     folder: CLOUDINARY_FOLDER_IMAGES,
@@ -195,9 +230,9 @@ export const processGalleryImageUpload = async (file, { baseName } = {}) => {
     filename,
     originalName: file.originalname,
     localPath: buildLocalPath('images', relPath),
-    sizeBytes: Number.isFinite(info?.size) ? info.size : stat.size,
-    width: Number.isFinite(info?.width) ? info.width : null,
-    height: Number.isFinite(info?.height) ? info.height : null,
+    sizeBytes: Number.isFinite(sizeBytes) ? sizeBytes : stat.size,
+    width,
+    height,
     cloudinaryUrl: cloud.secure_url,
     cloudinaryPublicId: cloud.public_id
   };

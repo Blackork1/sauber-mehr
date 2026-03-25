@@ -2174,6 +2174,8 @@ function initKontaktFlow() {
   if (!flow) return;
 
   const cards = Array.from(flow.querySelectorAll('[data-contact-card]'));
+  const OPTION_LABEL_MAX_SIZE = 16;
+  const OPTION_LABEL_MIN_SIZE = 4;
   const hiddenFields = {
     service: flow.querySelector('[data-contact-field="service"]'),
     area: flow.querySelector('[data-contact-field="area"]'),
@@ -2185,6 +2187,7 @@ function initKontaktFlow() {
   const backButtons = Array.from(flow.querySelectorAll('[data-contact-back]'));
   const stepHistory = [];
   let currentStep = null;
+  let fitLabelsRaf = null;
 
   const updateHidden = (key, value) => {
     const field = hiddenFields[key];
@@ -2198,6 +2201,44 @@ function initKontaktFlow() {
     });
   };
 
+  const fitOptionLabelSizeForGroup = (optionsGroup) => {
+    if (!optionsGroup) return;
+    const labels = Array.from(optionsGroup.querySelectorAll('.kontakt-flow__option-label'));
+    if (!labels.length) return;
+
+    const visibleLabels = labels.filter((label) => label.offsetParent !== null);
+    if (!visibleLabels.length) return;
+
+    let size = OPTION_LABEL_MAX_SIZE;
+    optionsGroup.style.setProperty('--kontakt-option-label-size', `${size}px`);
+
+    const hasOverflow = () => visibleLabels.some(
+      (label) => label.scrollWidth > label.clientWidth + 0.5
+    );
+
+    while (size > OPTION_LABEL_MIN_SIZE && hasOverflow()) {
+      size = Math.max(OPTION_LABEL_MIN_SIZE, size - 0.25);
+      optionsGroup.style.setProperty('--kontakt-option-label-size', `${size}px`);
+    }
+  };
+
+  const fitOptionLabelSizes = () => {
+    const activeCard = cards.find((card) => !card.hidden);
+    if (!activeCard) return;
+    const optionGroups = Array.from(activeCard.querySelectorAll('.kontakt-flow__options'));
+    optionGroups.forEach((group) => fitOptionLabelSizeForGroup(group));
+  };
+
+  const scheduleFitOptionLabelSizes = () => {
+    if (fitLabelsRaf !== null) {
+      window.cancelAnimationFrame(fitLabelsRaf);
+    }
+    fitLabelsRaf = window.requestAnimationFrame(() => {
+      fitLabelsRaf = null;
+      fitOptionLabelSizes();
+    });
+  };
+
   const showStep = (step, { pushHistory = true } = {}) => {
     if (currentStep && pushHistory && step !== currentStep) {
       stepHistory.push(currentStep);
@@ -2207,6 +2248,7 @@ function initKontaktFlow() {
       card.hidden = card.dataset.step !== step;
     });
     updateBackButtons();
+    scheduleFitOptionLabelSizes();
   };
 
   const contactDetailsCard = flow.querySelector('[data-step="contact-details"]');
@@ -2282,6 +2324,12 @@ function initKontaktFlow() {
   }
 
   showStep('start', { pushHistory: false });
+  window.addEventListener('resize', scheduleFitOptionLabelSizes, { passive: true });
+  if (document.fonts?.ready) {
+    document.fonts.ready
+      .then(() => scheduleFitOptionLabelSizes())
+      .catch(() => {});
+  }
 }
 
 function initShootingGalleries() {

@@ -8,7 +8,7 @@ SET
       'type', 'richText',
       'title', 'Datenschutzerklärung',
       'html', $$
-<p><strong>Stand:</strong> 9. Februar 2026</p>
+<p><strong>Stand:</strong> 25. März 2026</p>
 <p>Diese Datenschutzerklärung informiert Sie über Art, Umfang und Zwecke der Verarbeitung personenbezogener Daten auf dieser Website und den dazugehörigen Unterseiten.</p>
 
 <h3>1. Verantwortlicher</h3>
@@ -50,19 +50,26 @@ SET
 <h3>13. Google Search Console</h3>
 <p>Wir nutzen die Google Search Console zur technischen Überwachung und Optimierung unserer Auffindbarkeit in Suchmaschinen. Auf der Website selbst ist hierfür kein eigenständiges Tracking-Skript erforderlich. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.</p>
 
-<h3>14. Empfänger, Auftragsverarbeiter, Drittlandtransfer</h3>
+<h3>14. Webseiterstellung von</h3>
+<p>Diese Website wurde durch den externen Dienstleister Komplett Webdesign konzipiert und technisch umgesetzt. Weitere Informationen finden Sie unter <a href="https://www.komplettwebdesign.de" target="_blank" rel="noopener noreferrer">www.komplettwebdesign.de</a>. Beim bloßen Aufruf dieser Website erfolgt durch diesen Hinweis keine automatische Datenübertragung an Komplett Webdesign.</p>
+
+<h3>15. Social-Media-Verlinkungen (WhatsApp, Instagram, TikTok)</h3>
+<p>Auf unserer Website sind externe Links zu WhatsApp, Instagram und TikTok eingebunden. Es handelt sich um reine Verlinkungen. Eine Datenübertragung an die jeweiligen Plattformen erfolgt erst, wenn Sie den entsprechenden Link aktiv anklicken. Ab diesem Zeitpunkt gelten die Datenschutzbestimmungen des jeweiligen Anbieters.</p>
+<p>Rechtsgrundlage für die Verlinkung ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer zeitgemäßen Außendarstellung und zusätzlichen Kontaktmöglichkeit).</p>
+
+<h3>16. Empfänger, Auftragsverarbeiter, Drittlandtransfer</h3>
 <p>Wir setzen vertraglich gebundene Dienstleister (Auftragsverarbeiter nach Art. 28 DSGVO) ein. Sofern Daten in Drittländer übermittelt werden, erfolgt dies nur unter Beachtung der DSGVO-Vorgaben (z. B. Angemessenheitsbeschluss, Standardvertragsklauseln).</p>
 
-<h3>15. Speicherdauer</h3>
+<h3>17. Speicherdauer</h3>
 <p>Wir speichern personenbezogene Daten nur so lange, wie es für die jeweiligen Zwecke erforderlich ist oder gesetzliche Pflichten dies verlangen. Danach werden die Daten gelöscht oder anonymisiert.</p>
 
-<h3>16. Ihre Rechte</h3>
+<h3>18. Ihre Rechte</h3>
 <p>Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16 DSGVO), Löschung (Art. 17 DSGVO), Einschränkung (Art. 18 DSGVO), Datenübertragbarkeit (Art. 20 DSGVO), Widerspruch (Art. 21 DSGVO) sowie Widerruf erteilter Einwilligungen (Art. 7 DSGVO) mit Wirkung für die Zukunft.</p>
 
-<h3>17. Beschwerderecht</h3>
+<h3>19. Beschwerderecht</h3>
 <p>Sie haben das Recht, sich bei einer Datenschutzaufsichtsbehörde zu beschweren, insbesondere bei der für Berlin zuständigen Aufsichtsbehörde.</p>
 
-<h3>18. Änderung dieser Datenschutzerklärung</h3>
+<h3>20. Änderung dieser Datenschutzerklärung</h3>
 <p>Wir passen diese Datenschutzerklärung an, wenn dies aufgrund rechtlicher, technischer oder organisatorischer Änderungen erforderlich ist.</p>
 $$
     )

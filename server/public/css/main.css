@@ -489,7 +489,7 @@ a {
 
 .sauber-nav__logo img {
   width: 120px;
-  height: 120px;
+  /* height: 120px; */
   position: absolute;
   object-fit: contain;
 }
@@ -1888,10 +1888,14 @@ a {
 .kontakt-flow__form-wrapper {
   display: flex;
   justify-content: flex-end;
+  width: 100%;
+  justify-self: stretch;
 }
 
 .kontakt-flow__form {
-  width: min(540px, 100%);
+  width: 90%;
+  max-width: 540px;
+  min-width: 0;
 }
 
 .kontakt-flow__card {
@@ -1903,6 +1907,11 @@ a {
   display: grid;
   gap: 20px;
   min-height: 300px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  justify-self: stretch;
+  box-sizing: border-box;
   position: relative;
 }
 
@@ -1949,12 +1958,23 @@ a {
 
 .kontakt-flow__options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  justify-self: stretch;
+  align-self: stretch;
+  height: 100%;
+  grid-auto-rows: 1fr;
 }
 
 .kontakt-flow__options--grid {
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.kontakt-flow__options > .kontakt-flow__option:last-child:nth-child(4) {
+  grid-column: 2;
 }
 
 .kontakt-flow__option {
@@ -1962,6 +1982,8 @@ a {
   background: var(--sauber-focus);
   border-radius: 16px;
   padding: 12px;
+  width: 100%;
+  height: 100%;
   display: flex;
   gap: 10px;
   text-align: center;
@@ -1985,10 +2007,10 @@ a {
 
 .kontakt-flow__option-media {
   width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: 12px;
+  aspect-ratio: 1 / 1;
+  border-radius: 0;
   overflow: hidden;
-  background: rgba(83, 111, 212, 0.08);
+  background: transparent;
   display: grid;
   place-items: center;
 }
@@ -1996,7 +2018,8 @@ a {
 .kontakt-flow__option-media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center;
 }
 
 .kontakt-flow__option-placeholder {
@@ -2009,7 +2032,10 @@ a {
 .kontakt-flow__option-label {
   font-weight: 600;
   color: var(--sauber-text);
-  font-size: 14px;
+  font-size: min(16px, var(--kontakt-option-label-size, 14px));
+  line-height: 1.2;
+  width: 100%;
+  white-space: nowrap;
 }
 
 .kontakt-flow__field {
@@ -2027,6 +2053,28 @@ a {
   font-size: 15px;
 }
 
+.kontakt-flow__field input[type='file'] {
+  background: #fff;
+  padding: 10px;
+}
+
+.kontakt-flow__field input[type='file']::file-selector-button {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  background: var(--sauber-primary-indigo);
+  color: var(--sauber-off-white);
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.kontakt-flow__hint {
+  margin: -6px 0 0;
+  font-size: 13px;
+  color: var(--sauber-muted);
+}
+
 .kontakt-flow__button {
   border: none;
   border-radius: 12px;
@@ -2036,6 +2084,11 @@ a {
   font-weight: 600;
   cursor: pointer;
   width: fit-content;
+}
+
+.kontakt-flow__card[data-step="contact-details"] .kontakt-flow__field,
+.kontakt-flow__card[data-step="contact-details"] .kontakt-flow__button {
+  width: 100%;
 }
 
 @media (max-width: 1000px) {
@@ -3316,18 +3369,24 @@ body.is-shooting-gallery-open {
   }
 
   .kontakt-flow__card {
-    padding: 40px 20px 20px 20px;
+    padding: 40px 14px 16px 14px;
   }
 
   .kontakt-flow__options {
-    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    grid-template-columns: repeat(2, minmax(110px, 1fr));
+    gap: 12px;
   }
 
-  .kontakt-flow__options > .kontakt-flow__option:last-child:nth-child(odd) {
+  .kontakt-flow__options--grid {
+    grid-template-columns: repeat(2, minmax(110px, 1fr));
+  }
+
+  .kontakt-flow__options > .kontakt-flow__option:last-child:nth-child(3) {
     grid-column: 1 / -1;
     justify-self: center;
-    width: min(140px, 100%);
+    width: calc((100% - 12px) / 2);
   }
+
   .image-slider__thumbnails {
     display: none;
   }

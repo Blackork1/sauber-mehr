@@ -977,9 +977,9 @@
                       <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
                       <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
                     </div>
-                    <input type="file" name="content_block_<%= block._adminId %>__sectorCard.options.<%= index %>.imageUrl_upload" accept="image/*" data-upload-input hidden>
-                    <input type="hidden" name="content_block_<%= block._adminId %>__sectorCard.options.<%= index %>.imageUrl_gallery_id" data-gallery-input="image" value="">
-                    <input type="hidden" name="content_block_<%= block._adminId %>__sectorCard.options.<%= index %>.imageUrl" value="<%= safeValue(option?.imageUrl) %>" data-gallery-current>
+                    <input type="file" name="content_block_<%= block._adminId %>__sectorCard.options.<%= index %>.imageUrl_upload" accept="image/*" data-upload-input hidden data-dynamic-name-template="content_block_<%= block._adminId %>__sectorCard.options.__INDEX__.imageUrl_upload">
+                    <input type="hidden" name="content_block_<%= block._adminId %>__sectorCard.options.<%= index %>.imageUrl_gallery_id" data-gallery-input="image" value="" data-dynamic-name-template="content_block_<%= block._adminId %>__sectorCard.options.__INDEX__.imageUrl_gallery_id">
+                    <input type="hidden" name="content_block_<%= block._adminId %>__sectorCard.options.<%= index %>.imageUrl" value="<%= safeValue(option?.imageUrl) %>" data-gallery-current data-dynamic-name-template="content_block_<%= block._adminId %>__sectorCard.options.__INDEX__.imageUrl">
                     <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
                       <div class="admin-field">
                         <label>Alt-Text</label>
@@ -2036,9 +2036,9 @@
                     <button type="button" class="admin-button" data-upload-trigger>Bild hochladen</button>
                     <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
                   </div>
-                  <input type="file" name="content_block___BLOCK_ID___sectorCard.options.0.imageUrl_upload" accept="image/*" data-upload-input hidden>
-                  <input type="hidden" name="content_block___BLOCK_ID___sectorCard.options.0.imageUrl_gallery_id" data-gallery-input="image" value="">
-                  <input type="hidden" name="content_block___BLOCK_ID___sectorCard.options.0.imageUrl" value="" data-gallery-current>
+                  <input type="file" name="content_block___BLOCK_ID___sectorCard.options.0.imageUrl_upload" accept="image/*" data-upload-input hidden data-dynamic-name-template="content_block___BLOCK_ID___sectorCard.options.__INDEX__.imageUrl_upload">
+                  <input type="hidden" name="content_block___BLOCK_ID___sectorCard.options.0.imageUrl_gallery_id" data-gallery-input="image" value="" data-dynamic-name-template="content_block___BLOCK_ID___sectorCard.options.__INDEX__.imageUrl_gallery_id">
+                  <input type="hidden" name="content_block___BLOCK_ID___sectorCard.options.0.imageUrl" value="" data-gallery-current data-dynamic-name-template="content_block___BLOCK_ID___sectorCard.options.__INDEX__.imageUrl">
                   <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
                     <div class="admin-field">
                       <label>Alt-Text</label>

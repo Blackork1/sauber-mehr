@@ -1749,6 +1749,9 @@ a {
 .sauber-kontakt__field input[type="file"] {
   padding: 12px 14px;
   height: auto;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .sauber-kontakt__field select {
@@ -1792,11 +1795,13 @@ a {
   line-height: 1.5;
   color: var(--sauber-muted);
   overflow-wrap: anywhere;
-  word-break: normal;
+  word-break: break-word;
 }
 
 .contact-recaptcha__legal a {
   color: inherit;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .contact-recaptcha__error {
@@ -3479,19 +3484,24 @@ body.is-shooting-gallery-open {
     grid-template-columns: 1fr;
     gap: 48px;
     justify-items: stretch;
-    padding: 0 24px;
+    padding: 0 12px;
     box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
   }
   .sauber-kontakt__content {
     order: 1;
     width: 100%;
+    min-width: 0;
   }
 
   .sauber-kontakt__card-wrap {
     order: 2;
-    width: 100%;
+    width: min(100%, calc(100vw - 40px));
     max-width: 480px;
+    min-width: 0;
     justify-self: center;
+    box-sizing: border-box;
   }
 
   .sauber-kontakt__card-wrap::before {
@@ -3501,11 +3511,20 @@ body.is-shooting-gallery-open {
 
   .sauber-kontakt__card {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     box-sizing: border-box;
   }
 
   .sauber-kontakt__field {
     width: 100%;
+    min-width: 0;
+  }
+
+  .sauber-kontakt__card .contact-recaptcha {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .sauber-kontakt__items {
@@ -3560,7 +3579,7 @@ body.is-shooting-gallery-open {
 @media (max-width: 420px) {
   .sauber-kontakt__inner {
     max-width: 100%;
-    padding: 0 16px;
+    padding: 0 8px;
   }
 
   .sauber-kontakt__card-wrap {

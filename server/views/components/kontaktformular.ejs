@@ -80,6 +80,9 @@
     ];
   const autoServiceName = block?.serviceName || page?.title || '';
   const shouldAutoService = layout === 'services' && isLeistungenSubpage && autoServiceName;
+  const recaptchaEnabled = String(process.env.RECAPTCHA_ENABLED || 'true') === 'true';
+  const recaptchaSiteKey = recaptchaEnabled ? String(process.env.RECAPTCHA_SITE_KEY || '').trim() : '';
+  const recaptchaAction = recaptchaEnabled ? String(process.env.RECAPTCHA_EXPECTED_ACTION || 'contact_form').trim() : '';
 %>
 
 <section class="sauber-kontakt section" id="kontakt">
@@ -121,7 +124,16 @@
     <%} %>
 
     <div class="sauber-kontakt__card-wrap">
-      <form class="sauber-kontakt__card" method="post" action="<%= action %>" enctype="multipart/form-data">
+      <form
+        class="sauber-kontakt__card"
+        method="post"
+        action="<%= action %>"
+        enctype="multipart/form-data"
+        data-contact-form
+        data-recaptcha-enabled="<%= recaptchaEnabled ? 'true' : 'false' %>"
+        data-recaptcha-site-key="<%= recaptchaSiteKey %>"
+        data-recaptcha-action="<%= recaptchaAction %>"
+      >
         <label class="sauber-kontakt__field">
           <span>Dein Name</span>
           <input type="text" name="name" placeholder="Name" required>
@@ -162,6 +174,19 @@
           <span>Bilder hochladen (optional)</span>
           <input type="file" name="attachments" accept="image/*" multiple>
         </label>
+        <% if (recaptchaEnabled) { %>
+        <div class="contact-recaptcha" data-recaptcha-wrap>
+          <input type="hidden" name="g-recaptcha-response" value="" data-recaptcha-token>
+          <p class="contact-recaptcha__error" data-recaptcha-error hidden></p>
+          <p class="contact-recaptcha__legal">
+            Diese Website ist durch reCAPTCHA geschützt und es gelten die
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Datenschutzbestimmungen</a>
+            und
+            <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Nutzungsbedingungen</a>
+            von Google.
+          </p>
+        </div>
+        <% } %>
         <button class="sauber-kontakt__button" type="submit">Absenden</button>
       </form>
     </div>

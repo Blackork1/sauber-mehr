@@ -2332,6 +2332,187 @@ function initKontaktFlow() {
   }
 }
 
+function initLazyContactRecaptcha() {
+  const forms = Array.from(
+    document.querySelectorAll('form[data-contact-form][data-recaptcha-enabled="true"]')
+  );
+  if (!forms.length) return;
+
+  const stateByForm = new Map();
+  forms.forEach((form) => {
+    const tokenInput = form.querySelector('[data-recaptcha-token]');
+    if (!tokenInput) return;
+    stateByForm.set(form, {
+      form,
+      siteKey: String(form.dataset.recaptchaSiteKey || '').trim(),
+      action: String(form.dataset.recaptchaAction || 'contact_form').trim() || 'contact_form',
+      tokenInput,
+      error: form.querySelector('[data-recaptcha-error]'),
+      submitting: false
+    });
+  });
+
+  if (!stateByForm.size) return;
+
+  let apiLoadPromise = null;
+  let loadedSiteKey = '';
+
+  const clearError = (state) => {
+    if (!state.error) return;
+    state.error.hidden = true;
+    state.error.textContent = '';
+  };
+
+  const showError = (state, message) => {
+    if (!state.error) return;
+    state.error.hidden = false;
+    state.error.textContent = message;
+  };
+
+  const waitForRecaptchaReady = () => new Promise((resolve, reject) => {
+    if (!window.grecaptcha || typeof window.grecaptcha.ready !== 'function') {
+      reject(new Error('grecaptcha not ready'));
+      return;
+    }
+    window.grecaptcha.ready(() => resolve(window.grecaptcha));
+  });
+
+  const loadApi = (siteKey) => {
+    if (!siteKey) return Promise.reject(new Error('missing site key'));
+    if (
+      window.grecaptcha
+      && typeof window.grecaptcha.ready === 'function'
+      && loadedSiteKey === siteKey
+    ) {
+      return waitForRecaptchaReady();
+    }
+    if (apiLoadPromise && loadedSiteKey === siteKey) return apiLoadPromise;
+
+    if (loadedSiteKey && loadedSiteKey !== siteKey) {
+      return Promise.reject(new Error('multiple recaptcha keys not supported on one page'));
+    }
+
+    const lang = String(document.documentElement.lang || 'de').split('-')[0];
+    loadedSiteKey = siteKey;
+
+    apiLoadPromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[data-recaptcha-api="true"]');
+      const fail = (errorMessage) => {
+        apiLoadPromise = null;
+        loadedSiteKey = '';
+        reject(new Error(errorMessage));
+      };
+
+      const onLoad = () => {
+        waitForRecaptchaReady().then(resolve).catch(() => fail('grecaptcha not ready after script load'));
+      };
+
+      if (existing) {
+        if (
+          window.grecaptcha
+          && typeof window.grecaptcha.ready === 'function'
+          && loadedSiteKey === siteKey
+        ) {
+          onLoad();
+          return;
+        }
+        existing.addEventListener('load', onLoad, { once: true });
+        existing.addEventListener('error', () => fail('recaptcha script load failed'), { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = `https://www.google.com/recaptcha/api.js?render=${encodeURIComponent(siteKey)}&hl=${encodeURIComponent(lang)}`;
+      script.async = true;
+      script.defer = true;
+      script.dataset.recaptchaApi = 'true';
+      script.addEventListener('load', onLoad, { once: true });
+      script.addEventListener('error', () => fail('recaptcha script load failed'), { once: true });
+      document.head.appendChild(script);
+    });
+
+    return apiLoadPromise;
+  };
+
+  const activateForForm = (form) => {
+    const state = stateByForm.get(form);
+    if (!state) return Promise.resolve(false);
+
+    if (!state.siteKey) {
+      showError(state, 'Bot-Schutz ist aktuell nicht verfügbar. Bitte versuche es später erneut.');
+      return Promise.resolve(false);
+    }
+
+    return loadApi(state.siteKey)
+      .then(() => true)
+      .catch(() => {
+        showError(state, 'Bot-Schutz konnte nicht geladen werden. Bitte Seite neu laden.');
+        return false;
+      });
+  };
+
+  const fetchTokenForForm = (form) => {
+    const state = stateByForm.get(form);
+    if (!state) return Promise.resolve('');
+
+    return activateForForm(form)
+      .then((activated) => {
+        if (!activated) return '';
+        if (!window.grecaptcha || typeof window.grecaptcha.execute !== 'function') {
+          throw new Error('grecaptcha execute unavailable');
+        }
+        return window.grecaptcha.execute(state.siteKey, { action: state.action });
+      })
+      .then((token) => {
+        const safeToken = String(token || '').trim();
+        if (!safeToken) {
+          showError(state, 'Bot-Schutz konnte nicht bestätigt werden. Bitte erneut versuchen.');
+          return '';
+        }
+        state.tokenInput.value = safeToken;
+        clearError(state);
+        return safeToken;
+      })
+      .catch(() => {
+        showError(state, 'Bot-Schutz konnte nicht bestätigt werden. Bitte erneut versuchen.');
+        return '';
+      });
+  };
+
+  const addActivationListeners = (form) => {
+    const handler = () => {
+      activateForForm(form).catch(() => {});
+    };
+    form.addEventListener('pointerdown', handler, { once: true, passive: true });
+    form.addEventListener('focusin', handler, { once: true });
+    form.addEventListener('keydown', handler, { once: true });
+  };
+
+  stateByForm.forEach((state, form) => {
+    addActivationListeners(form);
+
+    form.addEventListener('submit', (event) => {
+      if (state.submitting) {
+        state.submitting = false;
+        return;
+      }
+
+      event.preventDefault();
+
+      state.tokenInput.value = '';
+      clearError(state);
+
+      fetchTokenForForm(form)
+        .then((token) => {
+          if (!token) return;
+          state.submitting = true;
+          form.submit();
+        })
+        .catch(() => {});
+    });
+  });
+}
+
 function initShootingGalleries() {
   const galleries = Array.from(document.querySelectorAll('[data-shooting-gallery]'));
   if (!galleries.length) return;
@@ -2497,3 +2678,4 @@ initTicketsHero();
 initDonationForms();
 initShootingGalleries();
 initKontaktFlow();
+initLazyContactRecaptcha();

@@ -1779,6 +1779,52 @@ a {
   width: fit-content;
 }
 
+.contact-recaptcha {
+  display: grid;
+  gap: 8px;
+  width: auto;
+  max-width: 100%;
+}
+
+.contact-recaptcha__legal {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--sauber-muted);
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.contact-recaptcha__legal a {
+  color: inherit;
+}
+
+.contact-recaptcha__error {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #b42318;
+  font-weight: 600;
+}
+
+.contact-recaptcha__error[hidden] {
+  display: none;
+}
+
+.sauber-kontakt__card .contact-recaptcha {
+  width: 380px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.sauber-kontakt__card .contact-recaptcha__legal {
+  color: var(--sauber-off-white);
+}
+
+.sauber-kontakt__card .contact-recaptcha__error {
+  color: #ffe5e8;
+}
+
 .sauber-kontakt__aside {
   display: grid;
   gap: 16px;

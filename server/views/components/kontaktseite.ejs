@@ -56,6 +56,9 @@
     ];
 
   const contactDetailsCard = block?.contactDetailsCard || {};
+  const recaptchaEnabled = String(process.env.RECAPTCHA_ENABLED || 'true') === 'true';
+  const recaptchaSiteKey = recaptchaEnabled ? String(process.env.RECAPTCHA_SITE_KEY || '').trim() : '';
+  const recaptchaAction = recaptchaEnabled ? String(process.env.RECAPTCHA_EXPECTED_ACTION || 'contact_form').trim() : '';
 %>
 
 <section class="kontakt-flow section" id="kontakt">
@@ -80,7 +83,16 @@
     </div>
 
     <div class="kontakt-flow__form-wrapper animate-on-scroll" data-contact-flow>
-      <form class="kontakt-flow__form" method="post" action="<%= action %>" enctype="multipart/form-data">
+      <form
+        class="kontakt-flow__form"
+        method="post"
+        action="<%= action %>"
+        enctype="multipart/form-data"
+        data-contact-form
+        data-recaptcha-enabled="<%= recaptchaEnabled ? 'true' : 'false' %>"
+        data-recaptcha-site-key="<%= recaptchaSiteKey %>"
+        data-recaptcha-action="<%= recaptchaAction %>"
+      >
         <input type="hidden" name="service" value="" data-contact-field="service">
         <input type="hidden" name="area" value="" data-contact-field="area">
         <input type="hidden" name="industry" value="" data-contact-field="industry">
@@ -207,6 +219,19 @@
             <span data-contact-label><%= contactDetailsCard?.phoneLabel || 'Deine Rufnummer' %></span>
             <input type="tel" name="contact_value" placeholder="<%= contactDetailsCard?.phonePlaceholder || '+49 123 456789' %>" required data-contact-input>
           </label>
+          <% if (recaptchaEnabled) { %>
+          <div class="contact-recaptcha" data-recaptcha-wrap>
+            <input type="hidden" name="g-recaptcha-response" value="" data-recaptcha-token>
+            <p class="contact-recaptcha__error" data-recaptcha-error hidden></p>
+            <p class="contact-recaptcha__legal">
+              Diese Website ist durch reCAPTCHA geschützt und es gelten die
+              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Datenschutzbestimmungen</a>
+              und
+              <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Nutzungsbedingungen</a>
+              von Google.
+            </p>
+          </div>
+          <% } %>
           <button class="kontakt-flow__button" type="submit"><%= contactDetailsCard?.submitLabel || 'Anfrage absenden' %></button>
         </div>
       </form>

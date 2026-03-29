@@ -1,7 +1,7 @@
 {
   "banner": {
     "title": "Cookie-Einstellungen",
-    "text": "Wir verwenden notwendige Cookies, damit die Website sicher funktioniert (z. B. Login und Sicherheit). Mit deiner Einwilligung nutzen wir Microsoft Clarity sowie Google Tag Manager/Google Analytics zur Analyse und laden YouTube-Videos als externe Inhalte. Du kannst deine Auswahl jederzeit in den Cookie-Einstellungen ändern oder widerrufen.",
+    "text": "Wir verwenden notwendige Cookies, damit die Website sicher funktioniert (z. B. Login, Sicherheit und Bot-Schutz im Kontaktformular). Google reCAPTCHA wird erst geladen, wenn du das Kontaktformular aktiv nutzt. Mit deiner Einwilligung nutzen wir Microsoft Clarity sowie Google Tag Manager/Google Analytics zur Analyse und laden YouTube-Videos als externe Inhalte. Du kannst deine Auswahl jederzeit in den Cookie-Einstellungen ändern oder widerrufen.",
     "privacyLink": "/datenschutz",
     "privacyLabel": "Datenschutzerklärung",
     "imprintLink": "/impressum",
@@ -12,7 +12,7 @@
   },
   "settings": {
     "title": "Cookie-Einstellungen",
-    "description": "Hier kannst du festlegen, welche optionalen Kategorien aktiviert werden sollen. Notwendige Cookies sind immer aktiv, da die Website sonst nicht korrekt funktioniert.",
+    "description": "Hier kannst du festlegen, welche optionalen Kategorien aktiviert werden sollen. Notwendige Cookies sind immer aktiv, da die Website sonst nicht korrekt funktioniert. Der Bot-Schutz via Google reCAPTCHA wird nur bei aktiver Nutzung des Kontaktformulars geladen.",
     "saveLabel": "Auswahl speichern",
     "rejectAllLabel": "Alle ablehnen",
     "acceptAllLabel": "Alle akzeptieren",
@@ -22,7 +22,7 @@
       {
         "key": "necessary",
         "title": "Notwendig (immer aktiv)",
-        "description": "Erforderlich für Betrieb, Sicherheit und Speicherung deiner Cookie-Auswahl.",
+        "description": "Erforderlich für Betrieb, Sicherheit, Bot-Schutz im Kontaktformular und Speicherung deiner Cookie-Auswahl.",
         "alwaysOn": true
       },
       {
@@ -55,6 +55,14 @@
         "purpose": "Schnelle und optimierte Auslieferung von Bildern/Videos.",
         "data": "IP-Adresse, technische Request-Daten, Geräte-/Browserinformationen",
         "legal": "Art. 6 Abs. 1 lit. f DSGVO"
+      },
+      {
+        "name": "Google reCAPTCHA",
+        "category": "Notwendig (Kontaktformular)",
+        "provider": "Google Ireland Limited / Google LLC",
+        "purpose": "Schutz des Kontaktformulars vor Spam und automatisierten Anfragen; wird erst bei aktiver Formularnutzung geladen.",
+        "data": "IP-Adresse, Browser-/Geräteinformationen, Referrer sowie technische Interaktions-/Risikodaten zur Bot-Erkennung",
+        "legal": "Art. 6 Abs. 1 lit. f DSGVO, § 25 Abs. 2 TDDDG"
       },
       {
         "name": "Microsoft Clarity",

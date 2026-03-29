@@ -6,8 +6,86 @@ function normalizeInput(value) {
   return String(value || '').trim();
 }
 
+function resolveClientIp(req) {
+  const forwardedFor = req.headers['x-forwarded-for'];
+  if (typeof forwardedFor === 'string' && forwardedFor.trim()) {
+    return forwardedFor.split(',')[0].trim();
+  }
+  return String(req.ip || req.socket?.remoteAddress || '').trim();
+}
+
 const MAX_CONTACT_IMAGE_WIDTH = Number(process.env.MAX_CONTACT_IMAGE_WIDTH || 2000);
 const CONTACT_IMAGE_QUALITY = Number(process.env.CONTACT_IMAGE_QUALITY || 80);
+const RECAPTCHA_ENABLED = String(process.env.RECAPTCHA_ENABLED || 'true') === 'true';
+const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
+const RECAPTCHA_SECRET_KEY = String(process.env.RECAPTCHA_SECRET_KEY || '').trim();
+const RECAPTCHA_EXPECTED_ACTION = String(process.env.RECAPTCHA_EXPECTED_ACTION || 'contact_form').trim();
+const RECAPTCHA_MIN_SCORE = Number(process.env.RECAPTCHA_MIN_SCORE || 0.5);
+const SAFE_RECAPTCHA_MIN_SCORE = Number.isFinite(RECAPTCHA_MIN_SCORE)
+  ? Math.min(1, Math.max(0, RECAPTCHA_MIN_SCORE))
+  : 0.5;
+
+async function verifyRecaptchaToken(token, remoteIp = '', expectedAction = '') {
+  if (!RECAPTCHA_SECRET_KEY) {
+    return { success: false, reason: 'missing_secret' };
+  }
+
+  const payload = new URLSearchParams();
+  payload.set('secret', RECAPTCHA_SECRET_KEY);
+  payload.set('response', token);
+  if (remoteIp) payload.set('remoteip', remoteIp);
+
+  try {
+    const response = await fetch(RECAPTCHA_VERIFY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: payload.toString()
+    });
+    if (!response.ok) {
+      return { success: false, reason: 'upstream_status' };
+    }
+    const data = await response.json();
+
+    if (!data?.success) {
+      return {
+        success: false,
+        reason: 'verification_failed',
+        score: typeof data?.score === 'number' ? data.score : null,
+        action: typeof data?.action === 'string' ? data.action : '',
+        errorCodes: Array.isArray(data?.['error-codes']) ? data['error-codes'] : []
+      };
+    }
+
+    const responseAction = typeof data?.action === 'string' ? data.action : '';
+    if (expectedAction && responseAction !== expectedAction) {
+      return {
+        success: false,
+        reason: 'action_mismatch',
+        score: typeof data?.score === 'number' ? data.score : null,
+        action: responseAction
+      };
+    }
+
+    const score = typeof data?.score === 'number' ? data.score : null;
+    if (score !== null && score < SAFE_RECAPTCHA_MIN_SCORE) {
+      return {
+        success: false,
+        reason: 'low_score',
+        score,
+        action: responseAction
+      };
+    }
+
+    return {
+      success: true,
+      reason: 'ok',
+      score,
+      action: responseAction
+    };
+  } catch (error) {
+    return { success: false, reason: 'request_failed', error };
+  }
+}
 
 async function compressContactImage(upload) {
   const sourceBuffer = upload?.buffer;
@@ -62,6 +140,7 @@ export async function postContact(req, res, next) {
     if (!contactValue && directEmail) {
       contactValue = directEmail;
     }
+    const recaptchaToken = normalizeInput(req.body?.['g-recaptcha-response']);
     const contactMethodLower = contactMethod.toLowerCase();
     const usesMail = contactMethodLower.includes('mail');
     const email = usesMail ? contactValue.toLowerCase() : directEmail;
@@ -73,6 +152,23 @@ export async function postContact(req, res, next) {
 
     if (!service || !contactMethod || !contactValue || (usesMail && !email)) {
       return res.status(400).send('Bitte alle Pflichtfelder ausfüllen.');
+    }
+
+    if (RECAPTCHA_ENABLED) {
+      if (!recaptchaToken) {
+        return res.status(400).send('Bitte bestätige, dass du kein Bot bist.');
+      }
+      const recaptchaResult = await verifyRecaptchaToken(
+        recaptchaToken,
+        resolveClientIp(req),
+        RECAPTCHA_EXPECTED_ACTION
+      );
+      if (!recaptchaResult.success) {
+        if (recaptchaResult.reason === 'missing_secret') {
+          return res.status(503).send('Bot-Schutz ist derzeit nicht verfügbar. Bitte später erneut versuchen.');
+        }
+        return res.status(400).send('Bot-Schutz konnte nicht bestätigt werden. Bitte erneut versuchen.');
+      }
     }
 
     if (hasFileValidationErrors) {

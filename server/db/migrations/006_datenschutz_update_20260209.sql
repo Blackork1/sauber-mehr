@@ -2,13 +2,13 @@ UPDATE pages
 SET
   title = 'Datenschutz',
   meta_title = 'Datenschutzerklärung – Sauber Mehr',
-  meta_description = 'Datenschutzerklärung der TM Sauber & Mehr UG (haftungsbeschränkt) mit Informationen zu Cookies, Clarity, Google Tag Manager/Google Analytics, Google Search Console, YouTube, Cloudinary und Mailchimp.',
+  meta_description = 'Datenschutzerklärung der TM Sauber & Mehr UG (haftungsbeschränkt) mit Informationen zu Cookies, Clarity, Google Tag Manager/Google Analytics, Google Search Console, YouTube, Cloudinary, Google reCAPTCHA und Mailchimp.',
   content = jsonb_build_array(
     jsonb_build_object(
       'type', 'richText',
       'title', 'Datenschutzerklärung',
       'html', $$
-<p><strong>Stand:</strong> 25. März 2026</p>
+<p><strong>Stand:</strong> 29. März 2026</p>
 <p>Diese Datenschutzerklärung informiert Sie über Art, Umfang und Zwecke der Verarbeitung personenbezogener Daten auf dieser Website und den dazugehörigen Unterseiten.</p>
 
 <h3>1. Verantwortlicher</h3>
@@ -26,51 +26,54 @@ SET
 <h3>5. Kontaktaufnahme</h3>
 <p>Bei Kontakt per E-Mail, Telefon oder Formular verarbeiten wir die von Ihnen mitgeteilten Daten zur Bearbeitung Ihres Anliegens. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche/vertragliche Kommunikation) oder Art. 6 Abs. 1 lit. f DSGVO (allgemeine Anfragen). Daten werden nach Abschluss der Bearbeitung gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.</p>
 
-<h3>6. Nutzerkonto / Registrierung</h3>
+<h3>6. Google reCAPTCHA im Kontaktformular</h3>
+<p>Zum Schutz unseres Kontaktformulars vor Spam und automatisierten Anfragen nutzen wir Google reCAPTCHA. Der Dienst wird erst geladen, wenn Sie das Kontaktformular aktiv nutzen (z. B. Klick/Fokus im Formular). Dabei können personenbezogene Daten (insbesondere IP-Adresse, Browser-/Geräteinformationen, Interaktionsdaten und Referrer) an Google übermittelt werden. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Missbrauchsprävention und IT-Sicherheit) sowie § 25 Abs. 2 TDDDG, soweit der Einsatz technisch erforderlich ist.</p>
+
+<h3>7. Nutzerkonto / Registrierung</h3>
 <p>Für den Login-Bereich verarbeiten wir insbesondere Name, E-Mail-Adresse, gehashte Passwörter sowie technische Kontodaten (z. B. Registrierungszeitpunkt). Zweck ist die Bereitstellung und Absicherung des Benutzerkontos. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO sowie Art. 6 Abs. 1 lit. f DSGVO (Missbrauchs- und Sicherheitsprävention).</p>
 
-<h3>7. Newsletter (Mailchimp)</h3>
+<h3>8. Newsletter (Mailchimp)</h3>
 <p>Für den Newsletterversand verwenden wir Mailchimp (The Rocket Science Group LLC d/b/a Mailchimp, USA). Verarbeitet werden insbesondere E-Mail-Adresse, ggf. Name, Anmeldezeitpunkt und Double-Opt-In-Nachweis. Rechtsgrundlage ist Ihre Einwilligung nach Art. 6 Abs. 1 lit. a DSGVO. Die Abmeldung ist jederzeit über den Abmeldelink im Newsletter möglich. Eine Übermittlung in Drittländer (insbesondere USA) kann erfolgen; hierfür werden geeignete Garantien (z. B. Standardvertragsklauseln) genutzt.</p>
 
-<h3>8. Consent-Management (eigener Cookie-Banner)</h3>
+<h3>9. Consent-Management (eigener Cookie-Banner)</h3>
 <p>Wir nutzen ein eigenes Einwilligungsmanagement, um Ihre Auswahl zu speichern und technisch umzusetzen. Dabei verarbeiten wir Einwilligungsstatus, Zeitstempel und technische Sitzungsdaten. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; für technisch notwendige Speicherungen auf dem Endgerät § 25 Abs. 2 TDDDG. Sie können Ihre Auswahl jederzeit über den Link „Cookie-Einstellungen“ ändern oder widerrufen.</p>
 
-<h3>9. Analyse mit Microsoft Clarity und Google Tag Manager / Google Analytics (nur nach Einwilligung)</h3>
+<h3>10. Analyse mit Microsoft Clarity und Google Tag Manager / Google Analytics (nur nach Einwilligung)</h3>
 <p>Sofern Sie zustimmen, nutzen wir Microsoft Clarity sowie Google Tag Manager / Google Analytics zur Analyse von Nutzungsinteraktionen und Reichweiten (z. B. Klicks, Scrollverhalten, technische Gerätedaten und Seitenaufrufe), um die Website zu verbessern. Rechtsgrundlage ist Art. 6 Abs. 1 lit. a DSGVO sowie § 25 Abs. 1 TDDDG. Ohne Einwilligung werden diese Analyse-Dienste nicht geladen.</p>
 
-<h3>10. Externe Medien: YouTube (nur nach Einwilligung)</h3>
+<h3>11. Externe Medien: YouTube (nur nach Einwilligung)</h3>
 <p>YouTube-Inhalte werden erst nach Ihrer Einwilligung geladen. Beim Laden/Abspielen können personenbezogene Daten (z. B. IP-Adresse, Geräte-/Browserdaten, Referrer, Cookies/IDs) an Google/YouTube übertragen werden. Rechtsgrundlage ist Art. 6 Abs. 1 lit. a DSGVO sowie § 25 Abs. 1 TDDDG. Ein Widerruf ist jederzeit über die Cookie-Einstellungen möglich.</p>
 
-<h3>11. Medienauslieferung über Cloudinary</h3>
+<h3>12. Medienauslieferung über Cloudinary</h3>
 <p>Für die performante Auslieferung und Optimierung von Bildern/Videos verwenden wir Cloudinary. Dabei werden technisch erforderliche Zugriffsdaten verarbeitet (z. B. IP-Adresse, Browser-/Geräteinformationen). Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (effiziente, sichere Bereitstellung der Website). Je nach Konfiguration kann eine Drittlandübermittlung stattfinden.</p>
 
-<h3>12. Schriftarten (lokales Hosting)</h3>
+<h3>13. Schriftarten (lokales Hosting)</h3>
 <p>Die auf dieser Website verwendeten Schriftarten werden lokal von unserem Server ausgeliefert. Eine automatische Verbindung zu Google-Fonts-Servern erfolgt dadurch nicht.</p>
 
-<h3>13. Google Search Console</h3>
+<h3>14. Google Search Console</h3>
 <p>Wir nutzen die Google Search Console zur technischen Überwachung und Optimierung unserer Auffindbarkeit in Suchmaschinen. Auf der Website selbst ist hierfür kein eigenständiges Tracking-Skript erforderlich. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO.</p>
 
-<h3>14. Webseiterstellung von</h3>
+<h3>15. Webseiterstellung von</h3>
 <p>Diese Website wurde durch den externen Dienstleister Komplett Webdesign konzipiert und technisch umgesetzt. Weitere Informationen finden Sie unter <a href="https://www.komplettwebdesign.de" target="_blank" rel="noopener noreferrer">www.komplettwebdesign.de</a>. Beim bloßen Aufruf dieser Website erfolgt durch diesen Hinweis keine automatische Datenübertragung an Komplett Webdesign.</p>
 
-<h3>15. Social-Media-Verlinkungen (WhatsApp, Instagram, TikTok)</h3>
+<h3>16. Social-Media-Verlinkungen (WhatsApp, Instagram, TikTok)</h3>
 <p>Auf unserer Website sind externe Links zu WhatsApp, Instagram und TikTok eingebunden. Es handelt sich um reine Verlinkungen. Eine Datenübertragung an die jeweiligen Plattformen erfolgt erst, wenn Sie den entsprechenden Link aktiv anklicken. Ab diesem Zeitpunkt gelten die Datenschutzbestimmungen des jeweiligen Anbieters.</p>
 <p>Rechtsgrundlage für die Verlinkung ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer zeitgemäßen Außendarstellung und zusätzlichen Kontaktmöglichkeit).</p>
 
-<h3>16. Empfänger, Auftragsverarbeiter, Drittlandtransfer</h3>
+<h3>17. Empfänger, Auftragsverarbeiter, Drittlandtransfer</h3>
 <p>Wir setzen vertraglich gebundene Dienstleister (Auftragsverarbeiter nach Art. 28 DSGVO) ein. Sofern Daten in Drittländer übermittelt werden, erfolgt dies nur unter Beachtung der DSGVO-Vorgaben (z. B. Angemessenheitsbeschluss, Standardvertragsklauseln).</p>
 
-<h3>17. Speicherdauer</h3>
+<h3>18. Speicherdauer</h3>
 <p>Wir speichern personenbezogene Daten nur so lange, wie es für die jeweiligen Zwecke erforderlich ist oder gesetzliche Pflichten dies verlangen. Danach werden die Daten gelöscht oder anonymisiert.</p>
 
 
-<h3>18. Ihre Rechte</h3>
+<h3>19. Ihre Rechte</h3>
 <p>Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16 DSGVO), Löschung (Art. 17 DSGVO), Einschränkung (Art. 18 DSGVO), Datenübertragbarkeit (Art. 20 DSGVO), Widerspruch (Art. 21 DSGVO) sowie Widerruf erteilter Einwilligungen (Art. 7 DSGVO) mit Wirkung für die Zukunft.</p>
 
-<h3>19. Beschwerderecht</h3>
+<h3>20. Beschwerderecht</h3>
 <p>Sie haben das Recht, sich bei einer Datenschutzaufsichtsbehörde zu beschweren, insbesondere bei der für Berlin zuständigen Aufsichtsbehörde.</p>
 
-<h3>20. Änderung dieser Datenschutzerklärung</h3>
+<h3>21. Änderung dieser Datenschutzerklärung</h3>
 <p>Wir passen diese Datenschutzerklärung an, wenn dies aufgrund rechtlicher, technischer oder organisatorischer Änderungen erforderlich ist.</p>
 $$
     )

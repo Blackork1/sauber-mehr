@@ -1,13 +1,37 @@
 <%- include('../layouts/main', { meta, body: (function(){ %>
+  <% const recaptchaEnabled = String(process.env.RECAPTCHA_ENABLED || 'true') === 'true'; %>
+  <% const recaptchaSiteKey = recaptchaEnabled ? String(process.env.RECAPTCHA_SITE_KEY || '').trim() : ''; %>
+  <% const recaptchaAction = recaptchaEnabled ? String(process.env.RECAPTCHA_EXPECTED_ACTION || 'contact_form').trim() : ''; %>
   <section class="card">
     <h1>Kontakt</h1>
     <% if (typeof query !== 'undefined' && query.sent) { %>
       <p class="success">Danke! Deine Nachricht wurde gesendet.</p>
     <% } %>
-    <form method="post" action="/kontakt" class="form">
+    <form
+      method="post"
+      action="/kontakt"
+      class="form"
+      data-contact-form
+      data-recaptcha-enabled="<%= recaptchaEnabled ? 'true' : 'false' %>"
+      data-recaptcha-site-key="<%= recaptchaSiteKey %>"
+      data-recaptcha-action="<%= recaptchaAction %>"
+    >
       <label>Name<br><input name="name" required></label>
       <label>E-Mail<br><input name="email" type="email" required></label>
       <label>Nachricht<br><textarea name="message" rows="6" required></textarea></label>
+      <% if (recaptchaEnabled) { %>
+      <div class="contact-recaptcha" data-recaptcha-wrap>
+        <input type="hidden" name="g-recaptcha-response" value="" data-recaptcha-token>
+        <p class="contact-recaptcha__error" data-recaptcha-error hidden></p>
+        <p class="contact-recaptcha__legal">
+          Diese Website ist durch reCAPTCHA geschützt und es gelten die
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Datenschutzbestimmungen</a>
+          und
+          <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Nutzungsbedingungen</a>
+          von Google.
+        </p>
+      </div>
+      <% } %>
       <button type="submit">Absenden</button>
     </form>
   </section>

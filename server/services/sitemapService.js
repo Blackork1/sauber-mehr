@@ -9,6 +9,7 @@ function normalizeBaseUrl(url) {
   return String(url || '').trim().replace(/\/+$/, '');
 }
 
+
 function normalizePath(value) {
   const raw = String(value || '').trim();
   if (!raw) return null;

@@ -12,6 +12,7 @@ import pool from './util/db.js';
 import cloudinary from './util/cloudinary.js';
 
 import mainRoutes from './routes/main.js';
+import seoRoutes from './routes/seo.js';
 import adminRoutes from './routes/admin.js';
 import authRoutes from './routes/auth.js';
 import contactRoutes from './routes/contact.js';
@@ -94,6 +95,7 @@ app.use((req, res, next) => {
 
 app.use('/api', consentRoutes);
 app.use('/', mainRoutes);
+app.use('/', seoRoutes);
 app.use('/', authRoutes);
 app.use('/', adminRoutes);
 app.use('/contact', contactRoutes);

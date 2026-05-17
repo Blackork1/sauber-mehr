@@ -1,0 +1,62 @@
+<%
+  const defaultItems = [
+    {
+      name: 'Das Handwerk',
+      description: 'Das Handwerk steht für regionale Betriebe, fachliche Qualität und verlässliche Arbeit. Für uns ist die Mitgliedschaft ein Zeichen dafür, dass wir unser Handwerk ernst nehmen und jeden Auftrag sauber ausführen.',
+      logo: {
+        src: '/images/mitgliedschaften/das-handwerk-logo.webp',
+        alt: 'Das Handwerk Logo'
+      }
+    },
+    {
+      name: 'BG BAU',
+      description: 'Die BG BAU ist die Berufsgenossenschaft der Bauwirtschaft. Sie unterstützt Betriebe bei Arbeitssicherheit und Gesundheitsschutz. Unsere Mitgliedschaft zeigt, dass sichere Abläufe und Verantwortung für unser Team Teil unserer Arbeit sind.',
+      logo: {
+        src: '/images/mitgliedschaften/bg-bau-mitglied-logo.webp',
+        alt: 'BG BAU Mitgliedslogo'
+      }
+    }
+  ];
+  const title = block?.title || 'Mitgliedschaften, auf die wir stolz sind';
+  const description = block?.description || 'Als Reinigungsfirma arbeiten wir nach klaren Standards. Unsere Mitgliedschaften bei Das Handwerk und der BG BAU zeigen: Qualität, Verantwortung und Sicherheit gehören für uns zusammen.';
+  const items = Array.isArray(block?.items) && block.items.length ? block.items : defaultItems;
+  const descriptionParts = String(description || '')
+    .split(/\r?\n+/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+  const resolveLogo = (item) => item?.logo?.src || item?.image?.src || item?.logoSrc || '';
+  const resolveAlt = (item) => item?.logo?.alt || item?.image?.alt || item?.imageAlt || `${item?.name || 'Mitgliedschaft'} Logo`;
+%>
+
+<section class="sauber-memberships section" data-component="mitgliedschaften" aria-labelledby="sauber-memberships-title">
+  <div class="section__inner sauber-memberships__inner">
+    <header class="sauber-memberships__header">
+      <p class="sauber-memberships__eyebrow animate-on-scroll">Verantwortung & Vertrauen</p>
+      <h2 class="sauber-memberships__title animate-on-scroll" id="sauber-memberships-title"><%- renderTextWithLinks(title) %></h2>
+      <% descriptionParts.forEach((paragraph) => { %>
+      <p class="sauber-memberships__description animate-on-scroll"><%- renderTextWithLinks(paragraph) %></p>
+      <% }) %>
+    </header>
+
+    <div class="sauber-memberships__grid">
+      <% items.slice(0, 4).forEach((item, index) => { %>
+      <% const logoSrc = resolveLogo(item); %>
+      <article class="sauber-memberships__card sauber-memberships__card--<%= index + 1 %> animate-on-scroll">
+        <div class="sauber-memberships__logo-panel">
+          <% if (logoSrc) { %>
+          <img class="sauber-memberships__logo" src="<%= logoSrc %>" alt="<%= resolveAlt(item) %>" loading="lazy">
+          <% } %>
+        </div>
+        <div class="sauber-memberships__content">
+          <% if (item?.name) { %>
+          <h3><%- renderTextWithLinks(item.name) %></h3>
+          <% } %>
+          <% if (item?.description) { %>
+          <p><%- renderTextWithLinks(item.description) %></p>
+          <% } %>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+  </div>
+</section>

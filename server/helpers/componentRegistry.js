@@ -14,6 +14,7 @@ export const COMPONENT_REGISTRY = {
   shootingGallery: 'shootingGallery',
   faq: 'faq',
   angebote: 'angebote',
+  mitgliedschaften: 'mitgliedschaften',
   kontaktformular: 'kontaktformular',
   kontaktseite: 'kontaktseite',
   teamAbout: 'teamAbout',

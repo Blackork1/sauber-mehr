@@ -12,6 +12,24 @@
   const isActivePanel = activeTabValue === panelId;
   const blocks = Array.isArray(page.content) ? page.content : [];
   const hasNonEmptyText = (value) => String(value ?? '').trim().length > 0;
+  const defaultMembershipItems = [
+    {
+      name: 'Das Handwerk',
+      description: 'Das Handwerk steht für regionale Betriebe, fachliche Qualität und verlässliche Arbeit. Für uns ist die Mitgliedschaft ein Zeichen dafür, dass wir unser Handwerk ernst nehmen und jeden Auftrag sauber ausführen.',
+      logo: {
+        src: '/images/mitgliedschaften/das-handwerk-logo.webp',
+        alt: 'Das Handwerk Logo'
+      }
+    },
+    {
+      name: 'BG BAU',
+      description: 'Die BG BAU ist die Berufsgenossenschaft der Bauwirtschaft. Sie unterstützt Betriebe bei Arbeitssicherheit und Gesundheitsschutz. Unsere Mitgliedschaft zeigt, dass sichere Abläufe und Verantwortung für unser Team Teil unserer Arbeit sind.',
+      logo: {
+        src: '/images/mitgliedschaften/bg-bau-mitglied-logo.webp',
+        alt: 'BG BAU Mitgliedslogo'
+      }
+    }
+  ];
 %>
 
 <form class="admin-panel <%= isActivePanel ? '' : 'is-hidden' %>" method="post" action="/adminbackend/pages/<%= page.id %>" enctype="multipart/form-data" data-panel="<%= panelId %>" data-panel-group="<%= panelGroup %>">
@@ -153,6 +171,7 @@
             kosten: 'Kosten & Ablauf',
             imageSlider: 'Image Slider',
             angebote: 'Angebote',
+            mitgliedschaften: 'Mitgliedschaften',
             kontaktformular: 'Kontaktformular',
             cta: 'CTA',
             richText: 'Rich Text',
@@ -186,6 +205,7 @@
             { type: 'kosten', label: contentTypeLabels.kosten },
             { type: 'imageSlider', label: contentTypeLabels.imageSlider },
             { type: 'angebote', label: contentTypeLabels.angebote },
+            { type: 'mitgliedschaften', label: contentTypeLabels.mitgliedschaften },
             { type: 'kontaktformular', label: 'Kontaktformular (Standard)', layout: 'default' },
             { type: 'kontaktformular', label: 'Kontaktformular (Leistungen)', layout: 'services' },
             { type: 'cta', label: contentTypeLabels.cta },
@@ -531,6 +551,64 @@
               </div>
             </div>
             <% }) %>
+          </div>
+          <% } else if (block.type === 'mitgliedschaften') { %>
+          <%
+                  const membershipItems = Array.isArray(block.items) && block.items.length ? block.items : defaultMembershipItems;
+                %>
+          <div class="admin-grid">
+            <div class="admin-field">
+              <label>Titel</label>
+              <input type="text" name="content_block_<%= block._adminId %>__title" value="<%= safeValue(block.title || 'Mitgliedschaften, auf die wir stolz sind') %>">
+            </div>
+            <div class="admin-field">
+              <label>Beschreibung</label>
+              <textarea name="content_block_<%= block._adminId %>__description" rows="3"><%= safeValue(block.description || 'Als Reinigungsfirma arbeiten wir nach klaren Standards. Unsere Mitgliedschaften bei Das Handwerk und der BG BAU zeigen: Qualität, Verantwortung und Sicherheit gehören für uns zusammen.') %></textarea>
+            </div>
+          </div>
+          <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="4">
+            <div data-dynamic-rows-items>
+              <% membershipItems.forEach((item, index) => { %>
+              <div class="admin-step-card" data-dynamic-row>
+                <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Mitgliedschaft entfernen">×</button>
+                <div class="admin-field">
+                  <label data-dynamic-label-template="Mitgliedschaft __INDEX__ Name">Mitgliedschaft <%= index + 1 %> Name</label>
+                  <input type="text" name="content_block_<%= block._adminId %>__items.<%= index %>.name" value="<%= safeValue(item?.name) %>" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__items.__INDEX__.name">
+                </div>
+                <div class="admin-field">
+                  <label>Beschreibung</label>
+                  <textarea name="content_block_<%= block._adminId %>__items.<%= index %>.description" rows="3" data-dynamic-input data-dynamic-name-template="content_block_<%= block._adminId %>__items.__INDEX__.description"><%= safeValue(item?.description) %></textarea>
+                </div>
+                <div class="admin-field">
+                  <label>Logo</label>
+                  <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                    <div class="admin-media-picker__controls">
+                      <button type="button" class="admin-button" data-upload-trigger>Logo hochladen</button>
+                      <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                    </div>
+                    <input type="file" name="content_block_<%= block._adminId %>__items.<%= index %>.logo.src_upload" accept="image/*" data-upload-input hidden data-dynamic-name-template="content_block_<%= block._adminId %>__items.__INDEX__.logo.src_upload">
+                    <input type="hidden" name="content_block_<%= block._adminId %>__items.<%= index %>.logo.src_gallery_id" data-gallery-input="image" value="" data-dynamic-name-template="content_block_<%= block._adminId %>__items.__INDEX__.logo.src_gallery_id">
+                    <input type="hidden" name="content_block_<%= block._adminId %>__items.<%= index %>.logo.src" value="<%= safeValue(item?.logo?.src) %>" data-gallery-current data-dynamic-name-template="content_block_<%= block._adminId %>__items.__INDEX__.logo.src">
+                    <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                      <div class="admin-field">
+                        <label>Alt-Text</label>
+                        <input type="text" name="content_block_<%= block._adminId %>__items.<%= index %>.logo.alt" data-gallery-alt-input="de" value="<%= safeValue(item?.logo?.alt) %>" data-dynamic-name-template="content_block_<%= block._adminId %>__items.__INDEX__.logo.alt">
+                      </div>
+                    </div>
+                    <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                    <% if (item?.logo?.src) { %>
+                    <a class="admin-media-picker__preview-link" href="<%= item.logo.src %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= item.logo.src %>" data-media-preview-type="image">
+                      Aktuelles Logo anzeigen
+                    </a>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+              <% }) %>
+            </div>
+            <div class="admin-dynamic-actions">
+              <button type="button" class="admin-button" data-dynamic-add>+ Mitgliedschaft hinzufügen</button>
+            </div>
           </div>
           <% } else if (block.type === 'teamAbout') { %>
           <%
@@ -1735,6 +1813,71 @@
 
       </div>
 
+    </template>
+
+    <template data-content-template="mitgliedschaften">
+      <div class="admin-content-block" data-content-block data-block-id="__BLOCK_ID__">
+        <input type="hidden" name="content_block___BLOCK_ID___type" value="mitgliedschaften" data-block-type>
+        <div class="admin-content-block__header">
+          <div>
+            <h4 class="admin-content-block__title">Mitgliedschaften</h4>
+            <p class="admin-content-block__meta">Typ: mitgliedschaften</p>
+          </div>
+          <button type="button" class="admin-button admin-button--secondary" data-content-remove>Komponente entfernen</button>
+        </div>
+        <div class="admin-grid">
+          <div class="admin-field">
+            <label>Titel</label>
+            <input type="text" name="content_block___BLOCK_ID___title" value="Mitgliedschaften, auf die wir stolz sind">
+          </div>
+          <div class="admin-field">
+            <label>Beschreibung</label>
+            <textarea name="content_block___BLOCK_ID___description" rows="3">Als Reinigungsfirma arbeiten wir nach klaren Standards. Unsere Mitgliedschaften bei Das Handwerk und der BG BAU zeigen: Qualität, Verantwortung und Sicherheit gehören für uns zusammen.</textarea>
+          </div>
+        </div>
+        <div class="admin-grid admin-grid--steps" data-dynamic-rows data-dynamic-manual data-max="4">
+          <div data-dynamic-rows-items>
+            <% defaultMembershipItems.forEach((item, index) => { %>
+            <div class="admin-step-card" data-dynamic-row>
+              <button type="button" class="admin-step-card__remove" data-dynamic-remove aria-label="Mitgliedschaft entfernen">×</button>
+              <div class="admin-field">
+                <label data-dynamic-label-template="Mitgliedschaft __INDEX__ Name">Mitgliedschaft <%= index + 1 %> Name</label>
+                <input type="text" name="content_block___BLOCK_ID___items.<%= index %>.name" value="<%= safeValue(item.name) %>" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___items.__INDEX__.name">
+              </div>
+              <div class="admin-field">
+                <label>Beschreibung</label>
+                <textarea name="content_block___BLOCK_ID___items.<%= index %>.description" rows="3" data-dynamic-input data-dynamic-name-template="content_block___BLOCK_ID___items.__INDEX__.description"><%= safeValue(item.description) %></textarea>
+              </div>
+              <div class="admin-field">
+                <label>Logo</label>
+                <div class="admin-media-picker" data-gallery-picker data-gallery-allow="image">
+                  <div class="admin-media-picker__controls">
+                    <button type="button" class="admin-button" data-upload-trigger>Logo hochladen</button>
+                    <button type="button" class="admin-button" data-gallery-open>Aus Galerie wählen</button>
+                  </div>
+                  <input type="file" name="content_block___BLOCK_ID___items.<%= index %>.logo.src_upload" accept="image/*" data-upload-input hidden data-dynamic-name-template="content_block___BLOCK_ID___items.__INDEX__.logo.src_upload">
+                  <input type="hidden" name="content_block___BLOCK_ID___items.<%= index %>.logo.src_gallery_id" data-gallery-input="image" value="" data-dynamic-name-template="content_block___BLOCK_ID___items.__INDEX__.logo.src_gallery_id">
+                  <input type="hidden" name="content_block___BLOCK_ID___items.<%= index %>.logo.src" value="<%= safeValue(item.logo.src) %>" data-gallery-current data-dynamic-name-template="content_block___BLOCK_ID___items.__INDEX__.logo.src">
+                  <div class="admin-grid admin-media-picker__alt" data-alt-fields hidden>
+                    <div class="admin-field">
+                      <label>Alt-Text</label>
+                      <input type="text" name="content_block___BLOCK_ID___items.<%= index %>.logo.alt" data-gallery-alt-input="de" value="<%= safeValue(item.logo.alt) %>" data-dynamic-name-template="content_block___BLOCK_ID___items.__INDEX__.logo.alt">
+                    </div>
+                  </div>
+                  <small data-gallery-preview>Keine Datei ausgewählt.</small>
+                  <a class="admin-media-picker__preview-link" href="<%= item.logo.src %>" target="_blank" rel="noopener noreferrer" data-media-preview-url="<%= item.logo.src %>" data-media-preview-type="image">
+                    Aktuelles Logo anzeigen
+                  </a>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+          <div class="admin-dynamic-actions">
+            <button type="button" class="admin-button" data-dynamic-add>+ Mitgliedschaft hinzufügen</button>
+          </div>
+        </div>
+      </div>
     </template>
 
     <template data-content-template="kontaktformular">

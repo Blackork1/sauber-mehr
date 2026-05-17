@@ -791,6 +791,24 @@ export async function updatePage(req, res, next) {
           block.cards = cards;
         }
 
+        if (block.type === 'mitgliedschaften') {
+          const items = Array.isArray(block.items) ? block.items : [];
+          for (let index = 0; index < items.length; index += 1) {
+            const fieldBase = `content_block_${blockId}__items.${index}.logo.src`;
+            const resolved = await resolveImageFieldSimple({
+              upload: req.files?.[`${fieldBase}_upload`],
+              galleryId: req.body[`${fieldBase}_gallery_id`],
+              currentUrl: items[index]?.logo?.src,
+              alt: items[index]?.logo?.alt,
+              pool
+            });
+            items[index].logo = items[index].logo || {};
+            if (resolved.src) items[index].logo.src = resolved.src;
+            if (resolved.alt) items[index].logo.alt = resolved.alt;
+          }
+          block.items = items;
+        }
+
         if (block.type === 'bereiche') {
           const imageFieldBase = `content_block_${blockId}__image.src`;
           const resolvedImage = await resolveImageFieldSimple({

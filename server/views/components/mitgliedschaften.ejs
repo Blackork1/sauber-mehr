@@ -11,6 +11,7 @@
     {
       name: 'BG BAU',
       description: 'Die BG BAU ist die Berufsgenossenschaft der Bauwirtschaft. Sie unterstützt Betriebe bei Arbeitssicherheit und Gesundheitsschutz. Unsere Mitgliedschaft zeigt, dass sichere Abläufe und Verantwortung für unser Team Teil unserer Arbeit sind.',
+      url: 'https://www.bgbau.de',
       logo: {
         src: '/images/mitgliedschaften/bg-bau-mitglied-logo.webp',
         alt: 'BG BAU Mitgliedslogo'
@@ -26,6 +27,11 @@
     .filter(Boolean);
   const resolveLogo = (item) => item?.logo?.src || item?.image?.src || item?.logoSrc || '';
   const resolveAlt = (item) => item?.logo?.alt || item?.image?.alt || item?.imageAlt || `${item?.name || 'Mitgliedschaft'} Logo`;
+  const resolveUrl = (item) => {
+    const explicitUrl = item?.url || item?.href || item?.link || '';
+    if (explicitUrl) return explicitUrl;
+    return String(item?.name || '').trim().toLowerCase() === 'bg bau' ? 'https://www.bgbau.de' : '';
+  };
 %>
 
 <section class="sauber-memberships section" data-component="mitgliedschaften" aria-labelledby="sauber-memberships-title">
@@ -41,10 +47,17 @@
     <div class="sauber-memberships__grid">
       <% items.slice(0, 4).forEach((item, index) => { %>
       <% const logoSrc = resolveLogo(item); %>
+      <% const logoUrl = resolveUrl(item); %>
       <article class="sauber-memberships__card sauber-memberships__card--<%= index + 1 %> animate-on-scroll">
         <div class="sauber-memberships__logo-panel">
           <% if (logoSrc) { %>
+            <% if (logoUrl) { %>
+          <a class="sauber-memberships__logo-link" href="<%= logoUrl %>" target="_blank" rel="noopener noreferrer" aria-label="<%= `${item?.name || 'Mitgliedschaft'} Website öffnen` %>">
+            <img class="sauber-memberships__logo" src="<%= logoSrc %>" alt="<%= resolveAlt(item) %>" loading="lazy">
+          </a>
+            <% } else { %>
           <img class="sauber-memberships__logo" src="<%= logoSrc %>" alt="<%= resolveAlt(item) %>" loading="lazy">
+            <% } %>
           <% } %>
         </div>
         <div class="sauber-memberships__content">

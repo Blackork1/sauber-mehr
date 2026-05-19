@@ -873,6 +873,15 @@ a {
   height: 62px;
   object-fit: contain;
 }
+.site-footer__membership-link {
+  display: block;
+  line-height: 0;
+}
+.site-footer__membership-link:focus-visible {
+  outline: 2px solid #00539b;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
 .site-footer__columns {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2979,6 +2988,20 @@ a {
   height: 100%;
   max-width: 430px;
   object-fit: contain;
+}
+
+.sauber-memberships__logo-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.sauber-memberships__logo-link:focus-visible {
+  outline: 2px solid #00539b;
+  outline-offset: 6px;
+  border-radius: 4px;
 }
 
 .sauber-memberships__content {

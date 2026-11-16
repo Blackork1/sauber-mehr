@@ -1,0 +1,201 @@
+<%
+  const layout = ['split', 'bento', 'story'].includes(block?.layout) ? block.layout : 'split';
+  const sectionId = block?.anchor || 'ueber-uns';
+  const titleId = `${sectionId}-title`;
+  const objekte = Array.isArray(block?.objekte) ? block.objekte : [];
+  const sonder = Array.isArray(block?.sonder) ? block.sonder : [];
+  const stats = Array.isArray(block?.stats) ? block.stats : [];
+  const timeline = Array.isArray(block?.timeline) ? block.timeline : [];
+  const image = block?.image || {};
+  const imageSecondary = block?.imageSecondary || {};
+  const primaryButton = block?.primaryButton || {};
+  const secondaryButton = block?.secondaryButton || {};
+  const header = {
+    badge: block?.badge,
+    badgeIcon: 'sparkle',
+    headline: block?.headline,
+    headlineAccent: block?.headlineAccent,
+    id: titleId,
+    align: layout === 'bento' ? 'center' : 'left'
+  };
+  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]
+  ));
+  const renderStat = (stat, index) => {
+    const hasCount = stat?.count !== undefined && stat?.count !== '' && Number.isFinite(Number(stat.count));
+    const countAttrs = hasCount
+      ? ` data-count="${Number(stat.count)}" data-decimals="${Number(stat.decimals || 0)}" data-suffix="${esc(stat.suffix || '')}"`
+      : '';
+    return `<div class="home-stat home-reveal" style="--i:${Number(index) || 0}">
+      <span class="home-stat__value"><span${countAttrs}>${esc(stat?.value)}</span>${stat?.star ? '<span class="home-stat__star" aria-hidden="true">★</span>' : ''}</span>
+      <span class="home-stat__label">${esc(stat?.label)}</span>
+    </div>`;
+  };
+%>
+
+<section class="home-about home-about--<%= layout %> section" id="<%= sectionId %>" aria-labelledby="<%= titleId %>" data-component="ueberUns">
+  <span class="home-blob home-blob--aqua" aria-hidden="true"></span>
+  <span class="home-blob home-blob--indigo" aria-hidden="true"></span>
+  <div class="section__inner home-about__inner">
+
+  <% if (layout === 'split') { %>
+    <div class="home-about__grid">
+      <div class="home-about__content">
+        <%- include('./partials/homeSectionHeader', { header }) %>
+        <p class="home-about__lead home-reveal"><%- renderTextWithLinks(block?.lead || '') %></p>
+        <p class="home-about__text home-reveal"><%- renderTextWithLinks(block?.text || '') %></p>
+        <% if (objekte.length) { %>
+        <p class="home-about__label home-reveal"><%= block?.objekteTitle %></p>
+        <ul class="home-chips" role="list">
+          <% objekte.forEach((item, index) => { %>
+          <li class="home-chip home-reveal" style="--i:<%= index %>"><%- include('./partials/homeIcon', { name: item.icon }) %><%= item.label %></li>
+          <% }) %>
+        </ul>
+        <% } %>
+        <div class="home-actions home-reveal">
+          <% if (primaryButton.href) { %><a class="home-btn home-btn--primary" href="<%= primaryButton.href %>"><%= primaryButton.label %></a><% } %>
+          <% if (secondaryButton.href) { %><a class="home-btn home-btn--ghost" href="<%= secondaryButton.href %>"><%= secondaryButton.label %></a><% } %>
+        </div>
+      </div>
+      <div class="home-about__media">
+        <div class="home-frame home-reveal home-reveal--clip">
+          <% if (image.src) { %><img src="<%= image.src %>" alt="<%= image.alt || '' %>" loading="lazy" decoding="async" data-parallax="0.06"><% } %>
+        </div>
+        <div class="home-float home-float--top home-reveal home-reveal--right">
+          <span class="home-float__value">seit 2022</span>
+          <span class="home-float__label">eigenes Unternehmen in Berlin</span>
+        </div>
+        <div class="home-float home-float--bottom home-reveal home-reveal--left">
+          <span class="home-float__stars" aria-hidden="true">★★★★★</span>
+          <span class="home-float__value">5,0 bei Google</span>
+          <span class="home-float__label">15 Bewertungen</span>
+        </div>
+      </div>
+    </div>
+
+    <% if (stats.length) { %>
+    <div class="home-stats">
+      <% stats.forEach((stat, index) => { %><%- renderStat(stat, index) %><% }) %>
+    </div>
+    <% } %>
+
+    <% if (sonder.length) { %>
+    <div class="home-about__special">
+      <h3 class="home-about__special-title home-reveal"><%= block?.sonderTitle %></h3>
+      <div class="home-special-grid">
+        <% sonder.forEach((item, index) => { %>
+        <a class="home-special home-reveal" style="--i:<%= index %>" href="<%= item.href || '/leistungen' %>">
+          <span class="home-special__index">0<%= index + 1 %></span>
+          <span class="home-special__title"><%= item.title %></span>
+          <span class="home-special__text"><%= item.text %></span>
+          <span class="home-special__arrow"><%- include('./partials/homeIcon', { name: 'arrowRight' }) %></span>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+    <% } %>
+
+  <% } else if (layout === 'bento') { %>
+    <%- include('./partials/homeSectionHeader', { header }) %>
+    <div class="home-bento">
+      <article class="home-bento__tile home-bento__tile--text home-reveal" style="--i:0">
+        <p class="home-about__lead"><%- renderTextWithLinks(block?.lead || '') %></p>
+        <p class="home-about__text"><%- renderTextWithLinks(block?.text || '') %></p>
+        <div class="home-actions">
+          <% if (primaryButton.href) { %><a class="home-btn home-btn--primary" href="<%= primaryButton.href %>"><%= primaryButton.label %></a><% } %>
+          <% if (secondaryButton.href) { %><a class="home-btn home-btn--ghost" href="<%= secondaryButton.href %>"><%= secondaryButton.label %></a><% } %>
+        </div>
+      </article>
+      <figure class="home-bento__tile home-bento__tile--image home-reveal home-reveal--zoom" style="--i:1">
+        <% if (image.src) { %><img src="<%= image.src %>" alt="<%= image.alt || '' %>" loading="lazy" decoding="async"><% } %>
+        <figcaption class="home-bento__caption">
+          <span class="home-bento__caption-kicker">Est. 2022</span>
+          <span>Eigenes Team, feste Ansprechpartner – Erfahrung in Berlin seit 2017.</span>
+        </figcaption>
+      </figure>
+      <% stats.slice(2, 4).forEach((stat, index) => { %>
+      <div class="home-bento__tile home-bento__tile--stat home-bento__tile--stat-<%= index + 1 %> home-reveal" style="--i:<%= index + 2 %>">
+        <%- renderStat(stat, index) %>
+      </div>
+      <% }) %>
+      <div class="home-bento__tile home-bento__tile--objects home-reveal" style="--i:4">
+        <p class="home-about__label"><%= block?.objekteTitle %></p>
+        <ul class="home-chips home-chips--compact" role="list">
+          <% objekte.forEach((item) => { %>
+          <li class="home-chip"><%- include('./partials/homeIcon', { name: item.icon }) %><%= item.label %></li>
+          <% }) %>
+        </ul>
+      </div>
+      <div class="home-bento__tile home-bento__tile--special home-reveal" style="--i:5">
+        <p class="home-about__label"><%= block?.sonderTitle %></p>
+        <div class="home-special-grid home-special-grid--bento">
+          <% sonder.forEach((item, index) => { %>
+          <a class="home-special" href="<%= item.href || '/leistungen' %>">
+            <span class="home-special__index">0<%= index + 1 %></span>
+            <span class="home-special__title"><%= item.title %></span>
+            <span class="home-special__text"><%= item.text %></span>
+            <span class="home-special__arrow"><%- include('./partials/homeIcon', { name: 'arrowRight' }) %></span>
+          </a>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+
+  <% } else { %>
+    <div class="home-story">
+      <div class="home-story__intro">
+        <%- include('./partials/homeSectionHeader', { header }) %>
+        <p class="home-about__lead home-reveal"><%- renderTextWithLinks(block?.lead || '') %></p>
+        <div class="home-actions home-reveal">
+          <% if (primaryButton.href) { %><a class="home-btn home-btn--primary" href="<%= primaryButton.href %>"><%= primaryButton.label %></a><% } %>
+          <% if (secondaryButton.href) { %><a class="home-btn home-btn--ghost" href="<%= secondaryButton.href %>"><%= secondaryButton.label %></a><% } %>
+        </div>
+        <% if (image.src) { %>
+        <div class="home-frame home-frame--story home-reveal home-reveal--clip">
+          <img src="<%= image.src %>" alt="<%= image.alt || '' %>" loading="lazy" decoding="async" data-parallax="0.05">
+        </div>
+        <% } %>
+      </div>
+      <div class="home-timeline" data-timeline>
+      <span class="home-timeline__line" aria-hidden="true"><span class="home-timeline__progress"></span></span>
+      <ol class="home-timeline__list">
+        <% timeline.forEach((entry, index) => { %>
+        <li class="home-timeline__item home-reveal home-reveal--right" style="--i:<%= index %>">
+          <span class="home-timeline__dot" aria-hidden="true"></span>
+          <span class="home-timeline__year"><%= entry.year %></span>
+          <h3 class="home-timeline__title"><%= entry.title %></h3>
+          <p class="home-timeline__text"><%- renderTextWithLinks(entry.text || '') %></p>
+          <% if (index === timeline.length - 1) { %>
+          <p class="home-about__text"><%- renderTextWithLinks(block?.text || '') %></p>
+          <ul class="home-special-list" role="list">
+            <% sonder.forEach((item) => { %>
+            <li><a href="<%= item.href || '/leistungen' %>"><%- include('./partials/homeIcon', { name: 'check' }) %><span><strong><%= item.title %></strong> – <%= item.text %></span></a></li>
+            <% }) %>
+          </ul>
+          <% } %>
+        </li>
+        <% }) %>
+      </ol>
+      </div>
+    </div>
+  </div>
+  <% if (objekte.length) { %>
+  <div class="home-marquee" aria-label="<%= block?.objekteTitle %>">
+    <% [0, 1].forEach((copy) => { %>
+    <ul class="home-marquee__track" role="list" <%- copy ? 'aria-hidden="true"' : '' %>>
+      <% [...objekte, ...objekte].forEach((item) => { %>
+      <li class="home-marquee__item"><%- include('./partials/homeIcon', { name: item.icon }) %><%= item.label %></li>
+      <% }) %>
+    </ul>
+    <% }) %>
+  </div>
+  <% } %>
+  <div class="section__inner home-about__inner">
+    <% if (stats.length) { %>
+    <div class="home-stats home-stats--story">
+      <% stats.forEach((stat, index) => { %><%- renderStat(stat, index) %><% }) %>
+    </div>
+    <% } %>
+  <% } %>
+  </div>
+</section>

@@ -1,0 +1,150 @@
+<%
+  const layout = ['spotlight', 'track', 'wall'].includes(block?.layout) ? block.layout : 'spotlight';
+  const sectionId = block?.anchor || 'bewertungen';
+  const titleId = `${sectionId}-title`;
+  const items = (Array.isArray(block?.items) ? block.items : []).filter((item) => item?.text);
+  const rating = block?.rating || '5,0';
+  const ratingCount = block?.ratingCount || items.length;
+  const source = block?.source || 'Google';
+  const allReviewsUrl = block?.allReviewsUrl || '';
+  const allReviewsLabel = block?.allReviewsLabel || `Alle Bewertungen auf ${source}`;
+  const header = {
+    badge: block?.badge,
+    badgeIcon: 'heart',
+    headline: block?.headline,
+    headlineAccent: block?.headlineAccent,
+    intro: block?.intro,
+    id: titleId,
+    align: layout === 'track' ? 'center' : 'left'
+  };
+  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => (
+    { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]
+  ));
+  const starsFor = (count) => '★'.repeat(Math.max(0, Math.min(5, Number(count) || 5)));
+  const initialOf = (name) => String(name || '?').trim().charAt(0).toUpperCase();
+%>
+
+<% if (items.length) { %>
+<section class="home-reviews home-reviews--<%= layout %> section" id="<%= sectionId %>" aria-labelledby="<%= titleId %>" data-component="bewertungen">
+  <span class="home-blob home-blob--aqua" aria-hidden="true"></span>
+  <div class="section__inner">
+
+  <% const summary = `
+    <div class="home-rating">
+      <span class="home-rating__value">${esc(rating)}</span>
+      <span class="home-rating__stars" aria-hidden="true">★★★★★</span>
+      <span class="home-rating__count">${esc(ratingCount)} Bewertungen bei ${esc(source)}</span>
+    </div>`; %>
+
+  <% if (layout === 'spotlight') { %>
+    <div class="home-reviews__layout">
+      <div class="home-reviews__aside">
+        <%- include('./partials/homeSectionHeader', { header }) %>
+        <div class="home-reveal"><%- summary %></div>
+        <% if (allReviewsUrl) { %>
+        <a class="home-btn home-btn--ghost home-reveal" href="<%= allReviewsUrl %>" target="_blank" rel="noopener"><%= allReviewsLabel %><%- include('./partials/homeIcon', { name: 'external' }) %></a>
+        <% } %>
+      </div>
+      <div class="home-spotlight home-reveal home-reveal--right" data-review-spotlight data-autoplay="8000" role="region" aria-roledescription="Karussell" aria-label="Kundenbewertungen">
+        <span class="home-spotlight__quote" aria-hidden="true">“</span>
+        <div class="home-spotlight__viewport" aria-live="polite">
+          <% items.forEach((item, index) => { %>
+          <figure class="home-spotlight__slide <%= index === 0 ? 'is-active' : '' %>" data-slide role="group" aria-roledescription="Bewertung" aria-label="<%= index + 1 %> von <%= items.length %>" <%- index === 0 ? '' : 'hidden' %>>
+            <span class="home-review__stars" aria-label="<%= item.stars || 5 %> von 5 Sternen"><%= starsFor(item.stars) %></span>
+            <blockquote class="home-spotlight__text"><p><%= item.text %></p></blockquote>
+            <figcaption class="home-review__author">
+              <span class="home-review__avatar" aria-hidden="true"><%= initialOf(item.name) %></span>
+              <span>
+                <strong><%= item.name %></strong>
+                <span class="home-review__meta"><%= item.service %> · <%= source %>-Bewertung <%= item.date %></span>
+              </span>
+            </figcaption>
+          </figure>
+          <% }) %>
+        </div>
+        <div class="home-spotlight__controls">
+          <button type="button" class="home-arrow" data-prev aria-label="Vorherige Bewertung"><%- include('./partials/homeIcon', { name: 'arrowLeft' }) %></button>
+          <div class="home-dots" role="tablist" aria-label="Bewertung auswählen">
+            <% items.forEach((item, index) => { %>
+            <button type="button" class="home-dots__dot <%= index === 0 ? 'is-active' : '' %>" data-dot="<%= index %>" role="tab" aria-selected="<%= index === 0 ? 'true' : 'false' %>" aria-label="Bewertung <%= index + 1 %>: <%= item.name %>"></button>
+            <% }) %>
+          </div>
+          <button type="button" class="home-arrow" data-next aria-label="Nächste Bewertung"><%- include('./partials/homeIcon', { name: 'arrowRight' }) %></button>
+        </div>
+        <span class="home-spotlight__progress" aria-hidden="true"><span data-progress></span></span>
+      </div>
+    </div>
+
+  <% } else if (layout === 'track') { %>
+    <%- include('./partials/homeSectionHeader', { header }) %>
+    <div class="home-reviews__bar home-reveal">
+      <%- summary %>
+      <div class="home-reviews__bar-actions">
+        <% if (allReviewsUrl) { %>
+        <a class="home-link" href="<%= allReviewsUrl %>" target="_blank" rel="noopener"><%= allReviewsLabel %><%- include('./partials/homeIcon', { name: 'external' }) %></a>
+        <% } %>
+        <button type="button" class="home-arrow" data-track-prev aria-label="Vorherige Bewertungen"><%- include('./partials/homeIcon', { name: 'arrowLeft' }) %></button>
+        <button type="button" class="home-arrow" data-track-next aria-label="Weitere Bewertungen"><%- include('./partials/homeIcon', { name: 'arrowRight' }) %></button>
+      </div>
+    </div>
+    <div class="home-track" data-review-track>
+      <ul class="home-track__list" data-track-list role="list" tabindex="0" aria-label="Kundenbewertungen, horizontal scrollbar">
+        <% items.forEach((item, index) => { %>
+        <li class="home-review-card home-reveal" style="--i:<%= index %>">
+          <span class="home-review__stars" aria-label="<%= item.stars || 5 %> von 5 Sternen"><%= starsFor(item.stars) %></span>
+          <blockquote class="home-review-card__text" data-readmore><p><%= item.text %></p></blockquote>
+          <button type="button" class="home-readmore" data-readmore-toggle hidden aria-expanded="false">Weiterlesen</button>
+          <div class="home-review__author">
+            <span class="home-review__avatar" aria-hidden="true"><%= initialOf(item.name) %></span>
+            <span>
+              <strong><%= item.name %></strong>
+              <span class="home-review__meta"><%= item.service %> · <%= item.date %></span>
+            </span>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+      <span class="home-track__progress" aria-hidden="true"><span data-track-progress></span></span>
+    </div>
+
+  <% } else { %>
+    <div class="home-reviews__layout home-reviews__layout--wall">
+      <div class="home-reviews__aside">
+        <%- include('./partials/homeSectionHeader', { header }) %>
+        <div class="home-reveal"><%- summary %></div>
+        <div class="home-rating-bars home-reveal" aria-hidden="true">
+          <% [5, 4, 3, 2, 1].forEach((stars) => { %>
+          <span class="home-rating-bars__row"><span><%= stars %> ★</span><span class="home-rating-bars__bar"><span style="--w:<%= stars === 5 ? 100 : 0 %>%"></span></span></span>
+          <% }) %>
+        </div>
+        <% if (allReviewsUrl) { %>
+        <a class="home-btn home-btn--ghost home-reveal" href="<%= allReviewsUrl %>" target="_blank" rel="noopener"><%= allReviewsLabel %><%- include('./partials/homeIcon', { name: 'external' }) %></a>
+        <% } %>
+      </div>
+      <div class="home-deck home-reveal home-reveal--right" data-review-deck role="region" aria-roledescription="Karussell" aria-label="Kundenbewertungen">
+        <div class="home-deck__stack" aria-live="polite">
+          <% items.forEach((item, index) => { %>
+          <figure class="home-deck__card" data-deck-card style="--pos:<%= index %>" <%- index === 0 ? '' : 'aria-hidden="true"' %>>
+            <span class="home-review__stars" aria-label="<%= item.stars || 5 %> von 5 Sternen"><%= starsFor(item.stars) %></span>
+            <blockquote class="home-deck__text"><p><%= item.text %></p></blockquote>
+            <figcaption class="home-review__author">
+              <span class="home-review__avatar" aria-hidden="true"><%= initialOf(item.name) %></span>
+              <span>
+                <strong><%= item.name %></strong>
+                <span class="home-review__meta"><%= item.service %> · <%= source %> <%= item.date %></span>
+              </span>
+            </figcaption>
+          </figure>
+          <% }) %>
+        </div>
+        <div class="home-deck__controls">
+          <button type="button" class="home-arrow" data-prev aria-label="Vorherige Bewertung"><%- include('./partials/homeIcon', { name: 'arrowLeft' }) %></button>
+          <span class="home-deck__counter"><span data-deck-current>1</span> / <%= items.length %></span>
+          <button type="button" class="home-arrow home-arrow--filled" data-next aria-label="Nächste Bewertung"><%- include('./partials/homeIcon', { name: 'arrowRight' }) %></button>
+        </div>
+      </div>
+    </div>
+  <% } %>
+  </div>
+</section>
+<% } %>

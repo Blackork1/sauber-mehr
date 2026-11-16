@@ -1,5 +1,5 @@
 import express from 'express';
-import { renderHome } from '../controllers/pageController.js';
+import { renderHome, renderHomePreview } from '../controllers/pageController.js';
 
 const router = express.Router();
 
@@ -8,5 +8,8 @@ const router = express.Router();
  * This keeps the "all pages from DB" rule consistent.
  */
 router.get('/', renderHome);
+
+/** Startseiten-Entwürfe (noindex, nicht in der Sitemap) */
+router.get(['/home1', '/home2', '/home3'], renderHomePreview);
 
 export default router;

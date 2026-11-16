@@ -19,6 +19,10 @@ export const COMPONENT_REGISTRY = {
   kontaktseite: 'kontaktseite',
   teamAbout: 'teamAbout',
   specialCards: 'specialCards',
+  ueberUns: 'ueberUns',
+  werte: 'werte',
+  bewertungen: 'bewertungen',
+  referenzen: 'referenzen',
 };
 
 export function normalizeBlocks(blocks = []) {

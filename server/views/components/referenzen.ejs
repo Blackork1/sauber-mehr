@@ -1,0 +1,128 @@
+<%
+  const layout = ['cards', 'tabs', 'zigzag'].includes(block?.layout) ? block.layout : 'cards';
+  const sectionId = block?.anchor || 'referenzen';
+  const titleId = `${sectionId}-title`;
+  const items = (Array.isArray(block?.items) ? block.items : []).filter((item) => item?.name);
+  const placeholderNote = block?.placeholderNote || 'Platzhalter';
+  const zigzagVisible = Number(block?.visibleCount) || 3;
+  const header = {
+    badge: block?.badge,
+    badgeIcon: 'office',
+    headline: block?.headline,
+    headlineAccent: block?.headlineAccent,
+    intro: block?.intro,
+    id: titleId,
+    align: layout === 'zigzag' ? 'center' : 'left'
+  };
+  const facts = (item) => [
+    { icon: 'calendar', label: 'Kunde', value: item.since },
+    { icon: 'clock', label: 'Turnus', value: item.interval },
+    { icon: 'area', label: 'Fläche', value: item.area }
+  ].filter((fact) => fact.value);
+%>
+
+<% if (items.length) { %>
+<section class="home-refs home-refs--<%= layout %> section" id="<%= sectionId %>" aria-labelledby="<%= titleId %>" data-component="referenzen">
+  <div class="section__inner">
+    <%- include('./partials/homeSectionHeader', { header }) %>
+
+  <% if (layout === 'cards') { %>
+    <div class="home-refs__grid">
+      <% items.forEach((item, index) => { %>
+      <article class="home-ref-card home-reveal" style="--i:<%= index % 3 %>">
+        <div class="home-ref-card__media">
+          <% if (item.image?.src) { %><img src="<%= item.image.src %>" alt="<%= item.image.alt || item.name %>" loading="lazy" decoding="async"><% } %>
+          <span class="home-ref-card__category"><%= item.category %></span>
+          <% if (item.placeholder) { %><span class="home-placeholder"><%= placeholderNote %></span><% } %>
+        </div>
+        <div class="home-ref-card__body">
+          <p class="home-ref-card__district"><%- include('./partials/homeIcon', { name: 'pin' }) %><%= item.district %></p>
+          <h3 class="home-ref-card__title"><%= item.name %></h3>
+          <p class="home-ref-card__text"><%= item.text %></p>
+          <dl class="home-facts">
+            <% facts(item).forEach((fact) => { %>
+            <div class="home-facts__item"><dt><%- include('./partials/homeIcon', { name: fact.icon }) %><%= fact.label %></dt><dd><%= fact.value %></dd></div>
+            <% }) %>
+          </dl>
+          <% if (Array.isArray(item.tasks) && item.tasks.length) { %>
+          <ul class="home-tags" role="list" aria-label="Leistungen">
+            <% item.tasks.forEach((task) => { %><li><%= task %></li><% }) %>
+          </ul>
+          <% } %>
+        </div>
+      </article>
+      <% }) %>
+    </div>
+
+  <% } else if (layout === 'tabs') { %>
+    <div class="home-ref-tabs home-reveal" data-ref-tabs>
+      <div class="home-ref-tabs__list" role="tablist" aria-label="Referenzen auswählen" aria-orientation="vertical">
+        <% items.forEach((item, index) => { %>
+        <button type="button" class="home-ref-tabs__tab <%= index === 0 ? 'is-active' : '' %>" role="tab" id="<%= sectionId %>-tab-<%= index %>" aria-controls="<%= sectionId %>-panel-<%= index %>" aria-selected="<%= index === 0 ? 'true' : 'false' %>" tabindex="<%= index === 0 ? '0' : '-1' %>">
+          <span class="home-ref-tabs__index">0<%= index + 1 %></span>
+          <span class="home-ref-tabs__name"><%= item.name %></span>
+          <span class="home-ref-tabs__meta"><%= item.category %> · <%= item.interval %></span>
+        </button>
+        <% }) %>
+      </div>
+      <div class="home-ref-tabs__panels">
+        <% items.forEach((item, index) => { %>
+        <article class="home-ref-panel <%= index === 0 ? 'is-active' : '' %>" role="tabpanel" id="<%= sectionId %>-panel-<%= index %>" aria-labelledby="<%= sectionId %>-tab-<%= index %>" tabindex="0" <%- index === 0 ? '' : 'hidden' %>>
+          <div class="home-ref-panel__media">
+            <% if (item.image?.src) { %><img src="<%= item.image.src %>" alt="<%= item.image.alt || item.name %>" loading="lazy" decoding="async"><% } %>
+            <% if (item.placeholder) { %><span class="home-placeholder"><%= placeholderNote %></span><% } %>
+          </div>
+          <div class="home-ref-panel__body">
+            <p class="home-ref-card__district"><%- include('./partials/homeIcon', { name: 'pin' }) %><%= item.category %> · <%= item.district %></p>
+            <h3 class="home-ref-panel__title"><%= item.name %></h3>
+            <p class="home-ref-panel__text"><%= item.text %></p>
+            <dl class="home-facts home-facts--boxed">
+              <% facts(item).forEach((fact) => { %>
+              <div class="home-facts__item"><dt><%- include('./partials/homeIcon', { name: fact.icon }) %><%= fact.label %></dt><dd><%= fact.value %></dd></div>
+              <% }) %>
+            </dl>
+            <% if (Array.isArray(item.tasks) && item.tasks.length) { %>
+            <ul class="home-checklist" role="list" aria-label="Leistungen">
+              <% item.tasks.forEach((task) => { %><li><%- include('./partials/homeIcon', { name: 'check' }) %><%= task %></li><% }) %>
+            </ul>
+            <% } %>
+          </div>
+        </article>
+        <% }) %>
+      </div>
+    </div>
+
+  <% } else { %>
+    <div class="home-zigzag" data-ref-more>
+      <% items.forEach((item, index) => { %>
+      <article class="home-zigzag__row <%= index % 2 ? 'is-reversed' : '' %>" <%- index >= zigzagVisible ? 'data-more-item hidden' : '' %>>
+        <div class="home-zigzag__media home-reveal home-reveal--clip">
+          <% if (item.image?.src) { %><img src="<%= item.image.src %>" alt="<%= item.image.alt || item.name %>" loading="lazy" decoding="async" data-parallax="0.05"><% } %>
+          <% if (item.placeholder) { %><span class="home-placeholder"><%= placeholderNote %></span><% } %>
+        </div>
+        <div class="home-zigzag__body home-reveal <%= index % 2 ? 'home-reveal--left' : 'home-reveal--right' %>">
+          <span class="home-zigzag__index" aria-hidden="true">0<%= index + 1 %></span>
+          <p class="home-ref-card__district"><%- include('./partials/homeIcon', { name: 'pin' }) %><%= item.category %> · <%= item.district %></p>
+          <h3 class="home-zigzag__title"><%= item.name %></h3>
+          <p class="home-zigzag__text"><%= item.text %></p>
+          <ul class="home-pills" role="list">
+            <% facts(item).forEach((fact) => { %>
+            <li><%- include('./partials/homeIcon', { name: fact.icon }) %><span><span class="home-pills__label"><%= fact.label %></span> <%= fact.value %></span></li>
+            <% }) %>
+          </ul>
+          <% if (Array.isArray(item.tasks) && item.tasks.length) { %>
+          <p class="home-zigzag__tasks"><strong>Aufgaben:</strong> <%= item.tasks.join(' · ') %></p>
+          <% } %>
+        </div>
+      </article>
+      <% }) %>
+      <% if (items.length > zigzagVisible) { %>
+      <div class="home-zigzag__more">
+        <button type="button" class="home-btn home-btn--ghost" data-more-toggle aria-expanded="false" data-label-more="Weitere Referenzen anzeigen" data-label-less="Weniger anzeigen">Weitere Referenzen anzeigen</button>
+      </div>
+      <% } %>
+    </div>
+  <% } %>
+  </div>
+</section>
+<% } %>

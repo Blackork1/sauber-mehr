@@ -1,0 +1,90 @@
+<%
+  const layout = ['cards', 'list', 'band'].includes(block?.layout) ? block.layout : 'cards';
+  const sectionId = block?.anchor || 'was-uns-ausmacht';
+  const titleId = `${sectionId}-title`;
+  const items = Array.isArray(block?.items) ? block.items : [];
+  const ja = Array.isArray(block?.ja) ? block.ja : [];
+  const nein = Array.isArray(block?.nein) ? block.nein : [];
+  const button = block?.button || {};
+  const image = block?.image || {};
+  const header = {
+    badge: block?.badge,
+    badgeIcon: 'check',
+    headline: block?.headline,
+    headlineAccent: block?.headlineAccent,
+    intro: block?.intro,
+    id: titleId,
+    align: layout === 'list' ? 'left' : 'center',
+    tone: layout === 'band' ? 'dark' : 'light'
+  };
+%>
+
+<section class="home-values home-values--<%= layout %> section" id="<%= sectionId %>" aria-labelledby="<%= titleId %>" data-component="werte">
+  <% if (layout === 'band') { %>
+  <span class="home-blob home-blob--aqua" aria-hidden="true"></span>
+  <span class="home-blob home-blob--yellow" aria-hidden="true"></span>
+  <% } %>
+  <div class="section__inner">
+
+  <% if (layout === 'list') { %>
+    <div class="home-values__split">
+      <div class="home-values__aside">
+        <%- include('./partials/homeSectionHeader', { header }) %>
+        <% if (image.src) { %>
+        <div class="home-frame home-frame--small home-reveal home-reveal--clip">
+          <img src="<%= image.src %>" alt="<%= image.alt || '' %>" loading="lazy" decoding="async" data-parallax="0.05">
+        </div>
+        <% } %>
+      </div>
+      <ol class="home-numbered" role="list">
+        <% items.forEach((item, index) => { %>
+        <li class="home-numbered__item home-reveal" style="--i:<%= index %>">
+          <span class="home-numbered__index" aria-hidden="true">0<%= index + 1 %></span>
+          <div>
+            <h3 class="home-numbered__title"><%= item.title %></h3>
+            <p class="home-numbered__text"><%- renderTextWithLinks(item.text || '') %></p>
+          </div>
+        </li>
+        <% }) %>
+      </ol>
+    </div>
+  <% } else { %>
+    <%- include('./partials/homeSectionHeader', { header }) %>
+    <div class="home-values__grid">
+      <% items.forEach((item, index) => { %>
+      <article class="home-value home-reveal" style="--i:<%= index %>">
+        <span class="home-value__icon"><%- include('./partials/homeIcon', { name: item.icon }) %></span>
+        <h3 class="home-value__title"><%= item.title %></h3>
+        <p class="home-value__text"><%- renderTextWithLinks(item.text || '') %></p>
+      </article>
+      <% }) %>
+    </div>
+  <% } %>
+
+    <div class="home-audience home-audience--<%= layout %> home-reveal">
+      <div class="home-audience__copy">
+        <h3 class="home-audience__title"><%= block?.zielgruppeTitle %></h3>
+        <p class="home-audience__text"><%- renderTextWithLinks(block?.zielgruppeText || '') %></p>
+      </div>
+      <div class="home-audience__lists">
+        <ul class="home-audience__list home-audience__list--yes" role="list" aria-label="Für diese Kunden arbeiten wir">
+          <% ja.forEach((entry, index) => { %>
+          <li class="home-audience__chip home-reveal home-reveal--zoom" style="--i:<%= index %>"><%- include('./partials/homeIcon', { name: 'check' }) %><%= entry %></li>
+          <% }) %>
+        </ul>
+        <ul class="home-audience__list home-audience__list--no" role="list" aria-label="Diese Aufträge übernehmen wir nicht">
+          <% nein.forEach((entry) => { %>
+          <li class="home-audience__chip home-audience__chip--no home-reveal home-reveal--zoom" style="--i:<%= ja.length %>"><%- include('./partials/homeIcon', { name: 'x' }) %><span><span class="sr-only">Nicht: </span><%= entry %></span></li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+
+    <% if (block?.closing || button.href) { %>
+    <div class="home-closing home-reveal">
+      <% if (block?.closing) { %><p class="home-closing__text"><%- renderTextWithLinks(block.closing) %></p><% } %>
+      <% if (button.href) { %><a class="home-btn <%= layout === 'band' ? 'home-btn--aqua' : 'home-btn--primary' %>" href="<%= button.href %>"><%= button.label %></a><% } %>
+    </div>
+    <% } %>
+  </div>
+</section>

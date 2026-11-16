@@ -1,0 +1,10 @@
+<%
+  const previewBar = `
+<nav class="home-preview-bar" aria-label="Startseiten-Entwürfe">
+  <span class="home-preview-bar__label">Entwurf</span>
+  ${previewVariants.map((entry) => `<a class="home-preview-bar__link${entry.key === previewKey ? ' is-active' : ''}" href="/${entry.key}" title="${entry.name}"${entry.key === previewKey ? ' aria-current="page"' : ''}>${entry.number}</a>`).join('')}
+  <a class="home-preview-bar__live" href="/">Live</a>
+</nav>`;
+  const previewBody = include('./_page-body', { blocks, page, servicePages }) + previewBar;
+%>
+<%- include('../layouts/main', { meta, schemaGraphJson, translations, body: previewBody }) %>

@@ -1,0 +1,21 @@
+<%
+  const hdr = typeof header !== 'undefined' ? header : {};
+  const hdrAlign = hdr.align || 'left';
+  const hdrTone = hdr.tone || 'light';
+  const hdrId = hdr.id || '';
+%>
+<header class="home-head home-head--<%= hdrAlign %> home-head--<%= hdrTone %>">
+  <% if (hdr.badge) { %>
+  <span class="home-badge home-reveal">
+    <span class="home-badge__icon"><%- include('./homeIcon', { name: hdr.badgeIcon || 'sparkle' }) %></span>
+    <span><%= hdr.badge %></span>
+  </span>
+  <% } %>
+  <h2 class="home-head__title home-reveal" <% if (hdrId) { %>id="<%= hdrId %>"<% } %>>
+    <span><%- renderTextWithLinks(hdr.headline || '') %></span>
+    <% if (hdr.headlineAccent) { %><span class="home-head__accent"><%- renderTextWithLinks(hdr.headlineAccent) %></span><% } %>
+  </h2>
+  <% if (hdr.intro) { %>
+  <p class="home-head__intro home-reveal"><%- renderTextWithLinks(hdr.intro) %></p>
+  <% } %>
+</header>

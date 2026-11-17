@@ -192,6 +192,23 @@ function initSauberNavigation() {
     }
   });
 
+  // Mobiles Menü schließt bei einem Klick/Tipp irgendwo außerhalb des Menüs.
+  // Der Klick löst dabei nichts darunter aus (z. B. keinen Link), er schließt nur das Menü.
+  document.addEventListener('click', (event) => {
+    if (!mobileWrapper?.classList.contains('is-open')) return;
+    if (mobileMenu?.contains(event.target) || mobileToggle?.contains(event.target)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    closeMobileMenu();
+  }, true);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && mobileWrapper?.classList.contains('is-open')) {
+      closeMobileMenu();
+      mobileToggle?.focus();
+    }
+  });
+
   window.addEventListener('resize', () => {
     if (window.innerWidth > 900) closeMobileMenu();
   });

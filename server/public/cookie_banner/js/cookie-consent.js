@@ -192,36 +192,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function createRevokeButton() {
-    const wrap = document.createElement('div');
-    wrap.id = 'cookie-revoke';
-    Object.assign(wrap.style, { position: 'fixed', bottom: '0', left: '0', zIndex: 1000 });
-
-    const btn = document.createElement('button');
-    btn.id = 'revoke-cookies';
-    btn.textContent = 'Cookies widerrufen';
-    Object.assign(btn.style, {
-      background: '#d15023',
-      color: '#fff',
-      border: 'none',
-      padding: '.28rem .45rem',
-      borderRadius: '0 0.35rem 0.35rem 0',
-      cursor: 'pointer',
-      fontSize: '11px'
-    });
-
-    wrap.appendChild(btn);
-    attachRevokeHandler(btn);
-    return wrap;
-  }
-
   function showRevokeButton() {
-    if (!document.getElementById('cookie-revoke')) {
-      document.body.appendChild(createRevokeButton());
-    }
+    // Kein schwebender Button mehr – Widerruf erfolgt über den Link im Footer (.js-cookie-revoke).
   }
 
   function attachOpenSettingsHandlers() {
+    document.querySelectorAll('.js-cookie-revoke').forEach((link) => attachRevokeHandler(link));
+
     document.querySelectorAll('.js-cookie-settings').forEach((link) => {
       link.addEventListener('click', (event) => {
         event.preventDefault();
@@ -251,8 +228,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function attachRevokeHandler(btn) {
+    const defaultLabel = btn.textContent;
     btn.addEventListener('click', (event) => {
       event.preventDefault();
+      if (btn.getAttribute('aria-busy') === 'true') return;
+      btn.setAttribute('aria-busy', 'true');
       btn.disabled = true;
       btn.textContent = 'Widerrufe…';
 
@@ -268,8 +248,11 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch((err) => {
           console.error(err);
+        })
+        .finally(() => {
+          btn.removeAttribute('aria-busy');
           btn.disabled = false;
-          btn.textContent = 'Cookies widerrufen';
+          btn.textContent = defaultLabel;
         });
     });
   }

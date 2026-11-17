@@ -1,5 +1,5 @@
 <%
-  const layout = ['split', 'bento', 'story'].includes(block?.layout) ? block.layout : 'split';
+  const layout = ['split', 'wide', 'bento', 'story'].includes(block?.layout) ? block.layout : 'split';
   const sectionId = block?.anchor || 'ueber-uns';
   const titleId = `${sectionId}-title`;
   const objekte = Array.isArray(block?.objekte) ? block.objekte : [];
@@ -16,7 +16,8 @@
     headline: block?.headline,
     headlineAccent: block?.headlineAccent,
     id: titleId,
-    align: layout === 'bento' ? 'center' : 'left'
+    align: layout === 'bento' ? 'center' : 'left',
+    wide: layout === 'wide'
   };
   const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => (
     { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]
@@ -48,7 +49,7 @@
         <p class="home-about__label home-reveal"><%= block?.objekteTitle %></p>
         <ul class="home-chips" role="list">
           <% objekte.forEach((item, index) => { %>
-          <li class="home-chip home-reveal" style="--i:<%= index %>"><%- include('./partials/homeIcon', { name: item.icon }) %><%= item.label %></li>
+          <li class="home-reveal" style="--i:<%= index %>"><% if (item.href) { %><a class="home-chip home-chip--link" href="<%= item.href %>"><%- include('./partials/homeIcon', { name: item.icon }) %><%= item.label %></a><% } else { %><span class="home-chip"><%- include('./partials/homeIcon', { name: item.icon }) %><%= item.label %></span><% } %></li>
           <% }) %>
         </ul>
         <% } %>
@@ -92,6 +93,46 @@
         </a>
         <% }) %>
       </div>
+    </div>
+    <% } %>
+
+  <% } else if (layout === 'wide') { %>
+    <%- include('./partials/homeSectionHeader', { header }) %>
+    <div class="home-about__grid home-about__grid--wide">
+      <div class="home-about__content">
+        <p class="home-about__lead home-reveal"><%- renderTextWithLinks(block?.lead || '') %></p>
+        <p class="home-about__text home-reveal"><%- renderTextWithLinks(block?.text || '') %></p>
+        <% if (objekte.length) { %>
+        <p class="home-about__label home-reveal"><%= block?.objekteTitle %></p>
+        <ul class="home-chips" role="list">
+          <% objekte.forEach((item, index) => { %>
+          <li class="home-reveal" style="--i:<%= index %>"><% if (item.href) { %><a class="home-chip home-chip--link" href="<%= item.href %>"><%- include('./partials/homeIcon', { name: item.icon }) %><%= item.label %></a><% } else { %><span class="home-chip"><%- include('./partials/homeIcon', { name: item.icon }) %><%= item.label %></span><% } %></li>
+          <% }) %>
+        </ul>
+        <% } %>
+      </div>
+      <div class="home-about__media">
+        <div class="home-frame home-reveal home-reveal--clip">
+          <% if (image.src) { %><img src="<%= image.src %>" alt="<%= image.alt || '' %>" loading="lazy" decoding="async" data-parallax="0.06"><% } %>
+        </div>
+        <div class="home-float home-float--top home-reveal home-reveal--right">
+          <span class="home-float__value">seit 2022</span>
+          <span class="home-float__label">eigenes Unternehmen in Berlin</span>
+        </div>
+        <div class="home-float home-float--bottom home-reveal home-reveal--left">
+          <span class="home-float__stars" aria-hidden="true">★★★★★</span>
+          <span class="home-float__value">5,0 bei Google</span>
+          <span class="home-float__label">15 Bewertungen</span>
+        </div>
+      </div>
+    </div>
+    <div class="home-actions home-actions--wide home-reveal">
+      <% if (primaryButton.href) { %><a class="home-btn home-btn--primary" href="<%= primaryButton.href %>"><%= primaryButton.label %></a><% } %>
+      <% if (secondaryButton.href) { %><a class="home-btn home-btn--ghost" href="<%= secondaryButton.href %>"><%= secondaryButton.label %></a><% } %>
+    </div>
+    <% if (stats.length) { %>
+    <div class="home-stats home-stats--tight">
+      <% stats.forEach((stat, index) => { %><%- renderStat(stat, index) %><% }) %>
     </div>
     <% } %>
 

@@ -125,7 +125,7 @@
     if (slides.length < 2) return;
     let current = 0;
     let timer = null;
-    let paused = false;
+    let paused = true; // startet, sobald das Karussell sichtbar ist
 
     const show = (index) => {
       const next = (index + slides.length) % slides.length;
@@ -146,33 +146,52 @@
       restart();
     };
 
+    // Restzeit bis zur nächsten Bewertung – Pausieren hält sie an, statt neu zu starten
+    let remaining = delay;
+    let runStartedAt = 0;
+
+    const run = () => {
+      if (!delay || reduceMotion || paused) return;
+      clearTimeout(timer);
+      runStartedAt = performance.now();
+      if (progress) {
+        progress.style.transition = `transform ${remaining}ms linear`;
+        progress.style.transform = 'scaleX(1)';
+      }
+      timer = setTimeout(() => show(current + 1), remaining);
+    };
+
     const restart = () => {
       if (!delay || reduceMotion) return;
       clearTimeout(timer);
+      remaining = delay;
       if (progress) {
         progress.style.transition = 'none';
         progress.style.transform = 'scaleX(0)';
         void progress.offsetWidth;
       }
-      if (paused) return;
-      if (progress) {
-        progress.style.transition = `transform ${delay}ms linear`;
-        progress.style.transform = 'scaleX(1)';
-      }
-      timer = setTimeout(() => show(current + 1), delay);
+      run();
     };
 
     const pause = () => {
+      if (paused) return;
       paused = true;
+      if (!delay || reduceMotion) return;
       clearTimeout(timer);
+      if (runStartedAt) {
+        remaining = Math.max(0, remaining - (performance.now() - runStartedAt));
+        runStartedAt = 0;
+      }
       if (progress) {
+        // Fortschrittsbalken an aktueller Position einfrieren
+        progress.style.transform = getComputedStyle(progress).transform;
         progress.style.transition = 'none';
-        progress.style.transform = 'scaleX(0)';
       }
     };
     const resume = () => {
+      if (!paused) return;
       paused = false;
-      restart();
+      run();
     };
 
     carousel.querySelector('[data-prev]')?.addEventListener('click', () => show(current - 1));
@@ -193,7 +212,7 @@
         entries.forEach((entry) => (entry.isIntersecting ? resume() : pause()));
       }, { threshold: 0.3 }).observe(carousel);
     } else {
-      restart();
+      resume();
     }
   });
 
@@ -341,6 +360,20 @@
         tabs[index].scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
       }
     };
+    const panelsWrap = wrapper.querySelector('.home-ref-tabs__panels');
+    const progressBar = wrapper.querySelector('[data-ref-progress]');
+    if (panelsWrap && progressBar) {
+      const updateProgress = () => {
+        const max = panelsWrap.scrollWidth - panelsWrap.clientWidth;
+        const visible = panelsWrap.scrollWidth > 0 ? panelsWrap.clientWidth / panelsWrap.scrollWidth : 1;
+        const ratio = max > 0 ? panelsWrap.scrollLeft / max : 0;
+        progressBar.style.width = `${Math.max(10, visible * 100)}%`;
+        progressBar.style.transform = `translateX(${(ratio * (100 / Math.max(visible, 0.01) - 100)).toFixed(2)}%)`;
+      };
+      panelsWrap.addEventListener('scroll', () => requestAnimationFrame(updateProgress), { passive: true });
+      window.addEventListener('resize', updateProgress);
+      updateProgress();
+    }
     tabs.forEach((tab, index) => {
       tab.addEventListener('click', () => select(index, false));
       tab.addEventListener('keydown', (event) => {

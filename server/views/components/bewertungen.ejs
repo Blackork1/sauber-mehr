@@ -45,7 +45,7 @@
         <a class="home-btn home-btn--ghost home-reveal" href="<%= allReviewsUrl %>" target="_blank" rel="noopener"><%= allReviewsLabel %><%- include('./partials/homeIcon', { name: 'external' }) %></a>
         <% } %>
       </div>
-      <div class="home-spotlight home-reveal home-reveal--right" data-review-spotlight data-autoplay="8000" role="region" aria-roledescription="Karussell" aria-label="Kundenbewertungen">
+      <div class="home-spotlight <%= block?.fixedHeight ? 'home-spotlight--fixed' : '' %> home-reveal home-reveal--right" data-review-spotlight data-autoplay="8000" role="region" aria-roledescription="Karussell" aria-label="Kundenbewertungen">
         <span class="home-spotlight__quote" aria-hidden="true">“</span>
         <div class="home-spotlight__viewport" aria-live="polite">
           <% items.forEach((item, index) => { %>

@@ -4,7 +4,7 @@
   const hdrTone = hdr.tone || 'light';
   const hdrId = hdr.id || '';
 %>
-<header class="home-head home-head--<%= hdrAlign %> home-head--<%= hdrTone %>">
+<header class="home-head home-head--<%= hdrAlign %> home-head--<%= hdrTone %><%= hdr.wide ? ' home-head--wide' : '' %>">
   <% if (hdr.badge) { %>
   <span class="home-badge home-reveal">
     <span class="home-badge__icon"><%- include('./homeIcon', { name: hdr.badgeIcon || 'sparkle' }) %></span>

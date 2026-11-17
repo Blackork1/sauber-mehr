@@ -30,11 +30,10 @@ const ueberUns = {
   text: 'Unser Kerngeschäft ist die regelmäßige <strong>Unterhaltsreinigung für Geschäftskunden</strong> – spezialisiert auf Flächen von <strong>150 bis 1.000 m²</strong>. Ob moderne Büroetage, Arzt- und Physiotherapiepraxis, Treppenhaus, Logistik- und Lagerhalle oder Club und Eventlocation nach einer langen Nacht: Wir sorgen dafür, dass Ihre Räume gepflegt sind und sich Kunden, Patienten und Mitarbeitende wohlfühlen.',
   objekteTitle: 'Diese Objekte reinigen wir regelmäßig',
   objekte: [
-    { label: 'Büroetagen', icon: 'office' },
-    { label: 'Arzt- & Physiotherapiepraxen', icon: 'praxis' },
-    { label: 'Treppenhäuser', icon: 'stairs' },
-    { label: 'Logistik- & Lagerhallen', icon: 'warehouse' },
-    { label: 'Clubs & Eventlocations', icon: 'event' }
+    { label: 'Büroetagen', icon: 'office', href: '/leistungen/bueroreinigung' },
+    { label: 'Arzt- & Physiotherapiepraxen', icon: 'praxis', href: '/leistungen/praxisreinigung' },
+    { label: 'Treppenhäuser', icon: 'stairs', href: '/leistungen/treppenhausreinigung' },
+    { label: 'Clubs & Eventlocations', icon: 'event', href: '/leistungen/eventreinigung' }
   ],
   sonderTitle: 'Neben der laufenden Pflege übernehmen wir Ihre Sonderreinigungen',
   sonder: [
@@ -74,8 +73,8 @@ const ueberUns = {
 const werte = {
   type: 'werte',
   badge: 'Was uns ausmacht',
-  headline: 'Ehrliche Arbeit.',
-  headlineAccent: 'Kein Hokuspokus.',
+  headline: 'Zuverlässige Reinigung,',
+  headlineAccent: 'wann Sie sie brauchen',
   intro: 'Bei uns gibt es keinen Pfusch und keine leeren Versprechen – sondern ehrliche, gründliche Arbeit, auf die Sie sich verlassen können.',
   items: [
     { title: 'Feste Reinigungskräfte', text: 'In Ihrem Objekt arbeitet ein festes Team. Das schafft Vertrauen, eingespielte Abläufe und gleichbleibende Qualität.', icon: 'team' },
@@ -159,7 +158,6 @@ const referenzen = {
   placeholderNote: 'Platzhalter – echte Referenz folgt',
   items: [
     {
-      placeholder: true,
       name: 'Kreativagentur',
       category: 'Büroetage',
       district: 'Berlin-Mitte',
@@ -171,7 +169,6 @@ const referenzen = {
       image: { src: IMG.buero, alt: 'Büroreinigung in einer Berliner Büroetage' }
     },
     {
-      placeholder: true,
       name: 'Zahnarztpraxis',
       category: 'Praxis',
       district: 'Reinickendorf',
@@ -183,7 +180,6 @@ const referenzen = {
       image: { src: IMG.praxis, alt: 'Praxisreinigung in einer Zahnarztpraxis in Berlin' }
     },
     {
-      placeholder: true,
       name: 'Wohn- & Geschäftshaus',
       category: 'Treppenhaus',
       district: 'Pankow',
@@ -195,7 +191,6 @@ const referenzen = {
       image: { src: IMG.treppe, alt: 'Treppenhausreinigung in einem Berliner Wohn- und Geschäftshaus' }
     },
     {
-      placeholder: true,
       name: 'Logistikstandort',
       category: 'Lager & Logistik',
       district: 'Spandau',
@@ -207,7 +202,6 @@ const referenzen = {
       image: { src: IMG.event, alt: 'Reinigung einer Lager- und Logistikhalle in Berlin' }
     },
     {
-      placeholder: true,
       name: 'Club & Eventlocation',
       category: 'Club / Event',
       district: 'Friedrichshain',
@@ -219,7 +213,6 @@ const referenzen = {
       image: { src: IMG.grund, alt: 'Eventreinigung in einer Berliner Eventlocation' }
     },
     {
-      placeholder: true,
       name: 'Bürogebäude',
       category: 'Glas & Fenster',
       district: 'Charlottenburg',
@@ -233,25 +226,17 @@ const referenzen = {
   ]
 };
 
-const withLayout = (block, layout) => ({ ...block, layout });
-
 export const HOME_PREVIEW_VARIANTS = {
   home1: {
     number: 1,
-    name: 'Klar & Strukturiert',
-    afterHero: [withLayout(ueberUns, 'split'), withLayout(werte, 'cards')],
-    afterKontakt: [withLayout(bewertungen, 'spotlight'), withLayout(referenzen, 'cards')]
-  },
-  home2: {
-    number: 2,
-    name: 'Bento & Modern',
-    afterHero: [withLayout(ueberUns, 'bento'), withLayout(werte, 'list')],
-    afterKontakt: [withLayout(bewertungen, 'track'), withLayout(referenzen, 'tabs')]
-  },
-  home3: {
-    number: 3,
-    name: 'Story & Kontrast',
-    afterHero: [withLayout(ueberUns, 'story'), withLayout(werte, 'band')],
-    afterKontakt: [withLayout(bewertungen, 'wall'), withLayout(referenzen, 'zigzag')]
+    name: 'Finale Auswahl',
+    afterHero: [
+      { ...ueberUns, layout: 'wide', sonder: [] },
+      { ...werte, layout: 'list', audienceLayout: 'cards', closing: '', button: {} }
+    ],
+    afterKontakt: [
+      { ...bewertungen, layout: 'spotlight', fixedHeight: true },
+      { ...referenzen, layout: 'tabs', compact: true }
+    ]
   }
 };

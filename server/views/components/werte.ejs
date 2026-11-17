@@ -61,7 +61,7 @@
     </div>
   <% } %>
 
-    <div class="home-audience home-audience--<%= layout %> home-reveal">
+    <div class="home-audience home-audience--<%= block?.audienceLayout || layout %> home-reveal">
       <div class="home-audience__copy">
         <h3 class="home-audience__title"><%= block?.zielgruppeTitle %></h3>
         <p class="home-audience__text"><%- renderTextWithLinks(block?.zielgruppeText || '') %></p>

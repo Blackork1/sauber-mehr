@@ -2114,6 +2114,28 @@ function initStartFullscreenSliderSnap() {
   let hasUserScrolled = false;
   let lastScrollY = window.scrollY;
   let scrollDirection = 0;
+  // Bei Sprüngen über Anker-Links (z. B. „Kostenlose Besichtigung anfragen“ → #kontakt)
+  // darf der Slider die Scroll-Bewegung nicht abfangen.
+  let suppressUntil = 0;
+
+  const isSamePageAnchor = (link) => {
+    if (!link || !link.hash) return false;
+    return link.pathname === window.location.pathname && link.origin === window.location.origin;
+  };
+
+  const releaseSuppression = () => {
+    suppressUntil = 0;
+  };
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href*="#"]');
+    if (!isSamePageAnchor(link)) return;
+    suppressUntil = Date.now() + 3000;
+  }, true);
+
+  window.addEventListener('scrollend', () => {
+    if (suppressUntil) window.setTimeout(releaseSuppression, 100);
+  });
 
   const handleScrollDirection = () => {
     const currentScrollY = window.scrollY;
@@ -2151,6 +2173,7 @@ function initStartFullscreenSliderSnap() {
     (entries) => {
       entries.forEach((entry) => {
         if (hasSnapped || isSnapping) return;
+        if (suppressUntil && Date.now() < suppressUntil) return;
         if (!entry.isIntersecting) return;
         if (!hasUserScrolled || scrollDirection < 0) return;
         if (entry.intersectionRatio < 0.9) return;

@@ -10,6 +10,6 @@ const router = express.Router();
 router.get('/', renderHome);
 
 /** Startseiten-Entwürfe (noindex, nicht in der Sitemap) */
-router.get(['/home1', '/home2', '/home3'], renderHomePreview);
+router.get('/home1', renderHomePreview);
 
 export default router;

@@ -3728,7 +3728,7 @@ body.is-shooting-gallery-open {
     grid-template-columns: 1fr;
     gap: 48px;
     justify-items: stretch;
-    padding: 0 12px;
+    padding: 0 20px;
     box-sizing: border-box;
     min-width: 0;
     max-width: 100%;
@@ -3823,7 +3823,7 @@ body.is-shooting-gallery-open {
 @media (max-width: 420px) {
   .sauber-kontakt__inner {
     max-width: 100%;
-    padding: 0 8px;
+    padding: 0 20px;
   }
 
   .sauber-kontakt__card-wrap {
@@ -5953,8 +5953,11 @@ body.is-shooting-gallery-open {
   line-height: 1.15;
   font-weight: 700;
   color: var(--sauber-text);
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  hyphens: manual;
 }
+
+.home-head__title > span { text-wrap: balance; }
 
 .home-head__accent {
   color: var(--sauber-primary-aqua);
@@ -6038,6 +6041,8 @@ body.is-shooting-gallery-open {
   background: var(--sauber-primary-indigo);
   border-color: var(--sauber-primary-indigo);
   color: var(--sauber-white);
+  box-shadow: 0 14px 28px rgba(83, 111, 212, 0.35);
+  transform: translateY(-2px);
 }
 
 .home-link {
@@ -6811,8 +6816,8 @@ html:not(.home-js) .home-float {
 
 .home-values__split {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: 88px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 72px;
   align-items: start;
 }
 
@@ -6822,6 +6827,8 @@ html:not(.home-js) .home-float {
 }
 
 .home-values__aside .home-head { margin-bottom: 32px; }
+
+.home-values__aside .home-head__title { font-size: clamp(28px, 2.9vw, 38px); }
 
 .home-frame--small {
   aspect-ratio: 4 / 3;
@@ -7960,4 +7967,248 @@ html:not(.home-js) .home-float {
 
   .home-reveal--clip::after { display: none; }
   .home-timeline__progress { transform: scaleY(1) !important; }
+}
+
+/* =========================
+   Entwurf 4 (finale Auswahl)
+   ========================= */
+
+/* Über uns – Überschrift über volle Breite */
+.home-about--wide {
+  background: linear-gradient(165deg, #ffffff 0%, #f2fbfc 55%, var(--sauber-light-aqua) 100%);
+  padding-bottom: 80px;
+}
+
+.home-head--wide { max-width: none; margin-bottom: 40px; }
+
+.home-about__grid--wide {
+  align-items: start;
+  gap: 80px;
+}
+
+.home-about__grid--wide .home-about__media { margin-top: 6px; }
+
+.home-actions--wide {
+  justify-content: center;
+  margin-top: 56px;
+}
+
+.home-stats--tight { margin-top: 40px; }
+
+/* Bewertungen – feste Höhe, kein Springen zwischen Slides */
+.home-spotlight--fixed .home-spotlight__viewport {
+  display: grid;
+  min-height: 0;
+}
+
+.home-spotlight--fixed .home-spotlight__slide { grid-area: 1 / 1; }
+
+.home-spotlight--fixed .home-spotlight__slide[hidden] {
+  display: grid;
+  visibility: hidden;
+}
+
+/* Referenzen – kompakte Tabs in einer Bildschirmhöhe */
+.home-refs--compact { padding: 96px 0 48px; }
+
+.home-refs--compact .home-head {
+  max-width: none;
+  margin-bottom: 28px;
+  gap: 12px;
+}
+
+.home-refs--compact .home-head__title {
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: 0.3em;
+}
+
+.home-ref-tabs--compact {
+  height: clamp(420px, calc(100vh - 470px), 620px);
+  height: clamp(420px, calc(100svh - 470px), 620px);
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.home-ref-tabs--compact .home-ref-tabs__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+}
+
+.home-ref-tabs--compact .home-ref-tabs__tab {
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 10px 18px;
+}
+
+.home-ref-tabs--compact .home-ref-tabs__panels {
+  height: 100%;
+  min-height: 0;
+}
+
+.home-ref-tabs--compact .home-ref-panel {
+  height: 100%;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.home-ref-tabs--compact .home-ref-panel__media {
+  aspect-ratio: auto;
+  height: 100%;
+}
+
+.home-ref-tabs--compact .home-ref-panel__body {
+  padding: 24px 28px;
+  gap: 12px;
+  align-content: center;
+  overflow: auto;
+}
+
+.home-ref-tabs--compact .home-ref-panel__text { font-size: 15px; }
+
+.home-ref-tabs--compact .home-facts--boxed {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--sauber-border);
+}
+
+.home-ref-tabs--compact .home-facts--boxed .home-facts__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  background: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--sauber-border);
+}
+
+.home-ref-tabs--compact .home-facts--boxed dt { flex-shrink: 0; }
+.home-ref-tabs--compact .home-facts--boxed dd { text-align: right; }
+
+.home-ref-tabs--compact .home-checklist { gap: 6px 12px; }
+.home-ref-tabs--compact .home-checklist li { font-size: 14px; }
+
+.home-ref-tabs__progress { display: none; }
+
+@media (max-width: 900px) {
+  .home-about__grid--wide { gap: 48px; }
+  .home-actions--wide { margin-top: 40px; }
+
+  .home-refs--compact { padding: 80px 0 64px; }
+
+  .home-ref-tabs--compact {
+    display: block;
+    height: auto;
+  }
+
+  .home-ref-tabs--compact .home-ref-tabs__list { display: none; }
+
+  .home-ref-tabs--compact .home-ref-tabs__panels {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 86%;
+    gap: 16px;
+    height: auto;
+    margin: 0 -4px;
+    padding: 4px 4px 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .home-ref-tabs--compact .home-ref-tabs__panels::-webkit-scrollbar { display: none; }
+
+  .home-ref-tabs--compact .home-ref-panel,
+  .home-ref-tabs--compact .home-ref-panel[hidden] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    height: auto;
+    scroll-snap-align: start;
+    animation: none;
+    box-shadow: var(--home-shadow);
+  }
+
+  .home-ref-tabs--compact .home-ref-panel .home-ref-panel__media img { animation: none; }
+
+  .home-ref-tabs--compact .home-ref-panel__media {
+    aspect-ratio: 16 / 10;
+    height: auto;
+  }
+
+  .home-ref-tabs--compact .home-ref-panel__body {
+    align-content: start;
+    overflow: visible;
+    padding: 22px 20px 24px;
+  }
+
+  .home-ref-tabs--compact .home-checklist { grid-template-columns: minmax(0, 1fr); }
+
+  .home-ref-tabs--compact .home-ref-tabs__progress {
+    display: block;
+    height: 4px;
+    margin-top: 8px;
+    border-radius: 4px;
+    background: rgba(83, 111, 212, 0.14);
+    overflow: hidden;
+  }
+
+  .home-ref-tabs__progress > span {
+    display: block;
+    height: 100%;
+    width: 30%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--sauber-primary-aqua), var(--sauber-primary-indigo));
+  }
+}
+
+/* Werte-Liste: 01 auf Höhe der Überschrift statt des Badges */
+@media (min-width: 901px) {
+  .home-values--list .home-numbered { margin-top: 52px; }
+}
+
+/* Werte-Liste: kompaktere Punkte in der schmaleren rechten Spalte */
+@media (min-width: 901px) {
+  .home-values--list .home-numbered__item {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 16px;
+    padding: 24px 0;
+  }
+
+  .home-values--list .home-numbered__item:first-child { padding-top: 0; }
+  .home-values--list .home-numbered__index { font-size: 44px; }
+}
+
+/* Werte-Liste: Punkte enden bündig mit dem blauen Rahmen hinter dem Bild */
+@media (min-width: 901px) {
+  .home-values--list .home-values__split { align-items: stretch; }
+
+  .home-values--list .home-values__aside {
+    position: static;
+    padding-bottom: 24px; /* Versatz des Rahmens (box-shadow 24px) */
+  }
+
+  .home-values--list .home-numbered {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-values--list .home-numbered__item {
+    flex: 1 1 auto;
+    align-content: start;
+  }
+}
+
+/* Objekt-Chips als Links zu den Leistungsseiten */
+.home-chip--link {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.home-chip--link:hover,
+.home-chip--link:focus-visible {
+  color: var(--sauber-primary-indigo);
 }

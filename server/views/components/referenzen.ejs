@@ -22,7 +22,7 @@
 %>
 
 <% if (items.length) { %>
-<section class="home-refs home-refs--<%= layout %> section" id="<%= sectionId %>" aria-labelledby="<%= titleId %>" data-component="referenzen">
+<section class="home-refs home-refs--<%= layout %><%= block?.compact ? ' home-refs--compact' : '' %> section" id="<%= sectionId %>" aria-labelledby="<%= titleId %>" data-component="referenzen">
   <div class="section__inner">
     <%- include('./partials/homeSectionHeader', { header }) %>
 
@@ -55,7 +55,7 @@
     </div>
 
   <% } else if (layout === 'tabs') { %>
-    <div class="home-ref-tabs home-reveal" data-ref-tabs>
+    <div class="home-ref-tabs<%= block?.compact ? ' home-ref-tabs--compact' : '' %> home-reveal" data-ref-tabs>
       <div class="home-ref-tabs__list" role="tablist" aria-label="Referenzen auswählen" aria-orientation="vertical">
         <% items.forEach((item, index) => { %>
         <button type="button" class="home-ref-tabs__tab <%= index === 0 ? 'is-active' : '' %>" role="tab" id="<%= sectionId %>-tab-<%= index %>" aria-controls="<%= sectionId %>-panel-<%= index %>" aria-selected="<%= index === 0 ? 'true' : 'false' %>" tabindex="<%= index === 0 ? '0' : '-1' %>">
@@ -90,6 +90,7 @@
         </article>
         <% }) %>
       </div>
+      <span class="home-ref-tabs__progress" aria-hidden="true"><span data-ref-progress></span></span>
     </div>
 
   <% } else { %>

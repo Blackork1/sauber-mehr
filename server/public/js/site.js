@@ -241,6 +241,78 @@ function initSocialRailScrollState() {
 
 initSocialRailScrollState();
 
+/**
+ * Navigation oben und Kontakt-Buttons unten nur beim Hochscrollen zeigen.
+ * Beim Runterscrollen werden beide sanft ausgeblendet, um Platz zu sparen.
+ */
+function initScrollRevealChrome() {
+  const nav = document.querySelector('.sauber-nav');
+  const rail = document.querySelector('.social-rail');
+  if (!nav && !rail) return;
+
+  const TOP_ZONE = 80; // im oberen Seitenbereich immer sichtbar
+  const MIN_DELTA = 8; // kleine Bewegungen ignorieren
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  const isNavBusy = () => Boolean(
+    nav && (
+      nav.querySelector('.sauber-nav__mobile.is-open')
+      || nav.querySelector('.is-open')
+      || nav.contains(document.activeElement)
+    )
+  );
+
+  const revealTimers = new WeakMap();
+
+  const toggleEl = (el, hidden) => {
+    if (!el) return;
+    const wasHidden = el.classList.contains('is-scroll-hidden');
+    if (wasHidden === hidden) return; // nur echte Zustandswechsel animieren
+    el.classList.toggle('is-scroll-hidden', hidden);
+    if (!hidden) {
+      // Beim Einblenden kurz keine Hover-Effekte, sonst blinkt der Button unter dem Zeiger auf
+      el.classList.add('is-revealing');
+      window.clearTimeout(revealTimers.get(el));
+      revealTimers.set(el, window.setTimeout(() => el.classList.remove('is-revealing'), 400));
+    }
+  };
+
+  const mobileNavQuery = window.matchMedia ? window.matchMedia('(max-width: 900px)') : null;
+
+  const setHidden = (hidden) => {
+    // Navigation nur auf Mobil ein-/ausblenden, auf Desktop bleibt sie stehen
+    const navMayHide = Boolean(mobileNavQuery && mobileNavQuery.matches);
+    toggleEl(nav, hidden && navMayHide && !isNavBusy());
+    toggleEl(rail, hidden);
+  };
+
+  const update = () => {
+    ticking = false;
+    const y = window.scrollY;
+    if (y <= TOP_ZONE) {
+      setHidden(false);
+      lastY = y;
+      return;
+    }
+    const delta = y - lastY;
+    if (Math.abs(delta) < MIN_DELTA) return;
+    setHidden(delta > 0);
+    lastY = y;
+  };
+
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  }, { passive: true });
+
+  if (nav) nav.addEventListener('focusin', () => setHidden(false));
+  update();
+}
+
+initScrollRevealChrome();
+
 function initMobileSocialRailImageSliderGuard() {
   const rail = document.querySelector('.social-rail');
   const slider = document.querySelector('.image-slider--start-fullscreen');

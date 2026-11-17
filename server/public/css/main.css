@@ -8212,3 +8212,51 @@ html:not(.home-js) .home-float {
 .home-chip--link:focus-visible {
   color: var(--sauber-primary-indigo);
 }
+
+/* Entwurfs-Hinweis unten rechts (nur Text, keine Umschaltung) */
+.home-preview-bar { padding: 10px 16px; }
+.home-preview-bar__label { padding: 0; }
+
+@media (max-width: 640px) {
+  .home-preview-bar { padding: 8px 12px; }
+  .home-preview-bar__label { display: inline; }
+}
+
+/* Navigation & Kontakt-Buttons: beim Runterscrollen ausblenden, beim Hochscrollen zeigen */
+.sauber-nav {
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  will-change: transform;
+}
+
+/* Navigation nur auf Mobil (bis 900 px, Hamburger-Menü) ausblenden, auf Desktop immer sichtbar */
+@media (max-width: 900px) {
+  .sauber-nav.is-scroll-hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.social-rail.is-scroll-hidden {
+  opacity: 0;
+  transform: translate(-50%, 24px);
+  pointer-events: none;
+}
+
+/* Während des Einblendens keine Hover-/Fokus-Effekte, damit nichts aufblinkt */
+.social-rail.is-revealing,
+.sauber-nav.is-revealing {
+  pointer-events: none;
+}
+
+.social-rail.is-revealing .social-rail__link,
+.sauber-nav.is-revealing .sauber-nav__cta {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sauber-nav,
+  .social-rail {
+    transition: none;
+  }
+}

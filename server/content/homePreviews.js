@@ -187,7 +187,7 @@ const referenzen = {
       size: 'groß',
       text: 'Hygienische Praxisreinigung für eine Kinderzahnarztpraxis – mit Fokus auf Behandlungsräume und Kontaktflächen.',
       tasks: ['Behandlungszimmer', 'Empfang & Wartebereich', 'Kontaktflächen', 'Sanitär'],
-      image: { src: IMG.praxis, alt: 'Praxisreinigung in der Kinderzahnarztpraxis Little Miracle in Berlin-Charlottenburg' }
+      image: { src: '/images/referenzen/little-miracle-kinderzahnarztpraxis-charlottenburg.webp', alt: 'Gebäude der Kinderzahnarztpraxis Little Miracle in Berlin-Charlottenburg' }
     },
     {
       name: 'THE_SPACE KUDAMM',

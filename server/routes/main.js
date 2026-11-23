@@ -1,5 +1,5 @@
 import express from 'express';
-import { renderHome, renderHomePreview } from '../controllers/pageController.js';
+import { renderHome } from '../controllers/pageController.js';
 
 const router = express.Router();
 
@@ -9,7 +9,5 @@ const router = express.Router();
  */
 router.get('/', renderHome);
 
-/** Startseiten-Entwürfe (noindex, nicht in der Sitemap) */
-router.get('/home1', renderHomePreview);
 
 export default router;

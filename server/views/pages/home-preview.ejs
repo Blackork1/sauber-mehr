@@ -1,8 +1,0 @@
-<%
-  const previewBar = `
-<div class="home-preview-bar" role="note" aria-label="Hinweis: Entwurfsansicht">
-  <span class="home-preview-bar__label">Entwurf</span>
-</div>`;
-  const previewBody = include('./_page-body', { blocks, page, servicePages }) + previewBar;
-%>
-<%- include('../layouts/main', { meta, schemaGraphJson, translations, body: previewBody }) %>

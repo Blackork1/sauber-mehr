@@ -214,7 +214,7 @@ const referenzen = {
   ]
 };
 
-export const HOME_PREVIEW_VARIANTS = {
+const HOME_PREVIEW_VARIANTS = {
   home1: {
     number: 1,
     name: 'Finale Auswahl',
@@ -228,3 +228,6 @@ export const HOME_PREVIEW_VARIANTS = {
     ]
   }
 };
+
+/** Neue Sektionen der Startseite (ehemals Entwurf /home1) */
+export const HOME_SECTIONS = HOME_PREVIEW_VARIANTS.home1;

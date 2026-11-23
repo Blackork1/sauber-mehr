@@ -1,6 +1,6 @@
 import { getPageByCanonicalPath, getPageBySlug, listLeistungenSubpages } from '../services/pageService.js';
 import { normalizeBlocks } from '../helpers/componentRegistry.js';
-import { HOME_PREVIEW_VARIANTS } from '../content/homePreviews.js';
+import { HOME_SECTIONS } from '../content/homePreviews.js';
 
 import {
   absUrl,
@@ -10,8 +10,52 @@ import {
   safeJsonLd
 } from '../helpers/pageMeta.js';
 
+/**
+ * Startseite: Blöcke aus der DB (Slug 'de') plus die neuen Sektionen aus
+ * content/homePreviews.js (Über uns + Werte nach dem Hero, Bewertungen +
+ * Referenzen nach dem Kontaktformular).
+ */
 export async function renderHome(req, res, next) {
-  return renderBySlugInternal('de', req, res, next);
+  try {
+    const pool = req.app.get('db');
+    const page = await getPageBySlug(pool, 'de');
+    if (!page) return next();
+    return renderPage({ ...page, content: composeHomeContent(page.content) }, req, res, next);
+  } catch (err) {
+    return next(err);
+  }
+}
+
+function composeHomeContent(content) {
+  const baseBlocks = (Array.isArray(content) ? content : []).map((block) => {
+    // „kleinen starken Team“ → „starken Team“ (bis der DB-Text im Admin angepasst ist)
+    if (block?.type === 'angebote' && typeof block.description === 'string') {
+      return { ...block, description: block.description.replace(/kleinen starken Team/g, 'starken Team') };
+    }
+    return block;
+  });
+  const hasType = (type) => baseBlocks.some((block) => block?.type === type);
+  // Falls die neuen Blöcke später direkt in der DB gepflegt werden, nicht doppelt einfügen
+  const afterHero = HOME_SECTIONS.afterHero.filter((block) => !hasType(block.type));
+  const afterKontakt = HOME_SECTIONS.afterKontakt.filter((block) => !hasType(block.type));
+
+  const merged = [];
+  let heroInserted = false;
+  let kontaktInserted = false;
+  baseBlocks.forEach((block) => {
+    merged.push(block);
+    if (!heroInserted && block?.type === 'hero') {
+      merged.push(...afterHero);
+      heroInserted = true;
+    }
+    if (!kontaktInserted && block?.type === 'kontaktformular') {
+      merged.push(...afterKontakt);
+      kontaktInserted = true;
+    }
+  });
+  if (!heroInserted) merged.unshift(...afterHero);
+  if (!kontaktInserted) merged.push(...afterKontakt);
+  return merged;
 }
 
 export async function renderBySlug(req, res, next) {
@@ -26,82 +70,6 @@ export async function renderByCanonicalPath(req, res, next) {
     const page = await getPageByCanonicalPath(pool, path);
     if (!page) return next();
     return renderPage(page, req, res, next);
-  } catch (err) {
-    return next(err);
-  }
-}
-
-/**
- * Startseiten-Entwürfe (/home1, /home2, /home3).
- * Lädt die aktuelle Startseite aus der DB und ergänzt die neuen Sektionen
- * aus content/homePreviews.js. Die Seiten sind noindex, stehen nicht in der
- * Sitemap und verändern die echte Startseite nicht.
- */
-export async function renderHomePreview(req, res, next) {
-  try {
-    const key = String(req.path || '').replace(/^\//, '').replace(/\/$/, '').toLowerCase();
-    const variant = HOME_PREVIEW_VARIANTS[key];
-    if (!variant) return next();
-
-    const pool = req.app.get('db');
-    const page = await getPageBySlug(pool, 'de');
-    if (!page) return next();
-
-    // Textanpassungen an bestehenden DB-Blöcken nur für die Vorschau
-    // (auf der echten Startseite im Admin-Backend ändern)
-    const baseBlocks = (Array.isArray(page.content) ? page.content : []).map((block) => {
-      if (block?.type === 'angebote' && typeof block.description === 'string') {
-        return { ...block, description: block.description.replace(/kleinen starken Team/g, 'starken Team') };
-      }
-      return block;
-    });
-    const merged = [];
-    let heroInserted = false;
-    let kontaktInserted = false;
-    baseBlocks.forEach((block) => {
-      merged.push(block);
-      if (!heroInserted && block?.type === 'hero') {
-        merged.push(...variant.afterHero);
-        heroInserted = true;
-      }
-      if (!kontaktInserted && block?.type === 'kontaktformular') {
-        merged.push(...variant.afterKontakt);
-        kontaktInserted = true;
-      }
-    });
-    if (!heroInserted) merged.unshift(...variant.afterHero);
-    if (!kontaktInserted) merged.push(...variant.afterKontakt);
-
-    const blocks = normalizeBlocks(merged);
-    const servicePages = await listLeistungenSubpages(pool);
-    const baseMeta = buildMeta({ page });
-    const previewPath = `/${key}`;
-    const meta = {
-      ...baseMeta,
-      title: `Entwurf ${variant.number} – ${baseMeta.title}`,
-      robots: 'noindex, nofollow',
-      canonical: absUrl(previewPath),
-      og: { ...baseMeta.og, url: absUrl(previewPath) }
-    };
-
-    res.set('X-Robots-Tag', 'noindex, nofollow');
-    res.set('Cache-Control', 'no-store');
-
-    return res.render('pages/home-preview', {
-      page,
-      blocks,
-      meta,
-      schemaGraphJson: '',
-      translations: null,
-      servicePages,
-      previewKey: key,
-      previewVariant: variant,
-      previewVariants: Object.entries(HOME_PREVIEW_VARIANTS).map(([variantKey, entry]) => ({
-        key: variantKey,
-        number: entry.number,
-        name: entry.name
-      }))
-    });
   } catch (err) {
     return next(err);
   }

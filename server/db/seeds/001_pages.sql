@@ -137,7 +137,7 @@ VALUES
     "badge": "Kontakt",
     "headline": "Kontaktiere uns noch",
     "headlineAccent": "Heute",
-    "intro": "Du suchst eine zuverlässige B2B-Reinigung, die mit einem kleinen, eingespielten Team fast alle Leistungen aus einer Hand abdeckt? Dann lass uns kurz sprechen.",
+    "intro": "Du suchst eine zuverlässige B2B-Reinigung, die mit einem starken, eingespielten Team fast alle Leistungen aus einer Hand abdeckt? Dann lass uns kurz sprechen.",
     "details": "In einem 10-Minuten-Call klären wir Objekt, Turnus und Sonderwünsche – danach erhältst du ein transparentes, unverbindliches Angebot.",
     "services": [
       "Haushaltsreinigung",

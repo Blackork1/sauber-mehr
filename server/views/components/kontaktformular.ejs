@@ -4,7 +4,7 @@
   const badge = block?.badge || 'Kontakt';
   const headline = block?.headline || 'Kontaktiere uns noch';
   const headlineAccent = block?.headlineAccent || 'Heute';
-  const intro = block?.intro || 'Du suchst eine zuverlässige B2B-Reinigung, die mit einem kleinen, eingespielten Team fast alle Leistungen aus einer Hand abdeckt? Dann lass uns kurz sprechen.';
+  const intro = String(block?.intro || 'Du suchst eine zuverlässige B2B-Reinigung, die mit einem starken, eingespielten Team fast alle Leistungen aus einer Hand abdeckt? Dann lass uns kurz sprechen.').replace(/kleinen, eingespielten/g, 'starken, eingespielten');
   const details = block?.details || 'In einem 10-Minuten-Call klären wir Objekt, Turnus und Sonderwünsche – danach erhältst du ein transparentes, unverbindliches Angebot.';
   const sideTitle = block?.sideTitle || 'Professionelle Reinigung in Berlin';
   const sideDescription = block?.sideDescription || 'Wir melden uns innerhalb von 24 Stunden bei dir. Dein Angebot wird kostenlos und auf deine Bedürfnisse angepasst erstellt.';

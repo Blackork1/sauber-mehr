@@ -27,7 +27,7 @@ const ueberUns = {
   headline: 'Willkommen bei TM Sauber & Mehr',
   headlineAccent: 'Ihr Partner für gewerbliche Reinigung',
   lead: 'TM Sauber & Mehr ist Ihr verlässlicher Partner für gewerbliche Gebäudereinigung in Berlin. Seit 2022 führen wir unser eigenes Reinigungsunternehmen – und bringen unsere Branchenerfahrung aus der Hauptstadt seit 2017 direkt in Ihr Objekt.',
-  text: 'Unser Kerngeschäft ist die regelmäßige <strong>Unterhaltsreinigung für Geschäftskunden</strong> – spezialisiert auf Flächen von <strong>150 bis 1.000 m²</strong>. Ob moderne Büroetage, Arzt- und Physiotherapiepraxis, Treppenhaus, Logistik- und Lagerhalle oder Club und Eventlocation nach einer langen Nacht: Wir sorgen dafür, dass Ihre Räume gepflegt sind und sich Kunden, Patienten und Mitarbeitende wohlfühlen.',
+  text: 'Unser Kerngeschäft ist die regelmäßige <strong>Unterhaltsreinigung für Geschäftskunden</strong> – spezialisiert auf Flächen von <strong>150 bis 2.000 m²</strong>. Ob moderne Büroetage, Arzt- und Physiotherapiepraxis, Treppenhaus, Logistik- und Lagerhalle oder Club und Eventlocation nach einer langen Nacht: Wir sorgen dafür, dass Ihre Räume gepflegt sind und sich Kunden, Patienten und Mitarbeitende wohlfühlen.',
   objekteTitle: 'Diese Objekte reinigen wir regelmäßig',
   objekte: [
     { label: 'Büroetagen', icon: 'office', href: '/leistungen/bueroreinigung' },
@@ -61,7 +61,7 @@ const ueberUns = {
     {
       year: 'Heute',
       title: 'Spezialisiert auf Unterhaltsreinigung für Unternehmen',
-      text: 'Regelmäßige Reinigung für Flächen von 150 bis 1.000 m² – plus Sonderreinigungen aus einer Hand.'
+      text: 'Regelmäßige Reinigung für Flächen von 150 bis 2.000 m² – plus Sonderreinigungen aus einer Hand.'
     }
   ],
   image: { src: IMG.unterhalt, alt: 'Reinigungskraft von TM Sauber & Mehr bei der Unterhaltsreinigung in Berlin' },
@@ -155,73 +155,61 @@ const referenzen = {
   headline: 'Objekte, die wir',
   headlineAccent: 'regelmäßig betreuen',
   intro: 'Ein Einblick in unseren Alltag: Welche Objekte wir reinigen, wie oft wir vor Ort sind und was dabei zu tun ist.',
-  placeholderNote: 'Platzhalter – echte Referenz folgt',
   items: [
     {
-      name: 'Kreativagentur',
-      category: 'Büroetage',
-      district: 'Berlin-Mitte',
-      since: 'seit 2023',
-      interval: '3× pro Woche',
-      area: 'ca. 600 m²',
-      text: 'Feste Reinigungskraft am Abend, damit das Team morgens in ein aufgeräumtes Büro startet.',
-      tasks: ['Arbeitsplätze & Kontaktflächen', 'Teeküche & Spülmaschine', 'Sanitärräume', 'Böden & Müll'],
-      image: { src: IMG.buero, alt: 'Büroreinigung in einer Berliner Büroetage' }
-    },
-    {
-      name: 'Zahnarztpraxis',
-      category: 'Praxis',
-      district: 'Reinickendorf',
+      name: 'PeakAce AG',
+      category: 'Bürogebäude',
+      district: 'Friedrichshain-Kreuzberg',
       since: 'seit 2022',
-      interval: '5× pro Woche',
-      area: 'ca. 250 m²',
-      text: 'Hygienische Reinigung nach Praxisschluss mit Fokus auf Behandlungsstühle und Kontaktflächen.',
-      tasks: ['Behandlungszimmer', 'Empfang & Wartebereich', 'Desinfektion Kontaktflächen', 'Sanitär'],
-      image: { src: IMG.praxis, alt: 'Praxisreinigung in einer Zahnarztpraxis in Berlin' }
+      interval: 'regelmäßig',
+      size: 'sehr groß',
+      text: 'Unterhaltsreinigung der Büroflächen einer Digital-Marketing-Agentur – zuverlässig, damit sich das Team auf seine Arbeit konzentrieren kann.',
+      tasks: ['Arbeitsplätze & Kontaktflächen', 'Küchen & Sozialräume', 'Sanitärräume', 'Böden'],
+      image: { src: '/images/referenzen/peakace-buerogebaeude-berlin.webp', alt: 'Bürogebäude der PeakAce AG in Berlin, gereinigt von TM Sauber & Mehr' }
     },
     {
-      name: 'Wohn- & Geschäftshaus',
-      category: 'Treppenhaus',
-      district: 'Pankow',
-      since: 'seit 2024',
-      interval: '1× pro Woche',
-      area: '6 Etagen',
-      text: 'Gepflegter erster Eindruck für Mieter und Besucher – im festen Turnus, mit Protokoll für die Hausverwaltung.',
-      tasks: ['Treppen & Podeste', 'Geländer & Handläufe', 'Eingangsbereich', 'Glastüren'],
-      image: { src: IMG.treppe, alt: 'Treppenhausreinigung in einem Berliner Wohn- und Geschäftshaus' }
-    },
-    {
-      name: 'Logistikstandort',
-      category: 'Lager & Logistik',
-      district: 'Spandau',
+      name: 'Adrian Bleschke Architekten GmbH',
+      category: 'Architekturbüro',
+      district: 'Kreuzberg',
       since: 'seit 2023',
-      interval: '2× pro Woche',
-      area: 'ca. 1.000 m²',
-      text: 'Reinigung von Büro- und Sozialräumen sowie der Verkehrswege – abgestimmt auf die Schichtzeiten.',
-      tasks: ['Sozial- & Pausenräume', 'Büros', 'Sanitär', 'Verkehrswege'],
-      image: { src: IMG.event, alt: 'Reinigung einer Lager- und Logistikhalle in Berlin' }
+      interval: 'regelmäßig',
+      size: 'mittel',
+      text: 'Gepflegte Arbeitsräume für ein Architekturbüro – vom Arbeitsplatz bis zum Besprechungsraum.',
+      tasks: ['Arbeitsplätze', 'Besprechungsräume', 'Küche', 'Sanitär & Böden'],
+      image: { src: '/images/referenzen/adrian-bleschke-architekten-kreuzberg.webp', alt: 'Bürogebäude von Adrian Bleschke Architekten in Berlin-Kreuzberg' }
     },
     {
-      name: 'Club & Eventlocation',
-      category: 'Club / Event',
-      district: 'Friedrichshain',
-      since: 'seit 2023',
-      interval: 'nach jedem Wochenende',
-      area: 'ca. 800 m²',
-      text: 'Nach der langen Nacht kommen wir: Am Montag ist die Location wieder bereit für Gäste.',
-      tasks: ['Tanzfläche & Bars', 'Sanitär', 'Müllentsorgung', 'Außenbereich'],
-      image: { src: IMG.grund, alt: 'Eventreinigung in einer Berliner Eventlocation' }
-    },
-    {
-      name: 'Bürogebäude',
-      category: 'Glas & Fenster',
+      name: 'Little Miracle',
+      category: 'Kinderzahnarztpraxis',
       district: 'Charlottenburg',
+      since: 'seit 2025',
+      interval: 'regelmäßig',
+      size: 'groß',
+      text: 'Hygienische Praxisreinigung für eine Kinderzahnarztpraxis – mit Fokus auf Behandlungsräume und Kontaktflächen.',
+      tasks: ['Behandlungszimmer', 'Empfang & Wartebereich', 'Kontaktflächen', 'Sanitär'],
+      image: { src: IMG.praxis, alt: 'Praxisreinigung in der Kinderzahnarztpraxis Little Miracle in Berlin-Charlottenburg' }
+    },
+    {
+      name: 'THE_SPACE KUDAMM',
+      category: 'Eventspace',
+      district: 'Charlottenburg',
+      since: 'seit 2025',
+      interval: 'regelmäßig',
+      size: 'sehr groß',
+      text: 'Reinigung eines Eventspace am Kurfürstendamm – damit die Flächen vor und nach Veranstaltungen einladend sind.',
+      tasks: ['Eventflächen', 'Eingangsbereich', 'Sanitär', 'Müllentsorgung'],
+      image: { src: '/images/referenzen/the-space-kudamm-eventspace-berlin.webp', alt: 'THE_SPACE KUDAMM Eventspace in Berlin-Charlottenburg' }
+    },
+    {
+      name: 'Studio 1111',
+      category: 'Eventlocation',
+      district: 'Tiergarten',
       since: 'seit 2024',
-      interval: 'quartalsweise',
-      area: 'ca. 400 m² Glas',
-      text: 'Streifenfreie Glasflächen innen und außen – mit Teleskopstange auch bei großen Fensterfronten.',
-      tasks: ['Fenster innen & außen', 'Rahmen & Fensterbänke', 'Glastrennwände', 'Eingangsportal'],
-      image: { src: IMG.fenster, alt: 'Fensterreinigung an einem Bürogebäude in Berlin' }
+      interval: 'regelmäßig',
+      size: 'groß',
+      text: 'Reinigung einer Eventlocation – nach der Veranstaltung ist alles wieder bereit für die nächsten Gäste.',
+      tasks: ['Bar & Lounge', 'Böden', 'Sanitär', 'Müllentsorgung'],
+      image: { src: '/images/referenzen/studio-1111-eventlocation-tiergarten.webp', alt: 'Eventlocation Studio 1111 in Berlin-Tiergarten' }
     }
   ]
 };

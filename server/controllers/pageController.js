@@ -47,7 +47,14 @@ export async function renderHomePreview(req, res, next) {
     const page = await getPageBySlug(pool, 'de');
     if (!page) return next();
 
-    const baseBlocks = Array.isArray(page.content) ? page.content : [];
+    // Textanpassungen an bestehenden DB-Blöcken nur für die Vorschau
+    // (auf der echten Startseite im Admin-Backend ändern)
+    const baseBlocks = (Array.isArray(page.content) ? page.content : []).map((block) => {
+      if (block?.type === 'angebote' && typeof block.description === 'string') {
+        return { ...block, description: block.description.replace(/kleinen starken Team/g, 'starken Team') };
+      }
+      return block;
+    });
     const merged = [];
     let heroInserted = false;
     let kontaktInserted = false;

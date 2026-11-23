@@ -17,7 +17,7 @@
   const facts = (item) => [
     { icon: 'calendar', label: 'Kunde', value: item.since },
     { icon: 'clock', label: 'Turnus', value: item.interval },
-    { icon: 'area', label: 'Fläche', value: item.area }
+    { icon: 'area', label: 'Größe', value: item.size || item.area }
   ].filter((fact) => fact.value);
 %>
 
